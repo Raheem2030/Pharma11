@@ -1,0 +1,1590 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>دليل العقاقير والنباتات الطبية</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700;800;900&family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            darkBg: '#0B0B0F',
+            lightBg: '#F8FAFC',
+            cardDark: '#171724',
+            cardLight: '#FFFFFF',
+            neonViolet: '#8B5CF6',
+            neonCyan: '#06B6D4',
+            neonAmber: '#F59E0B',
+            neonEmerald: '#10B981',
+            neonRose: '#F43F5E'
+          },
+          fontFamily: {
+            cairo: ['Cairo', 'sans-serif'],
+            arabic: ['IBM Plex Sans Arabic', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- KaTeX CDN (Math LaTeX Formulas Rendering) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+
+  <!-- Chart.js CDN (Data Visualization) -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    /* Dynamic Theme Variables */
+    :root {
+      --bg-main: #0B0B0F;
+      --text-main: #F8FAFC;
+      --card-bg: rgba(23, 23, 36, 0.85);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --header-bg: rgba(11, 11, 15, 0.85);
+      --drawer-bg: #12121A;
+      --shadow-glow: rgba(139, 92, 246, 0.25);
+    }
+
+    html:not(.dark) {
+      --bg-main: #F1F5F9;
+      --text-main: #0F172A;
+      --card-bg: #FFFFFF;
+      --card-border: rgba(0, 0, 0, 0.08);
+      --header-bg: rgba(241, 245, 249, 0.9);
+      --drawer-bg: #FFFFFF;
+      --shadow-glow: rgba(139, 92, 246, 0.12);
+    }
+
+    body {
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      font-family: 'IBM Plex Sans Arabic', sans-serif;
+      overflow-x: hidden;
+      -webkit-tap-highlight-color: transparent;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    /* Light Mode Dynamic Text Contrast Overrides */
+    html:not(.dark) .text-slate-300 { color: #334155 !important; }
+    html:not(.dark) .text-slate-400 { color: #475569 !important; }
+    html:not(.dark) .text-slate-200 { color: #1E293B !important; }
+    html:not(.dark) .text-slate-100 { color: #0F172A !important; }
+    html:not(.dark) .text-white { color: #0F172A !important; }
+    
+    html:not(.dark) .bg-slate-800\/40, 
+    html:not(.dark) .bg-slate-800\/60,
+    html:not(.dark) .bg-slate-900\/40, 
+    html:not(.dark) .bg-slate-900\/60, 
+    html:not(.dark) .bg-slate-900\/80 {
+      background-color: rgba(226, 232, 240, 0.7) !important;
+      border-color: rgba(203, 213, 225, 0.8) !important;
+    }
+    
+    html:not(.dark) .border-slate-700\/50, 
+    html:not(.dark) .border-slate-800 {
+      border-color: rgba(203, 213, 225, 0.8) !important;
+    }
+
+    /* UI Structural Components */
+    .glass-panel {
+      background: var(--card-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--card-border);
+      transition: all 0.3s ease;
+    }
+
+    .glass-header {
+      background: var(--header-bg);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    .rich-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .rich-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px -5px var(--shadow-glow);
+      border-color: rgba(139, 92, 246, 0.4);
+    }
+
+    #right-outline-drawer {
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      background-color: var(--drawer-bg);
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(139, 92, 246, 0.3); border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(139, 92, 246, 0.6); }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col font-arabic">
+
+  <!-- Auto-Hiding Dynamic Header Navigation Bar -->
+  <header id="main-header" class="sticky top-0 z-40 glass-header w-full transition-transform duration-300 transform translateY(0)">
+    <div class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
+      
+      <!-- Drawer Toggle Button -->
+      <button id="drawer-toggle-btn" class="flex items-center gap-2 px-3 py-2 rounded-xl bg-violet-600/10 hover:bg-violet-600/20 text-violet-500 font-cairo font-bold text-sm border border-violet-500/20 transition-all">
+        <i class="fa-solid fa-bars-staggered text-base"></i>
+        <span>فهرس النباتات</span>
+      </button>
+
+      <!-- Lecture Header Titles -->
+      <div class="text-center px-2">
+        <span id="chapter-tag-display" class="inline-block px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-violet-500/10 text-violet-400 mb-0.5 border border-violet-500/20">علم العقاقير</span>
+        <h1 id="lecture-title-display" class="font-cairo font-extrabold text-base md:text-lg leading-tight truncate max-w-[200px] sm:max-w-md">دليل العقاقير والنباتات الطبية</h1>
+      </div>
+
+      <!-- Theme Toggle Button -->
+      <button id="theme-toggle-btn" class="p-2.5 rounded-xl bg-slate-800/20 dark:bg-slate-800/80 hover:bg-violet-600/20 text-amber-500 dark:text-amber-300 border border-slate-700/30 transition-all" title="تبديل المظهر">
+        <i id="theme-icon" class="fa-solid fa-sun text-lg"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Content Container -->
+  <main class="flex-grow max-w-5xl w-full mx-auto px-4 py-6">
+    
+    <!-- Subtitle / Meta Bar -->
+    <div class="mb-6 p-4 rounded-2xl glass-panel border-r-4 border-r-violet-500 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <div>
+        <h2 id="lecture-subtitle-display" class="font-cairo font-bold text-lg text-violet-500 dark:text-violet-400">المكونات الفعالة، العناصر المجهرية التشخيصية، والاستعمالات الدوائية لـ 10 نباتات طبية</h2>
+        <p class="text-xs text-slate-400 mt-1">استخدم القائمة الجانبية أو عناصر الفهرس للتنقل التفاعلي بين النباتات الطبية العشرة والتحليل المقارن.</p>
+      </div>
+      <div class="flex items-center gap-2 text-xs font-semibold text-slate-400 bg-slate-800/20 dark:bg-slate-900/50 px-3 py-1.5 rounded-lg w-fit">
+        <i class="fa-solid fa-seedling text-emerald-400"></i>
+        <span id="topic-count-display">11 قسماً</span>
+      </div>
+    </div>
+
+    <!-- Single Topic Active Viewport -->
+    <div id="active-topic-viewport" class="space-y-6">
+      <!-- Content dynamically injected here -->
+    </div>
+
+  </main>
+
+  <!-- Hierarchical Right Drawer Navigation -->
+  <div id="drawer-overlay" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden transition-opacity"></div>
+  
+  <aside id="right-outline-drawer" class="fixed top-0 right-0 h-full w-80 max-w-[85vw] z-50 transform translate-x-full shadow-2xl flex flex-col border-l border-slate-800/30">
+    <div class="p-4 border-b border-slate-800/40 flex items-center justify-between">
+      <div class="flex items-center gap-2 text-violet-500 dark:text-violet-400 font-cairo font-bold text-base">
+        <i class="fa-solid fa-book-medical"></i>
+        <span>قائمة النباتات والمقارنات</span>
+      </div>
+      <button id="close-drawer-btn" class="p-2 rounded-lg text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all">
+        <i class="fa-solid fa-xmark text-lg"></i>
+      </button>
+    </div>
+
+    <!-- Drawer Items List -->
+    <div id="drawer-tree-container" class="flex-grow overflow-y-auto p-4 space-y-2">
+      <!-- Tree links dynamically injected here -->
+    </div>
+  </aside>
+
+  <!-- JavaScript Engine -->
+  <script>
+    /* ==========================================================================
+       LECTURE_DATA ENGINE
+       ========================================================================== */
+    const LECTURE_DATA = {
+      title: "دليل العقاقير والنباتات الطبية",
+      subtitle: "المكونات الفعالة، العناصر المجهرية التشخيصية، والاستعمالات الدوائية لـ 10 نباتات طبية أساسية",
+      chapterTag: "علم العقاقير والنباتات الطبية",
+      topics: [
+        {
+          id: "topic-overview",
+          title: "0.0 نظرة عامة وتوزيع الفصائل النباتية",
+          level: 1,
+          subtitle: "Overview & Taxonomic Classification",
+          chartConfig: {
+            type: 'doughnut',
+            data: {
+              labels: ['الفصيلة الشفوية (Labiatae)', 'الفصائل الأخرى (Theaceae, Fabaceae, Asteraceae, Myrtaceae, Tiliaceae, Rosaceae)'],
+              datasets: [{
+                data: [3, 7],
+                backgroundColor: [
+                  'rgba(139, 92, 246, 0.8)',
+                  'rgba(6, 182, 212, 0.8)'
+                ],
+                borderColor: ['#8B5CF6', '#06B6D4'],
+                borderWidth: 2
+              }]
+            },
+            options: {
+              responsive: true,
+              plugins: {
+                legend: {
+                  position: 'bottom',
+                  labels: {
+                    color: '#94A3B8',
+                    font: { family: 'Cairo', size: 12 }
+                  }
+                }
+              }
+            }
+          },
+          content: `
+            <div class="space-y-6">
+              <div class="rich-card p-6 border-r-4 border-r-violet-500">
+                <h3 class="font-cairo font-bold text-lg mb-3 flex items-center gap-2">
+                  <i class="fa-solid fa-book-bookmark text-violet-500"></i>
+                  مقدمة الدليل الصيدلاني المخبري
+                </h3>
+                <p class="text-slate-300 leading-relaxed text-sm">
+                  يقدم هذا الدليل مرجعاً دراسياً وسريرياً شاملاً لـ <strong>10 نباتات طبية شائعة الاستخدام في الصيدلة</strong>. تم تصنيف كل نبات وفقاً لـ: الاسم العلمي والإنكليزي والفصيلة النباتية، القسم المستعمل، المكونات الكيميائية الفعالة، العناصر المجهرية التشخيصية المميزة، والاستعمالات الدوائية والفيزيولوجية.
+                </p>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div class="rich-card p-4 border-r-4 border-r-emerald-500">
+                  <div class="flex items-center gap-3">
+                    <i class="fa-solid fa-leaf text-2xl text-emerald-400"></i>
+                    <div>
+                      <h4 class="font-cairo font-bold text-sm text-slate-200">الأوراق</h4>
+                      <p class="text-xs text-slate-400">الشاي، إكليل الجبل، السنا، الميرمية، الزعتر، الأوكاليبتوس</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="rich-card p-4 border-r-4 border-r-amber-500">
+                  <div class="flex items-center gap-3">
+                    <i class="fa-solid fa-spa text-2xl text-amber-400"></i>
+                    <div>
+                      <h4 class="font-cairo font-bold text-sm text-slate-200">الأزهار والرؤوس</h4>
+                      <p class="text-xs text-slate-400">البابونج، الزيزفون، الورد الدمشقي</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="rich-card p-4 border-r-4 border-r-cyan-500">
+                  <div class="flex items-center gap-3">
+                    <i class="fa-solid fa-seedling text-2xl text-cyan-400"></i>
+                    <div>
+                      <h4 class="font-cairo font-bold text-sm text-slate-200">القمم المزهرة</h4>
+                      <p class="text-xs text-slate-400">الخزامى (Lavender)</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="rich-card p-6 border-r-4 border-r-cyan-500">
+                <h3 class="font-cairo font-bold text-base mb-3 text-cyan-500 flex items-center gap-2">
+                  <i class="fa-solid fa-chart-pie"></i>
+                  توزيع النباتات المدروسة حسب العائلات التصنيفية
+                </h3>
+                <p class="text-xs text-slate-400 mb-4">
+                  تمثل الفصيلة الشفوية (Lamiaceae / Labiatae) النسبة الأكبر بـ 3 نباتات (إكليل الجبل، الميرمية، الزعتر، والخزامى أيضاً تتبع لها)، وتتميز باحتوائها العالي على الزيوت الطيارة والأوبار المفرزة.
+                </p>
+                <div class="max-w-xs mx-auto py-2">
+                  <canvas id="topicChart"></canvas>
+                </div>
+              </div>
+            </div>
+          `
+        },
+        {
+          id: "topic-tea",
+          title: "1.0 الشاي (Tea)",
+          level: 1,
+          subtitle: "Camellia sinensis - Theaceae",
+          content: `
+            <div class="space-y-6">
+              <!-- Taxonomy Info -->
+              <div class="rich-card p-6 border-r-4 border-r-emerald-500">
+                <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-700/50 pb-3 mb-4">
+                  <div>
+                    <span class="text-xs text-emerald-400 font-bold tracking-wide uppercase">التصنيف والتعريف النباتي</span>
+                    <h3 class="font-cairo font-bold text-xl text-slate-100">الشاي (Tea)</h3>
+                  </div>
+                  <span class="px-3 py-1 bg-emerald-500/10 text-emerald-400 rounded-full border border-emerald-500/20 text-xs font-bold font-mono">
+                    Camellia sinensis
+                  </span>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                  <div class="p-3 rounded-xl bg-slate-800/40 border border-slate-700/50">
+                    <span class="text-slate-400 block mb-1">الفصيلة:</span>
+                    <strong class="text-emerald-400 text-sm">الشايية (Theaceae)</strong>
+                  </div>
+                  <div class="p-3 rounded-xl bg-slate-800/40 border border-slate-700/50">
+                    <span class="text-slate-400 block mb-1">القسم المستعمل:</span>
+                    <strong class="text-slate-200 text-sm">الأوراق (Leaves)</strong>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Active Constituents & Diagnostic Microscopy -->
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="rich-card p-5 border-r-4 border-r-violet-500">
+                  <h4 class="font-cairo font-bold text-base mb-3 text-violet-400 flex items-center gap-2">
+                    <i class="fa-solid fa-flask-vial"></i> المكونات الفعالة
+                  </h4>
+                  <ul class="text-xs space-y-2 text-slate-300">
+                    <li class="flex items-start gap-2">
+                      <i class="fa-solid fa-check text-violet-400 mt-0.5"></i>
+                      <span><strong>حموض فينولية:</strong> مثل حمض الكلوروجينيك، ومشتقات متعددة الفينول (كاتشين، مركبات عفصية).</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                      <i class="fa-solid fa-check text-violet-400 mt-0.5"></i>
+                      <span><strong>قلويات بورينية:</strong> كافيين، تيوفيلين، ثيوبرومين.</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                      <i class="fa-solid fa-check text-violet-400 mt-0.5"></i>
+                      <span><strong>فيتامينات ومعادن:</strong> فيتامينات (C, B1, B2, B6)، ومعادن (ألمنيوم، بوتاسيوم، فلور)، وزيت عطري طيار.</span>
+                    </li>
+                  </ul>
+                </div>
+
+                <div class="rich-card p-5 border-r-4 border-r-cyan-500">
+                  <h4 class="font-cairo font-bold text-base mb-3 text-cyan-400 flex items-center gap-2">
+                    <i class="fa-solid fa-microscope"></i> العناصر المجهرية التشخيصية
+                  </h4>
+                  <ul class="text-xs space-y-2 text-slate-300">
+                    <li class="flex items-start gap-2">
+                      <i class="fa-solid fa-circle-dot text-cyan-400 mt-0.5"></i>
+                      <span><strong>ثغور غير منتظمة</strong>.</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                      <i class="fa-solid fa-circle-dot text-cyan-400 mt-0.5"></i>
+                      <span><strong>أوبار لامسة مخروطية عكازية</strong> <span class="text-cyan-300 font-semibold">(عنصر تشخيصي رئيسي)</span>.</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                      <i class="fa-solid fa-circle-dot text-cyan-400 mt-0.5"></i>
+                      <span><strong>خلايا متصلبة متشعبة</strong> <span class="text-cyan-300 font-semibold">(عنصر تشخيصي)</span>.</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                      <i class="fa-solid fa-circle-dot text-cyan-400 mt-0.5"></i>
+                      <span><strong>حماضات كالسيوم:</strong> مرصعة أو وردية، مع أوعية خشبية حلزونية.</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+
+              <!-- Pharmacology & Types -->
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="rich-card p-5 border-r-4 border-r-emerald-500">
+                  <h4 class="font-cairo font-bold text-base mb-2 text-emerald-400 flex items-center gap-2">
+                    <i class="fa-solid fa-notes-medical"></i> الاستعمالات والتأثير الدوائي
+                  </h4>
+                  <p class="text-xs text-slate-300 leading-relaxed">
+                    مدر للبول، موسع للأوعية المحيطية، منبه للدماغ ويسهل العمل الذهني والعضلي، يزيد التروية الدموية، ينظم ضربات القلب، مضاد لتسوس الأسنان (لوجود الفلور)، قابض ومضاد للإسهال (بفضل العفص).
+                  </p>
+                </div>
+
+                <div class="rich-card p-5 border-r-4 border-r-amber-500">
+                  <h4 class="font-cairo font-bold text-base mb-2 text-amber-400 flex items-center gap-2">
+                    <i class="fa-solid fa-tags"></i> الأنواع والضروب
+                  </h4>
+                  <div class="flex gap-2">
+                    <span class="px-3 py-1 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-xs font-semibold">الشاي الأخضر (Green Tea)</span>
+                    <span class="px-3 py-1 rounded-lg bg-amber-500/10 text-amber-400 border border-amber-500/20 text-xs font-semibold">الشاي الأسود (Black Tea)</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          `
+        },
+        {
+          id: "topic-rosemary",
+          title: "2.0 إكليل الجبل (Rosemary)",
+          level: 1,
+          subtitle: "Rosemarinus officinalis - Lamiaceae",
+          content: `
+            <div class="space-y-6">
+              <div class="rich-card p-6 border-r-4 border-r-emerald-500">
+                <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-700/50 pb-3 mb-4">
+                  <div>
+                    <span class="text-xs text-emerald-400 font-bold tracking-wide uppercase">التصنيف والتعريف النباتي</span>
+                    <h3 class="font-cairo font-bold text-xl text-slate-100">إكليل الجبل (Rosemary)</h3>
+                  </div>
+                  <span class="px-3 py-1 bg-emerald-500/10 text-emerald-400 rounded-full border border-emerald-500/20 text-xs font-bold font-mono">
+                    Rosemarinus officinalis
+                  </span>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                  <div class="p-3 rounded-xl bg-slate-800/40 border border-slate-700/50">
+                    <span class="text-slate-400 block mb-1">الفصيلة:</span>
+                    <strong class="text-emerald-400 text-sm">الشفوية (Labiatae / Lamiaceae)</strong>
+                  </div>
+                  <div class="p-3 rounded-xl bg-slate-800/40 border border-slate-700/50">
+                    <span class="text-slate-400 block mb-1">القسم المستعمل:</span>
+                    <strong class="text-slate-200 text-sm">الأوراق (Leaves)</strong>
+                  </div>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="rich-card p-5 border-r-4 border-r-violet-500">
+                  <h4 class="font-cairo font-bold text-base mb-3 text-violet-400 flex items-center gap-2">
+                    <i class="fa-solid fa-flask-vial"></i> المكونات الفعالة
+                  </h4>
+                  <ul class="text-xs space-y-2 text-slate-300">
+                    <li class="flex items-start gap-2">
+                      <i class="fa-solid fa-check text-violet-400 mt-0.5"></i>
+                      <span><strong>زيت عطري:</strong> غني بالسينول (Cineole)، البورنيول (Borneol)، الليمونين، والكافور.</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                      <i class="fa-solid fa-check text-violet-400 mt-0.5"></i>
+                      <span><strong>حموض فينولية:</strong> حمض الروزمارينيك (Rosmarinic acid).</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                      <i class="fa-solid fa-check text-violet-400 mt-0.5"></i>
+                      <span>فلافونويدات، وقلويات <strong>(الروزماريسين - Rosmaricine)</strong>.</span>
+                    </li>
+                  </ul>
+                </div>
+
+                <div class="rich-card p-5 border-r-4 border-r-cyan-500">
+                  <h4 class="font-cairo font-bold text-base mb-3 text-cyan-400 flex items-center gap-2">
+                    <i class="fa-solid fa-microscope"></i> العناصر المجهرية التشخيصية
+                  </h4>
+                  <ul class="text-xs space-y-2 text-slate-300">
+                    <li class="flex items-start gap-2">
+                      <i class="fa-solid fa-circle-dot text-cyan-400 mt-0.5"></i>
+                      <span><strong>ثغور في البشرة السفلية</strong>.</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                      <i class="fa-solid fa-circle-dot text-cyan-400 mt-0.5"></i>
+                      <span><strong>أوبار غدية</strong> بنمط الشفويات المميز.</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                      <i class="fa-solid fa-circle-dot text-cyan-400 mt-0.5"></i>
+                      <span><strong>أوبار لامسة:</strong> وحيدة الخلية أو متعددة الخلايا المتشعبة.</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="rich-card p-5 border-r-4 border-r-emerald-500">
+                  <h4 class="font-cairo font-bold text-base mb-2 text-emerald-400 flex items-center gap-2">
+                    <i class="fa-solid fa-notes-medical"></i> الاستعمالات والتأثير الدوائي
+                  </h4>
+                  <div class="text-xs space-y-2 text-slate-300 leading-relaxed">
+                    <p><strong class="text-emerald-300">داخلياً:</strong> منبه رافع لضغط الدم، يفرغ الصفراء، مدر للبول، ومضاد لتشنج وتعفن الأمعاء.</p>
+                    <p><strong class="text-cyan-300">خارجياً:</strong> مندب ملائم لتسريع التئام الجروح، ومنشط لفروة الرأس وتحفيز نمو الشعر.</p>
+                  </div>
+                </div>
+
+                <div class="rich-card p-5 border-r-4 border-r-amber-500">
+                  <h4 class="font-cairo font-bold text-base mb-2 text-amber-400 flex items-center gap-2">
+                    <i class="fa-solid fa-tags"></i> الأنواع والضروب
+                  </h4>
+                  <p class="text-xs text-slate-400 leading-relaxed">
+                    لم تذكر المصادر تفريعات لأنواع أخرى مستعملة صيدلانياً لنبات إكليل الجبل في هذا السياق.
+                  </p>
+                </div>
+              </div>
+            </div>
+          `
+        },
+        {
+          id: "topic-senna",
+          title: "3.0 السنا (Medical Senna)",
+          level: 1,
+          subtitle: "Cassia angustifolia / acutifolia - Fabaceae",
+          content: `
+            <div class="space-y-6">
+              <div class="rich-card p-6 border-r-4 border-r-emerald-500">
+                <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-700/50 pb-3 mb-4">
+                  <div>
+                    <span class="text-xs text-emerald-400 font-bold tracking-wide uppercase">التصنيف والتعريف النباتي</span>
+                    <h3 class="font-cairo font-bold text-xl text-slate-100">السنا الطبي (Senna)</h3>
+                  </div>
+                  <div class="flex flex-wrap gap-1">
+                    <span class="px-2.5 py-1 bg-emerald-500/10 text-emerald-400 rounded-full border border-emerald-500/20 text-[11px] font-bold font-mono">
+                      Cassia angustifolia (الهندي)
+                    </span>
+                    <span class="px-2.5 py-1 bg-emerald-500/10 text-emerald-400 rounded-full border border-emerald-500/20 text-[11px] font-bold font-mono">
+                      Cassia acutifolia (الإسكندري)
+                    </span>
+                  </div>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                  <div class="p-3 rounded-xl bg-slate-800/40 border border-slate-700/50">
+                    <span class="text-slate-400 block mb-1">الفصيلة:</span>
+                    <strong class="text-emerald-400 text-sm">القطانية (Leguminosae / Fabaceae)</strong>
+                  </div>
+                  <div class="p-3 rounded-xl bg-slate-800/40 border border-slate-700/50">
+                    <span class="text-slate-400 block mb-1">القسم المستعمل:</span>
+                    <strong class="text-slate-200 text-sm">الأوراق المركبة الجافة المقطوفة قبل الإزهار في الخريف</strong>
+                  </div>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="rich-card p-5 border-r-4 border-r-violet-500">
+                  <h4 class="font-cairo font-bold text-base mb-3 text-violet-400 flex items-center gap-2">
+                    <i class="fa-solid fa-flask-vial"></i> المكونات الفعالة
+                  </h4>
+                  <ul class="text-xs space-y-2 text-slate-300">
+                    <li class="flex items-start gap-2">
+                      <i class="fa-solid fa-check text-violet-400 mt-0.5"></i>
+                      <span><strong>أنتراكينونات حرة:</strong> مثل ألو إيمودين (Aloe-emodin).</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                      <i class="fa-solid fa-check text-violet-400 mt-0.5"></i>
+                      <span><strong>غليكوزيدات أنتراكينونية:</strong> سنوزيد (Sennoside A, B, C, D)، رين (Rhein).</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                      <i class="fa-solid fa-check text-violet-400 mt-0.5"></i>
+                      <span>تربينات، راتنجات، ومواد مُرّة (السناكيرول والسنايبكرين).</span>
+                    </li>
+                  </ul>
+                </div>
+
+                <div class="rich-card p-5 border-r-4 border-r-cyan-500">
+                  <h4 class="font-cairo font-bold text-base mb-3 text-cyan-400 flex items-center gap-2">
+                    <i class="fa-solid fa-microscope"></i> العناصر المجهرية التشخيصية
+                  </h4>
+                  <ul class="text-xs space-y-2 text-slate-300">
+                    <li class="flex items-start gap-2">
+                      <i class="fa-solid fa-circle-dot text-cyan-400 mt-0.5"></i>
+                      <span><strong>ثغور من النوع الموازي</strong> (Paracytic stomata).</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                      <i class="fa-solid fa-circle-dot text-cyan-400 mt-0.5"></i>
+                      <span><strong>أوبار لامسة متألمة</strong> ذات رأس منتفخ قليلاً.</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                      <i class="fa-solid fa-circle-dot text-cyan-400 mt-0.5"></i>
+                      <span><strong>ألياف حاملة لحماضات الكالسيوم الموشورية</strong>، وحماضات كالسيوم وردية قنفذية صغيرة.</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="rich-card p-5 border-r-4 border-r-emerald-500">
+                  <h4 class="font-cairo font-bold text-base mb-2 text-emerald-400 flex items-center gap-2">
+                    <i class="fa-solid fa-notes-medical"></i> الاستعمالات والتأثير الدوائي
+                  </h4>
+                  <p class="text-xs text-slate-300 leading-relaxed">
+                    يستعمل بشكل أساسي <strong>كملين ومسهل لعلاج الإمساك</strong> (عن طريق تهيج بطانة الأمعاء وتحفيز حركتها الحوية)، ويُستعمل لتخفيف ألم البواسير الناجم عن عسر التغوط.
+                  </p>
+                </div>
+
+                <div class="rich-card p-5 border-r-4 border-r-amber-500">
+                  <h4 class="font-cairo font-bold text-base mb-2 text-amber-400 flex items-center gap-2">
+                    <i class="fa-solid fa-tags"></i> الأنواع والضروب
+                  </h4>
+                  <div class="space-y-1 text-xs">
+                    <div class="flex items-center gap-2">
+                      <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+                      <span class="text-slate-200"><strong>السنا الهندي:</strong> سنامكي (Cassia angustifolia).</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                      <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+                      <span class="text-slate-200"><strong>السنا الإسكندري:</strong> سنا الخرطوم (Cassia acutifolia).</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          `
+        },
+        {
+          id: "topic-sage",
+          title: "4.0 الميرمية (Sage)",
+          level: 1,
+          subtitle: "Salvia officinalis - Lamiaceae",
+          content: `
+            <div class="space-y-6">
+              <div class="rich-card p-6 border-r-4 border-r-emerald-500">
+                <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-700/50 pb-3 mb-4">
+                  <div>
+                    <span class="text-xs text-emerald-400 font-bold tracking-wide uppercase">التصنيف والتعريف النباتي</span>
+                    <h3 class="font-cairo font-bold text-xl text-slate-100">الميرمية (Sage)</h3>
+                  </div>
+                  <span class="px-3 py-1 bg-emerald-500/10 text-emerald-400 rounded-full border border-emerald-500/20 text-xs font-bold font-mono">
+                    Salvia officinalis
+                  </span>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                  <div class="p-3 rounded-xl bg-slate-800/40 border border-slate-700/50">
+                    <span class="text-slate-400 block mb-1">الفصيلة:</span>
+                    <strong class="text-emerald-400 text-sm">الشفوية (Lamiaceae / Labiatae)</strong>
+                  </div>
+                  <div class="p-3 rounded-xl bg-slate-800/40 border border-slate-700/50">
+                    <span class="text-slate-400 block mb-1">القسم المستعمل:</span>
+                    <strong class="text-slate-200 text-sm">الأوراق (Leaves)</strong>
+                  </div>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="rich-card p-5 border-r-4 border-r-violet-500">
+                  <h4 class="font-cairo font-bold text-base mb-3 text-violet-400 flex items-center gap-2">
+                    <i class="fa-solid fa-flask-vial"></i> المكونات الفعالة
+                  </h4>
+                  <ul class="text-xs space-y-2 text-slate-300">
+                    <li class="flex items-start gap-2">
+                      <i class="fa-solid fa-check text-violet-400 mt-0.5"></i>
+                      <span><strong>زيت طيار:</strong> ثوجون (Thujone)، سينول، وبورنيول.</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                      <i class="fa-solid fa-check text-violet-400 mt-0.5"></i>
+                      <span><strong>غليكوزيدات فلافونوئيدية:</strong> روتين (Rutin)، وكويرسترين (Quercitrin).</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                      <i class="fa-solid fa-check text-violet-400 mt-0.5"></i>
+                      <span>حموض (حمض الكافيينك)، ومواد عفصية ومرة.</span>
+                    </li>
+                  </ul>
+                </div>
+
+                <div class="rich-card p-5 border-r-4 border-r-cyan-500">
+                  <h4 class="font-cairo font-bold text-base mb-3 text-cyan-400 flex items-center gap-2">
+                    <i class="fa-solid fa-microscope"></i> العناصر المجهرية التشخيصية
+                  </h4>
+                  <ul class="text-xs space-y-2 text-slate-300">
+                    <li class="flex items-start gap-2">
+                      <i class="fa-solid fa-circle-dot text-cyan-400 mt-0.5"></i>
+                      <span><strong>خطوط على خلايا البشرة ناتجة عن القشيرة</strong> <span class="text-cyan-300 font-semibold">(عنصر تشخيصي)</span>.</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                      <i class="fa-solid fa-circle-dot text-cyan-400 mt-0.5"></i>
+                      <span><strong>أوبار لامسة حادة ومنحنية</strong>.</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                      <i class="fa-solid fa-circle-dot text-cyan-400 mt-0.5"></i>
+                      <span><strong>وبرة مفرزة متعددة القاعدة وحيدة الرأس</strong> <span class="text-cyan-300 font-semibold">(عنصر تشخيصي)</span>.</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                      <i class="fa-solid fa-circle-dot text-cyan-400 mt-0.5"></i>
+                      <span>خلايا سمية من النوع المتعامد.</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="rich-card p-5 border-r-4 border-r-emerald-500">
+                  <h4 class="font-cairo font-bold text-base mb-2 text-emerald-400 flex items-center gap-2">
+                    <i class="fa-solid fa-notes-medical"></i> الاستعمالات والتأثير الدوائي
+                  </h4>
+                  <p class="text-xs text-slate-300 leading-relaxed">
+                    مضاد للتشنج العضلي، <strong>مضاد للتعرق</strong>، مقوٍ عام ومحسن للذاكرة (يستعمل في سياق دعم مرضى داء الزهايمر)، مضاد للأكسدة، غسول فموي مطهر لالتهاب الفم، ومضاد موضعي للالتهابات.
+                  </p>
+                </div>
+
+                <div class="rich-card p-5 border-r-4 border-r-amber-500">
+                  <h4 class="font-cairo font-bold text-base mb-2 text-amber-400 flex items-center gap-2">
+                    <i class="fa-solid fa-tags"></i> الأنواع والضروب
+                  </h4>
+                  <p class="text-xs text-slate-400 leading-relaxed">
+                    لم تذكر المصادر أنواعاً أخرى مستعملة بشكل منفصل.
+                  </p>
+                </div>
+              </div>
+            </div>
+          `
+        },
+        {
+          id: "topic-thyme",
+          title: "5.0 الزعتر (Thyme)",
+          level: 1,
+          subtitle: "Thymus vulgaris - Lamiaceae",
+          content: `
+            <div class="space-y-6">
+              <div class="rich-card p-6 border-r-4 border-r-emerald-500">
+                <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-700/50 pb-3 mb-4">
+                  <div>
+                    <span class="text-xs text-emerald-400 font-bold tracking-wide uppercase">التصنيف والتعريف النباتي</span>
+                    <h3 class="font-cairo font-bold text-xl text-slate-100">الزعتر (Thyme)</h3>
+                  </div>
+                  <div class="flex flex-wrap gap-1">
+                    <span class="px-2.5 py-1 bg-emerald-500/10 text-emerald-400 rounded-full border border-emerald-500/20 text-[11px] font-bold font-mono">
+                      Thymus vulgaris (الشائع)
+                    </span>
+                    <span class="px-2.5 py-1 bg-emerald-500/10 text-emerald-400 rounded-full border border-emerald-500/20 text-[11px] font-bold font-mono">
+                      Thymus serpyllum (البري)
+                    </span>
+                  </div>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                  <div class="p-3 rounded-xl bg-slate-800/40 border border-slate-700/50">
+                    <span class="text-slate-400 block mb-1">الفصيلة:</span>
+                    <strong class="text-emerald-400 text-sm">الشفوية (Lamiaceae / Labiatae)</strong>
+                  </div>
+                  <div class="p-3 rounded-xl bg-slate-800/40 border border-slate-700/50">
+                    <span class="text-slate-400 block mb-1">القسم المستعمل:</span>
+                    <strong class="text-slate-200 text-sm">الأوراق (Leaves)</strong>
+                  </div>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="rich-card p-5 border-r-4 border-r-violet-500">
+                  <h4 class="font-cairo font-bold text-base mb-3 text-violet-400 flex items-center gap-2">
+                    <i class="fa-solid fa-flask-vial"></i> المكونات الفعالة
+                  </h4>
+                  <ul class="text-xs space-y-2 text-slate-300">
+                    <li class="flex items-start gap-2">
+                      <i class="fa-solid fa-check text-violet-400 mt-0.5"></i>
+                      <span><strong>زيوت طيارة مطهرة:</strong> تحتوي أساساً على الثيمول (Thymol) والكارفاكرول (Carvacrol).</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                      <i class="fa-solid fa-check text-violet-400 mt-0.5"></i>
+                      <span><strong>مشتقات فلافونية وفينولات:</strong> لوتيولين (Luteolin).</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                      <i class="fa-solid fa-check text-violet-400 mt-0.5"></i>
+                      <span>فلافونوئيدات مضادة للأكسدة.</span>
+                    </li>
+                  </ul>
+                </div>
+
+                <div class="rich-card p-5 border-r-4 border-r-cyan-500">
+                  <h4 class="font-cairo font-bold text-base mb-3 text-cyan-400 flex items-center gap-2">
+                    <i class="fa-solid fa-microscope"></i> العناصر المجهرية التشخيصية
+                  </h4>
+                  <ul class="text-xs space-y-2 text-slate-300">
+                    <li class="flex items-start gap-2">
+                      <i class="fa-solid fa-circle-dot text-cyan-400 mt-0.5"></i>
+                      <span><strong>أوبار لامسة قصيرة أو متعددة الخلايا</strong> (منحنية أو مستقيمة) مغطاة بقشيرة متألمة <span class="text-cyan-300 font-semibold">(عنصر تشخيصي)</span>.</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                      <i class="fa-solid fa-circle-dot text-cyan-400 mt-0.5"></i>
+                      <span><strong>وبرة مفرزة</strong> وحيدة الخلية متعددة الرأس.</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                      <i class="fa-solid fa-circle-dot text-cyan-400 mt-0.5"></i>
+                      <span><strong>ثغور متعامدة</strong> (Diacytic stomata).</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="rich-card p-5 border-r-4 border-r-emerald-500">
+                  <h4 class="font-cairo font-bold text-base mb-2 text-emerald-400 flex items-center gap-2">
+                    <i class="fa-solid fa-notes-medical"></i> الاستعمالات والتأثير الدوائي
+                  </h4>
+                  <p class="text-xs text-slate-300 leading-relaxed">
+                    مطهر تنفسي ومعوي، <strong>مضاد للسعال والتشنج</strong>، طارد للديدان، مضاد للأكسدة، كما يُعد مهضماً ممتازاً ومضاداً للتخمرات المعدية والمعوية.
+                  </p>
+                </div>
+
+                <div class="rich-card p-5 border-r-4 border-r-amber-500">
+                  <h4 class="font-cairo font-bold text-base mb-2 text-amber-400 flex items-center gap-2">
+                    <i class="fa-solid fa-tags"></i> الأنواع والضروب
+                  </h4>
+                  <div class="space-y-1 text-xs">
+                    <div class="flex items-center gap-2">
+                      <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+                      <span class="text-slate-200"><strong>الزعتر العادي الشائع:</strong> <em>Thymus vulgaris</em></span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                      <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+                      <span class="text-slate-200"><strong>الزعتر البري:</strong> <em>Thymus serpyllum</em></span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          `
+        },
+        {
+          id: "topic-eucalyptus",
+          title: "6.0 الأوكاليبتوس (Eucalyptus)",
+          level: 1,
+          subtitle: "Eucalyptus globulus - Myrtaceae",
+          content: `
+            <div class="space-y-6">
+              <div class="rich-card p-6 border-r-4 border-r-emerald-500">
+                <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-700/50 pb-3 mb-4">
+                  <div>
+                    <span class="text-xs text-emerald-400 font-bold tracking-wide uppercase">التصنيف والتعريف النباتي</span>
+                    <h3 class="font-cairo font-bold text-xl text-slate-100">الأوكاليبتوس (Eucalyptus / الكينا)</h3>
+                  </div>
+                  <span class="px-3 py-1 bg-emerald-500/10 text-emerald-400 rounded-full border border-emerald-500/20 text-xs font-bold font-mono">
+                    Eucalyptus globulus
+                  </span>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                  <div class="p-3 rounded-xl bg-slate-800/40 border border-slate-700/50">
+                    <span class="text-slate-400 block mb-1">الفصيلة:</span>
+                    <strong class="text-emerald-400 text-sm">الآسية / الكافورية (Myrtaceae)</strong>
+                  </div>
+                  <div class="p-3 rounded-xl bg-slate-800/40 border border-slate-700/50">
+                    <span class="text-slate-400 block mb-1">القسم المستعمل:</span>
+                    <strong class="text-slate-200 text-sm">الأوراق (Leaves)</strong>
+                  </div>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="rich-card p-5 border-r-4 border-r-violet-500">
+                  <h4 class="font-cairo font-bold text-base mb-3 text-violet-400 flex items-center gap-2">
+                    <i class="fa-solid fa-flask-vial"></i> المكونات الفعالة
+                  </h4>
+                  <ul class="text-xs space-y-2 text-slate-300">
+                    <li class="flex items-start gap-2">
+                      <i class="fa-solid fa-check text-violet-400 mt-0.5"></i>
+                      <span><strong>زيت عطري:</strong> أوكاليبتول (Eucalyptol / 1,8-Cineole)، بينين (Pinene)، ليمونين.</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                      <i class="fa-solid fa-check text-violet-400 mt-0.5"></i>
+                      <span><strong>فلافونوئيدات:</strong> روتين (Rutin)، وهيبروزيد (Hyperoside).</span>
+                    </li>
+                  </ul>
+                </div>
+
+                <div class="rich-card p-5 border-r-4 border-r-cyan-500">
+                  <h4 class="font-cairo font-bold text-base mb-3 text-cyan-400 flex items-center gap-2">
+                    <i class="fa-solid fa-microscope"></i> العناصر المجهرية التشخيصية
+                  </h4>
+                  <ul class="text-xs space-y-2 text-slate-300">
+                    <li class="flex items-start gap-2">
+                      <i class="fa-solid fa-circle-dot text-cyan-400 mt-0.5"></i>
+                      <span><strong>ثغور غير منتظمة</strong>.</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                      <i class="fa-solid fa-circle-dot text-cyan-400 mt-0.5"></i>
+                      <span><strong>ألياف مغمدة بحماضات كالسيوم موشورية</strong>.</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                      <i class="fa-solid fa-circle-dot text-cyan-400 mt-0.5"></i>
+                      <span><strong>جيوب مفرزة ضخمة</strong> للزيت العطري.</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                      <i class="fa-solid fa-circle-dot text-cyan-400 mt-0.5"></i>
+                      <span>حماضات كالسيوم قنفذية.</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="rich-card p-5 border-r-4 border-r-emerald-500">
+                  <h4 class="font-cairo font-bold text-base mb-2 text-emerald-400 flex items-center gap-2">
+                    <i class="fa-solid fa-notes-medical"></i> الاستعمالات والتأثير الدوائي
+                  </h4>
+                  <ul class="text-xs space-y-1 text-slate-300 leading-relaxed">
+                    <li>• <strong>مقشع ومحلل للبلغم</strong>، ومضاد للبكتيريا في التهابات الجهاز التنفسي والشعب الهوائية.</li>
+                    <li>• <strong>استعمال خارجي:</strong> مسكن لآلام المفاصل والروماتيزم (يدخل في تركيب المراهم والكريمات).</li>
+                  </ul>
+                </div>
+
+                <div class="rich-card p-5 border-r-4 border-r-amber-500">
+                  <h4 class="font-cairo font-bold text-base mb-2 text-amber-400 flex items-center gap-2">
+                    <i class="fa-solid fa-tags"></i> الأنواع والضروب
+                  </h4>
+                  <p class="text-xs text-slate-300">
+                    <strong>الأوكاليبتوس الكروي:</strong> <em>Eucalyptus globulus</em>.
+                  </p>
+                </div>
+              </div>
+            </div>
+          `
+        },
+        {
+          id: "topic-chamomile",
+          title: "7.0 البابونج (Chamomile)",
+          level: 1,
+          subtitle: "Matricaria chamomilla - Asteraceae",
+          content: `
+            <div class="space-y-6">
+              <div class="rich-card p-6 border-r-4 border-r-emerald-500">
+                <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-700/50 pb-3 mb-4">
+                  <div>
+                    <span class="text-xs text-emerald-400 font-bold tracking-wide uppercase">التصنيف والتعريف النباتي</span>
+                    <h3 class="font-cairo font-bold text-xl text-slate-100">البابونج (Chamomile)</h3>
+                  </div>
+                  <div class="flex flex-wrap gap-1">
+                    <span class="px-2.5 py-1 bg-emerald-500/10 text-emerald-400 rounded-full border border-emerald-500/20 text-[11px] font-bold font-mono">
+                      Matricaria chamomilla (الألماني)
+                    </span>
+                    <span class="px-2.5 py-1 bg-emerald-500/10 text-emerald-400 rounded-full border border-emerald-500/20 text-[11px] font-bold font-mono">
+                      Anthemis nobilis (الروماني)
+                    </span>
+                  </div>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                  <div class="p-3 rounded-xl bg-slate-800/40 border border-slate-700/50">
+                    <span class="text-slate-400 block mb-1">الفصيلة:</span>
+                    <strong class="text-emerald-400 text-sm">المركبة (Compositae / Asteraceae)</strong>
+                  </div>
+                  <div class="p-3 rounded-xl bg-slate-800/40 border border-slate-700/50">
+                    <span class="text-slate-400 block mb-1">القسم المستعمل:</span>
+                    <strong class="text-slate-200 text-sm">الرؤوس الزهرية (Flower Heads)</strong>
+                  </div>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="rich-card p-5 border-r-4 border-r-violet-500">
+                  <h4 class="font-cairo font-bold text-base mb-3 text-violet-400 flex items-center gap-2">
+                    <i class="fa-solid fa-flask-vial"></i> المكونات الفعالة
+                  </h4>
+                  <ul class="text-xs space-y-2 text-slate-300">
+                    <li class="flex items-start gap-2">
+                      <i class="fa-solid fa-check text-violet-400 mt-0.5"></i>
+                      <span><strong>زيت طيار أزرق:</strong> يحوي الكامازولين (Chamazulene) الذي يعطيه لونه الأزرق المميز، والبيزابولول (Bisabolol).</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                      <i class="fa-solid fa-check text-violet-400 mt-0.5"></i>
+                      <span>فلافونويدات، وسيسكويتربين، ومضادات أكسدة.</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                      <i class="fa-solid fa-check text-violet-400 mt-0.5"></i>
+                      <span>كومارينات، وحموض فينولية.</span>
+                    </li>
+                  </ul>
+                </div>
+
+                <div class="rich-card p-5 border-r-4 border-r-cyan-500">
+                  <h4 class="font-cairo font-bold text-base mb-3 text-cyan-400 flex items-center gap-2">
+                    <i class="fa-solid fa-microscope"></i> العناصر المجهرية التشخيصية
+                  </h4>
+                  <ul class="text-xs space-y-2 text-slate-300">
+                    <li class="flex items-start gap-2">
+                      <i class="fa-solid fa-circle-dot text-cyan-400 mt-0.5"></i>
+                      <span><strong>حبات طلع بجدار مشوك لها 3 ثقوب إنتاش</strong> <span class="text-cyan-300 font-semibold">(عنصر تشخيصي)</span>.</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                      <i class="fa-solid fa-circle-dot text-cyan-400 mt-0.5"></i>
+                      <span><strong>سداة تحتوي بلورات حبيبات طلع</strong> <span class="text-cyan-300 font-semibold">(عنصر تشخيصي)</span>.</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                      <i class="fa-solid fa-circle-dot text-cyan-400 mt-0.5"></i>
+                      <span><strong>خلايا شبكية تعطي حماضات كالسيوم قنفذية</strong>.</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                      <i class="fa-solid fa-circle-dot text-cyan-400 mt-0.5"></i>
+                      <span><strong>ميسم متفرع بحليمات</strong> <span class="text-cyan-300 font-semibold">(عنصر تشخيصي)</span>.</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="rich-card p-5 border-r-4 border-r-emerald-500">
+                  <h4 class="font-cairo font-bold text-base mb-2 text-emerald-400 flex items-center gap-2">
+                    <i class="fa-solid fa-notes-medical"></i> الاستعمالات والتأثير الدوائي
+                  </h4>
+                  <div class="text-xs space-y-2 text-slate-300 leading-relaxed">
+                    <p><strong class="text-emerald-300">داخلياً:</strong> مضاد التهاب وتشنج، واقٍ من القرحة الهضمية وعسر الهضم، مهدئ عام وغسول فموي.</p>
+                    <p><strong class="text-cyan-300">خارجياً:</strong> قطرة للعين، التئام الجروح والتهابات الجلد، ومستحضرات التجميل.</p>
+                  </div>
+                </div>
+
+                <div class="rich-card p-5 border-r-4 border-r-amber-500">
+                  <h4 class="font-cairo font-bold text-base mb-2 text-amber-400 flex items-center gap-2">
+                    <i class="fa-solid fa-tags"></i> الأنواع والضروب
+                  </h4>
+                  <div class="space-y-1 text-xs">
+                    <div class="flex items-center gap-2">
+                      <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+                      <span class="text-slate-200"><strong>البابونج الألماني:</strong> <em>Matricaria chamomilla</em></span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                      <span class="w-2 h-2 rounded-full bg-amber-400"></span>
+                      <span class="text-slate-200"><strong>البابونج الروماني:</strong> <em>Anthemis nobilis</em></span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          `
+        },
+        {
+          id: "topic-lavender",
+          title: "8.0 الخزامى (Lavender)",
+          level: 1,
+          subtitle: "Lavandula officinalis - Lamiaceae",
+          content: `
+            <div class="space-y-6">
+              <div class="rich-card p-6 border-r-4 border-r-emerald-500">
+                <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-700/50 pb-3 mb-4">
+                  <div>
+                    <span class="text-xs text-emerald-400 font-bold tracking-wide uppercase">التصنيف والتعريف النباتي</span>
+                    <h3 class="font-cairo font-bold text-xl text-slate-100">الخزامى (Lavender)</h3>
+                  </div>
+                  <span class="px-3 py-1 bg-emerald-500/10 text-emerald-400 rounded-full border border-emerald-500/20 text-xs font-bold font-mono">
+                    Lavandula officinalis
+                  </span>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                  <div class="p-3 rounded-xl bg-slate-800/40 border border-slate-700/50">
+                    <span class="text-slate-400 block mb-1">الفصيلة:</span>
+                    <strong class="text-emerald-400 text-sm">الشفوية (Labiatae / Lamiaceae)</strong>
+                  </div>
+                  <div class="p-3 rounded-xl bg-slate-800/40 border border-slate-700/50">
+                    <span class="text-slate-400 block mb-1">القسم المستعمل:</span>
+                    <strong class="text-slate-200 text-sm">القمم المزهرة (Flowering Tops)</strong>
+                  </div>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="rich-card p-5 border-r-4 border-r-violet-500">
+                  <h4 class="font-cairo font-bold text-base mb-3 text-violet-400 flex items-center gap-2">
+                    <i class="fa-solid fa-flask-vial"></i> المكونات الفعالة
+                  </h4>
+                  <ul class="text-xs space-y-2 text-slate-300">
+                    <li class="flex items-start gap-2">
+                      <i class="fa-solid fa-check text-violet-400 mt-0.5"></i>
+                      <span><strong>زيت عطري طيار:</strong> غني بـ أسيتات الليناليل (Linalyl acetate)، لينالول (Linalool)، جيرانيول، بورنيول، كافور، وسينول.</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                      <i class="fa-solid fa-check text-violet-400 mt-0.5"></i>
+                      <span>مشتقات كومارينية وتربينية.</span>
+                    </li>
+                  </ul>
+                </div>
+
+                <div class="rich-card p-5 border-r-4 border-r-cyan-500">
+                  <h4 class="font-cairo font-bold text-base mb-3 text-cyan-400 flex items-center gap-2">
+                    <i class="fa-solid fa-microscope"></i> العناصر المجهرية التشخيصية
+                  </h4>
+                  <ul class="text-xs space-y-2 text-slate-300">
+                    <li class="flex items-start gap-2">
+                      <i class="fa-solid fa-circle-dot text-cyan-400 mt-0.5"></i>
+                      <span><strong>أوبار لامسة متفرعة شمع دانية</strong>.</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                      <i class="fa-solid fa-circle-dot text-cyan-400 mt-0.5"></i>
+                      <span><strong>أوبار مفرزة وحيدة القاعدة</strong>.</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                      <i class="fa-solid fa-circle-dot text-cyan-400 mt-0.5"></i>
+                      <span><strong>حبات طلع كروية تظهر 6 شقوق</strong> <span class="text-cyan-300 font-semibold">(عنصر تشخيصي نوعي)</span>.</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                      <i class="fa-solid fa-circle-dot text-cyan-400 mt-0.5"></i>
+                      <span>خلايا بشرة بجدار متعرج بها حماضات موشورية.</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="rich-card p-5 border-r-4 border-r-emerald-500">
+                  <h4 class="font-cairo font-bold text-base mb-2 text-emerald-400 flex items-center gap-2">
+                    <i class="fa-solid fa-notes-medical"></i> الاستعمالات والتأثير الدوائي
+                  </h4>
+                  <div class="text-xs space-y-2 text-slate-300 leading-relaxed">
+                    <p><strong class="text-cyan-300">خارجياً:</strong> مطهر للجروح، علاج للحروق والقرحات الجلدية، وفي صناعة العطور ومستحضرات الاسترخاء.</p>
+                    <p><strong class="text-emerald-300">داخلياً:</strong> مفرغ للصفراء، مضاد للتشنج، <strong>مهدئ للاكتئاب المعتدل والأرق العصبي</strong>، وعلاج لمشاكل الجهاز التنفسي كالربو.</p>
+                  </div>
+                </div>
+
+                <div class="rich-card p-5 border-r-4 border-r-amber-500">
+                  <h4 class="font-cairo font-bold text-base mb-2 text-amber-400 flex items-center gap-2">
+                    <i class="fa-solid fa-tags"></i> الأنواع والضروب
+                  </h4>
+                  <p class="text-xs text-slate-400 leading-relaxed">
+                    لم تذكر المصادر تفريعات أخرى ضمن المرجع.
+                  </p>
+                </div>
+              </div>
+            </div>
+          `
+        },
+        {
+          id: "topic-linden",
+          title: "9.0 الزيزفون (Syrian Linden)",
+          level: 1,
+          subtitle: "Tilia angustifolia - Tiliaceae",
+          content: `
+            <div class="space-y-6">
+              <div class="rich-card p-6 border-r-4 border-r-emerald-500">
+                <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-700/50 pb-3 mb-4">
+                  <div>
+                    <span class="text-xs text-emerald-400 font-bold tracking-wide uppercase">التصنيف والتعريف النباتي</span>
+                    <h3 class="font-cairo font-bold text-xl text-slate-100">الزيزفون (Syrian Linden)</h3>
+                  </div>
+                  <span class="px-3 py-1 bg-emerald-500/10 text-emerald-400 rounded-full border border-emerald-500/20 text-xs font-bold font-mono">
+                    Tilia angustifolia
+                  </span>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                  <div class="p-3 rounded-xl bg-slate-800/40 border border-slate-700/50">
+                    <span class="text-slate-400 block mb-1">الفصيلة:</span>
+                    <strong class="text-emerald-400 text-sm">الزيزفونية (Tiliaceae)</strong>
+                  </div>
+                  <div class="p-3 rounded-xl bg-slate-800/40 border border-slate-700/50">
+                    <span class="text-slate-400 block mb-1">القسم المستعمل:</span>
+                    <strong class="text-slate-200 text-sm">الأزهار (Flowers)</strong>
+                  </div>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="rich-card p-5 border-r-4 border-r-violet-500">
+                  <h4 class="font-cairo font-bold text-base mb-3 text-violet-400 flex items-center gap-2">
+                    <i class="fa-solid fa-flask-vial"></i> المكونات الفعالة
+                  </h4>
+                  <ul class="text-xs space-y-2 text-slate-300">
+                    <li class="flex items-start gap-2">
+                      <i class="fa-solid fa-check text-violet-400 mt-0.5"></i>
+                      <span><strong>غليكوزيدات فلافونوئيدية:</strong> كويرستين، روتين، كامبفيرول (Kaempferol).</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                      <i class="fa-solid fa-check text-violet-400 mt-0.5"></i>
+                      <span><strong>زيت عطري:</strong> يوجينول، جيرانيول، أوكاليبتول.</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                      <i class="fa-solid fa-check text-violet-400 mt-0.5"></i>
+                      <span><strong>مواد لعابية بنسبة 13%</strong> (Mucilage)، ومواد عفصية.</span>
+                    </li>
+                  </ul>
+                </div>
+
+                <div class="rich-card p-5 border-r-4 border-r-cyan-500">
+                  <h4 class="font-cairo font-bold text-base mb-3 text-cyan-400 flex items-center gap-2">
+                    <i class="fa-solid fa-microscope"></i> العناصر المجهرية التشخيصية
+                  </h4>
+                  <ul class="text-xs space-y-2 text-slate-300">
+                    <li class="flex items-start gap-2">
+                      <i class="fa-solid fa-circle-dot text-cyan-400 mt-0.5"></i>
+                      <span><strong>حبات طلع بيضوية / مثلثة</strong> بـ 3 ثقوب إنتاش.</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                      <i class="fa-solid fa-circle-dot text-cyan-400 mt-0.5"></i>
+                      <span><strong>أوبار لامسة مظلية الشكل</strong>.</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                      <i class="fa-solid fa-circle-dot text-cyan-400 mt-0.5"></i>
+                      <span><strong>طبقة ليفية شبكية بنية محمرة</strong>.</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                      <i class="fa-solid fa-circle-dot text-cyan-400 mt-0.5"></i>
+                      <span><strong>خلايا بارانشيمية</strong> تحتوي خلايا لعابية وحماضات كالسيوم وردية.</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="rich-card p-5 border-r-4 border-r-emerald-500">
+                  <h4 class="font-cairo font-bold text-base mb-2 text-emerald-400 flex items-center gap-2">
+                    <i class="fa-solid fa-notes-medical"></i> الاستعمالات والتأثير الدوائي
+                  </h4>
+                  <p class="text-xs text-slate-300 leading-relaxed">
+                    منوم ومهدئ ومقوٍ للأعصاب، معرق خافض للحرارة، مضاد وقابض للسعال الجاف، ملطف لالتهاب القصبات، ويسكن الأطفال عند إضافته لمياه الحمامات.
+                  </p>
+                </div>
+
+                <div class="rich-card p-5 border-r-4 border-r-amber-500">
+                  <h4 class="font-cairo font-bold text-base mb-2 text-amber-400 flex items-center gap-2">
+                    <i class="fa-solid fa-tags"></i> الأنواع والضروب
+                  </h4>
+                  <ul class="text-xs space-y-1 text-slate-300">
+                    <li>• الزيزفون السوري.</li>
+                    <li>• الزيزفون قلبي الورق (الحقيقي).</li>
+                    <li>• الزيزفون عريض الورق.</li>
+                    <li>• الزيزفون الشائع.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          `
+        },
+        {
+          id: "topic-rose",
+          title: "10.0 الورد الدمشقي (Damascus Rose)",
+          level: 1,
+          subtitle: "Rosa damascena - Rosaceae",
+          content: `
+            <div class="space-y-6">
+              <div class="rich-card p-6 border-r-4 border-r-emerald-500">
+                <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-700/50 pb-3 mb-4">
+                  <div>
+                    <span class="text-xs text-emerald-400 font-bold tracking-wide uppercase">التصنيف والتعريف النباتي</span>
+                    <h3 class="font-cairo font-bold text-xl text-slate-100">الورد الدمشقي (Damascus Rose)</h3>
+                  </div>
+                  <span class="px-3 py-1 bg-emerald-500/10 text-emerald-400 rounded-full border border-emerald-500/20 text-xs font-bold font-mono">
+                    Rosa damascena
+                  </span>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                  <div class="p-3 rounded-xl bg-slate-800/40 border border-slate-700/50">
+                    <span class="text-slate-400 block mb-1">الفصيلة:</span>
+                    <strong class="text-emerald-400 text-sm">الوردية (Rosaceae)</strong>
+                  </div>
+                  <div class="p-3 rounded-xl bg-slate-800/40 border border-slate-700/50">
+                    <span class="text-slate-400 block mb-1">القسم المستعمل:</span>
+                    <strong class="text-slate-200 text-sm">الأزهار والبراعم الزهرية</strong>
+                  </div>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="rich-card p-5 border-r-4 border-r-violet-500">
+                  <h4 class="font-cairo font-bold text-base mb-3 text-violet-400 flex items-center gap-2">
+                    <i class="fa-solid fa-flask-vial"></i> المكونات الفعالة
+                  </h4>
+                  <ul class="text-xs space-y-2 text-slate-300">
+                    <li class="flex items-start gap-2">
+                      <i class="fa-solid fa-check text-violet-400 mt-0.5"></i>
+                      <span><strong>زيت الورد العطري:</strong> كحولات تربينية أليفاتية (جيرانيول Geraniol، لينالول Linalool، نيرول Nerol، سيترونيلول Citronellol).</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                      <i class="fa-solid fa-check text-violet-400 mt-0.5"></i>
+                      <span><strong>دماسينون</strong> (Damascenone).</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                      <i class="fa-solid fa-check text-violet-400 mt-0.5"></i>
+                      <span>مواد لعابية، ومواد عفصية قابضة.</span>
+                    </li>
+                  </ul>
+                </div>
+
+                <div class="rich-card p-5 border-r-4 border-r-cyan-500">
+                  <h4 class="font-cairo font-bold text-base mb-3 text-cyan-400 flex items-center gap-2">
+                    <i class="fa-solid fa-microscope"></i> العناصر المجهرية التشخيصية
+                  </h4>
+                  <ul class="text-xs space-y-2 text-slate-300">
+                    <li class="flex items-start gap-2">
+                      <i class="fa-solid fa-circle-dot text-cyan-400 mt-0.5"></i>
+                      <span><strong>أوبار لامسة وحيدة الخلية</strong>.</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                      <i class="fa-solid fa-circle-dot text-cyan-400 mt-0.5"></i>
+                      <span><strong>ثغور وحماضات كالسيوم قنفذية</strong> بالسبلة.</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                      <i class="fa-solid fa-circle-dot text-cyan-400 mt-0.5"></i>
+                      <span><strong>أوعية خشبية حلزونية</strong>.</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                      <i class="fa-solid fa-circle-dot text-cyan-400 mt-0.5"></i>
+                      <span><strong>خلايا حرشفية</strong> (في البتلة)، وطبقة ليفية شبكية.</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="rich-card p-5 border-r-4 border-r-emerald-500">
+                  <h4 class="font-cairo font-bold text-base mb-2 text-emerald-400 flex items-center gap-2">
+                    <i class="fa-solid fa-notes-medical"></i> الاستعمالات والتأثير الدوائي
+                  </h4>
+                  <ul class="text-xs space-y-1.5 text-slate-300 leading-relaxed">
+                    <li>• <strong>قابض لوقف الرعاف</strong> والنزوف الطفيفة.</li>
+                    <li>• <strong>تأثير هضمي:</strong> مضاد للإسهال والمغص المعوي.</li>
+                    <li>• <strong>مهدئ لتوازن الجملة العصبية</strong> والضغط النفسي.</li>
+                    <li>• منشط للدورة الدموية، مرمم للجلد، مضاد للحروق، طارد للغازات، وتثبيط نمو بعض الخلايا السرطانية.</li>
+                  </ul>
+                </div>
+
+                <div class="rich-card p-5 border-r-4 border-r-amber-500">
+                  <h4 class="font-cairo font-bold text-base mb-2 text-amber-400 flex items-center gap-2">
+                    <i class="fa-solid fa-tags"></i> الأنواع والمسميات
+                  </h4>
+                  <p class="text-xs text-slate-300">
+                    يُعرف بـ: <strong>الورد الشامي</strong> أو <strong>الورد الدمشقي</strong> أو <strong>الورد البلدي</strong>.
+                  </p>
+                </div>
+              </div>
+            </div>
+          `
+        },
+        {
+          id: "topic-matrix",
+          title: "11.0 جدول المقارنة الشامل للعناصر التشخيصية",
+          level: 1,
+          subtitle: "Comprehensive Diagnostic Microscopy Matrix",
+          content: `
+            <div class="space-y-6">
+              <div class="rich-card p-6 border-r-4 border-r-violet-500">
+                <h3 class="font-cairo font-bold text-lg mb-3 text-violet-400 flex items-center gap-2">
+                  <i class="fa-solid fa-table-cells"></i>
+                  المصفوفة التشخيصية السريعة للنباتات العشرة
+                </h3>
+                <p class="text-xs text-slate-400 mb-4">
+                  جدول مقارن يوضح البصمة المجهرية الفارقة (Key Diagnostic Markers) لكل نبات للمساعدة في التحليل المخبري الصيدلاني:
+                </p>
+
+                <div class="overflow-x-auto">
+                  <table class="w-full text-right text-xs border-collapse">
+                    <thead>
+                      <tr class="bg-slate-800/60 border-b border-slate-700 text-slate-200">
+                        <th class="p-3 font-cairo font-bold">النبات</th>
+                        <th class="p-3 font-cairo font-bold">القسم المستعمل</th>
+                        <th class="p-3 font-cairo font-bold">العنصر المجهري الفارغ الرئيسي</th>
+                        <th class="p-3 font-cairo font-bold">أبرز مادة فعالة</th>
+                      </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-800 text-slate-300">
+                      <tr class="hover:bg-violet-600/5 transition-colors">
+                        <td class="p-3 font-bold text-emerald-400">1. الشاي</td>
+                        <td class="p-3">الأوراق</td>
+                        <td class="p-3">أوبار عكازية مخروطية + خلايا متصلبة متشعبة</td>
+                        <td class="p-3">كافيين + مركبات كاتشين وفينول</td>
+                      </tr>
+                      <tr class="hover:bg-violet-600/5 transition-colors">
+                        <td class="p-3 font-bold text-emerald-400">2. إكليل الجبل</td>
+                        <td class="p-3">الأوراق</td>
+                        <td class="p-3">أوبار غدية شفوية + أوبار لامسة متعددة الخلايا</td>
+                        <td class="p-3">حمض الروزمارينيك + سينول وبورنيول</td>
+                      </tr>
+                      <tr class="hover:bg-violet-600/5 transition-colors">
+                        <td class="p-3 font-bold text-emerald-400">3. السنا</td>
+                        <td class="p-3">الأوراق المركبة</td>
+                        <td class="p-3">ثغور موازية + ألياف بحماضات كالسيوم موشورية</td>
+                        <td class="p-3">سنوزيدات (A, B, C, D) + ألو إيمودين</td>
+                      </tr>
+                      <tr class="hover:bg-violet-600/5 transition-colors">
+                        <td class="p-3 font-bold text-emerald-400">4. الميرمية</td>
+                        <td class="p-3">الأوراق</td>
+                        <td class="p-3">خطوط القشيرة + وبرة متعددة القاعدة وحيدة الرأس</td>
+                        <td class="p-3">ثوجون + روتين وكويرسترين</td>
+                      </tr>
+                      <tr class="hover:bg-violet-600/5 transition-colors">
+                        <td class="p-3 font-bold text-emerald-400">5. الزعتر</td>
+                        <td class="p-3">الأوراق</td>
+                        <td class="p-3">أوبار لامسة بقشيرة متألمة + ثغور متعامدة</td>
+                        <td class="p-3">ثيمول + كارفاكرول + لوتيولين</td>
+                      </tr>
+                      <tr class="hover:bg-violet-600/5 transition-colors">
+                        <td class="p-3 font-bold text-emerald-400">6. الأوكاليبتوس</td>
+                        <td class="p-3">الأوراق</td>
+                        <td class="p-3">جيوب مفرزة ضخمة + ألياف بحماضات موشورية</td>
+                        <td class="p-3">أوكاليبتول (1,8-Cineole) + بينين</td>
+                      </tr>
+                      <tr class="hover:bg-violet-600/5 transition-colors">
+                        <td class="p-3 font-bold text-emerald-400">7. البابونج</td>
+                        <td class="p-3">الرؤوس الزهرية</td>
+                        <td class="p-3">طلع مشوك بـ 3 ثقوب + ميسم متفرع بحليمات</td>
+                        <td class="p-3">كامازولين أزرق + بيزابولول</td>
+                      </tr>
+                      <tr class="hover:bg-violet-600/5 transition-colors">
+                        <td class="p-3 font-bold text-emerald-400">8. الخزامى</td>
+                        <td class="p-3">القمم المزهرة</td>
+                        <td class="p-3">أوبار شمع دانية متفرعة + طلع كروي بـ 6 شقوق</td>
+                        <td class="p-3">أسيتات الليناليل + لينالول</td>
+                      </tr>
+                      <tr class="hover:bg-violet-600/5 transition-colors">
+                        <td class="p-3 font-bold text-emerald-400">9. الزيزفون</td>
+                        <td class="p-3">الأزهار</td>
+                        <td class="p-3">أوبار لامسة مظلية + طلع ثلاثي الثقوب</td>
+                        <td class="p-3">مواد لعابية (13%) + فلافونوئيدات</td>
+                      </tr>
+                      <tr class="hover:bg-violet-600/5 transition-colors">
+                        <td class="p-3 font-bold text-emerald-400">10. الورد الدمشقي</td>
+                        <td class="p-3">الأزهار والبراعم</td>
+                        <td class="p-3">أوبار وحيدة الخلية + خلايا حرشفية بالبتلة</td>
+                        <td class="p-3">جيرانيول + لينالول + دماسينون</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          `
+        }
+      ]
+    };
+
+    /* ==========================================================================
+       UI CONTROLLER ENGINE
+       ========================================================================== */
+    let activeTopicId = LECTURE_DATA.topics[0]?.id || '';
+    let currentChartInstance = null;
+    let lastScrollY = window.scrollY;
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initTheme();
+      renderLectureMetadata();
+      renderDrawerTree();
+      renderTopic(activeTopicId);
+      setupEventListeners();
+      setupHeaderAutoHiding();
+    });
+
+    // Theme Switcher Logic
+    function initTheme() {
+      const savedTheme = localStorage.getItem('app-theme') || 'dark';
+      const htmlEl = document.documentElement;
+      const themeIcon = document.getElementById('theme-icon');
+
+      if (savedTheme === 'dark') {
+        htmlEl.classList.add('dark');
+        if (themeIcon) themeIcon.className = 'fa-solid fa-sun text-amber-400';
+      } else {
+        htmlEl.classList.remove('dark');
+        if (themeIcon) themeIcon.className = 'fa-solid fa-moon text-slate-700';
+      }
+    }
+
+    function toggleTheme() {
+      triggerHaptic();
+      const htmlEl = document.documentElement;
+      const themeIcon = document.getElementById('theme-icon');
+      
+      if (htmlEl.classList.contains('dark')) {
+        htmlEl.classList.remove('dark');
+        localStorage.setItem('app-theme', 'light');
+        if (themeIcon) themeIcon.className = 'fa-solid fa-moon text-slate-700';
+      } else {
+        htmlEl.classList.add('dark');
+        localStorage.setItem('app-theme', 'dark');
+        if (themeIcon) themeIcon.className = 'fa-solid fa-sun text-amber-400';
+      }
+    }
+
+    // Auto-Hiding Header on Scroll
+    function setupHeaderAutoHiding() {
+      const header = document.getElementById('main-header');
+      window.addEventListener('scroll', () => {
+        const currentScrollY = window.scrollY;
+        if (currentScrollY > lastScrollY && currentScrollY > 70) {
+          header.classList.add('-translate-y-full');
+        } else {
+          header.classList.remove('-translate-y-full');
+        }
+        lastScrollY = currentScrollY;
+      });
+    }
+
+    // Safe Telegram Haptics
+    function triggerHaptic() {
+      try {
+        if (window.Telegram?.WebApp?.HapticFeedback) {
+          window.Telegram.WebApp.HapticFeedback.impactOccurred('light');
+        }
+      } catch (e) {}
+    }
+
+    // Inject Metadata
+    function renderLectureMetadata() {
+      document.getElementById('lecture-title-display').innerText = LECTURE_DATA.title;
+      document.getElementById('lecture-subtitle-display').innerText = LECTURE_DATA.subtitle;
+      document.getElementById('chapter-tag-display').innerText = LECTURE_DATA.chapterTag;
+      document.getElementById('topic-count-display').innerText = `${LECTURE_DATA.topics.length} أقسام`;
+    }
+
+    // Drawer Tree Renderer
+    function renderDrawerTree() {
+      const container = document.getElementById('drawer-tree-container');
+      container.innerHTML = '';
+
+      LECTURE_DATA.topics.forEach((topic) => {
+        const isLevel2 = topic.level === 2;
+        const isLevel3 = topic.level === 3;
+        const indentClass = isLevel3 ? 'mr-6' : isLevel2 ? 'mr-3' : 'mr-0';
+        
+        const btn = document.createElement('button');
+        btn.className = `w-full text-right p-3 rounded-xl transition-all flex items-center justify-between text-xs font-cairo font-bold ${indentClass} ${
+          topic.id === activeTopicId 
+            ? 'bg-violet-600/20 text-violet-500 dark:text-violet-400 border border-violet-500/40 shadow-sm' 
+            : 'hover:bg-slate-800/20 dark:hover:bg-slate-800/40 text-slate-400'
+        }`;
+        
+        btn.innerHTML = `
+          <span class="truncate ml-2">${topic.title}</span>
+          <i class="fa-solid fa-chevron-left text-[10px] opacity-60"></i>
+        `;
+
+        btn.onclick = () => {
+          triggerHaptic();
+          switchTopic(topic.id);
+          closeDrawer();
+        };
+
+        container.appendChild(btn);
+      });
+    }
+
+    // Render Active Topic
+    function renderTopic(topicId) {
+      const topic = LECTURE_DATA.topics.find(t => t.id === topicId);
+      if (!topic) return;
+
+      activeTopicId = topicId;
+      const viewport = document.getElementById('active-topic-viewport');
+
+      if (currentChartInstance) {
+        currentChartInstance.destroy();
+        currentChartInstance = null;
+      }
+
+      viewport.innerHTML = `
+        <div class="rich-card p-6 border-b-2 border-b-violet-500/30">
+          <span class="text-[11px] font-bold text-violet-500 dark:text-violet-400 uppercase tracking-wider block mb-1">${topic.subtitle || ''}</span>
+          <h2 class="font-cairo font-extrabold text-xl md:text-2xl">${topic.title}</h2>
+        </div>
+        <div>
+          ${topic.content}
+        </div>
+      `;
+
+      if (window.renderMathInElement) {
+        try {
+          renderMathInElement(viewport, {
+            delimiters: [
+              {left: '$$', right: '$$', display: true},
+              {left: '$', right: '$', display: false}
+            ],
+            throwOnError: false
+          });
+        } catch (e) {}
+      }
+
+      if (topic.chartConfig && document.getElementById('topicChart')) {
+        const ctx = document.getElementById('topicChart').getContext('2d');
+        currentChartInstance = new Chart(ctx, topic.chartConfig);
+      }
+
+      renderDrawerTree();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function switchTopic(topicId) {
+      renderTopic(topicId);
+    }
+
+    function openDrawer() {
+      triggerHaptic();
+      document.getElementById('right-outline-drawer').classList.remove('translate-x-full');
+      document.getElementById('drawer-overlay').classList.remove('hidden');
+    }
+
+    function closeDrawer() {
+      document.getElementById('right-outline-drawer').classList.add('translate-x-full');
+      document.getElementById('drawer-overlay').classList.add('hidden');
+    }
+
+    function setupEventListeners() {
+      document.getElementById('drawer-toggle-btn').onclick = openDrawer;
+      document.getElementById('close-drawer-btn').onclick = closeDrawer;
+      document.getElementById('drawer-overlay').onclick = closeDrawer;
+      document.getElementById('theme-toggle-btn').onclick = toggleTheme;
+
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') closeDrawer();
+      });
+    }
+  </script>
+</body>
+</html>
