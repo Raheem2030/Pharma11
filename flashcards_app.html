@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تطبيق فلاش كاردز مراجعة علم الأدوية</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome 6 CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Cairo & IBM Plex Sans Arabic -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Telegram Web App SDK -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body {
+            font-family: 'IBM Plex Sans Arabic', sans-serif;
+            background-color: #F8FAFC;
+            color: #334155;
+        }
+        h1, h2, h3, h4, .font-cairo {
+            font-family: 'Cairo', sans-serif;
+        }
+        .perspective-1000 {
+            perspective: 1000px;
+        }
+        .transform-style-3d {
+            transform-style: preserve-3d;
+        }
+        .backface-hidden {
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+        }
+        .rotate-y-180 {
+            transform: rotateY(180deg);
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #F1F5F9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #CBD5E1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94A3B8;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between selection:bg-purple-100 selection:text-purple-700">
+
+    <!-- Top Navigation Header -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
+        <div class="max-w-6xl mx-auto px-4 py-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <span class="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-purple-50 text-purple-600 font-bold shadow-inner">
+                    <i class="fa-solid fa-graduation-cap text-lg"></i>
+                </span>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-purple-50 text-purple-600 border border-purple-100">الجلسة الأولى</span>
+                        <span id="telegram-user-badge" class="text-xs font-medium px-2 py-0.5 rounded-full bg-blue-50 text-blue-600 border border-blue-100 hidden">مرحباً، <span id="tg-username"></span></span>
+                    </div>
+                    <h1 class="text-xl font-extrabold text-slate-900">بطاقات مراجعة علم الأدوية التجريبي</h1>
+                </div>
+            </div>
+
+            <!-- Stats & Controls -->
+            <div class="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
+                <div class="bg-slate-100 px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 flex items-center gap-2 border border-slate-200">
+                    <i class="fa-solid fa-layer-group text-purple-600"></i>
+                    <span>التقدم: <span id="current-card-num" class="text-purple-600 font-bold">1</span> / <span id="total-cards-num">30</span></span>
+                </div>
+                <button onclick="resetProgress()" class="text-xs text-slate-500 hover:text-purple-600 bg-slate-100 hover:bg-purple-50 px-3 py-1.5 rounded-lg border border-slate-200 transition flex items-center gap-1.5">
+                    <i class="fa-solid fa-rotate-right"></i> إعادة تعيين
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="max-w-4xl mx-auto px-4 py-8 flex-grow w-full flex flex-col justify-center">
+
+        <!-- Category & Filters Bar -->
+        <div class="mb-6 flex flex-wrap items-center justify-between gap-3">
+            <div id="section-badge" class="text-xs font-bold px-3 py-1.5 rounded-lg bg-purple-600 text-white shadow-sm flex items-center gap-2">
+                <i class="fa-solid fa-bookmark"></i>
+                <span id="current-section-name">القسم الأول: المفاهيم الأساسية والتعاريف العلمية</span>
+            </div>
+            <div class="flex items-center gap-2">
+                <select id="section-filter" onchange="filterSection(this.value)" class="text-xs font-semibold bg-white border border-slate-300 text-slate-700 py-1.5 px-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 shadow-sm cursor-pointer">
+                    <option value="all">جميع الأقسام (30 سؤال)</option>
+                    <option value="1">القسم الأول: المفاهيم الأساسية (س 1-6)</option>
+                    <option value="2">القسم الثاني: مصادر الأدوية (س 7-14)</option>
+                    <option value="3">القسم الثالث: الطرق العامة (س 15-16)</option>
+                    <option value="4">القسم الرابع: طريق الفم (س 17-21)</option>
+                    <option value="5">القسم الخامس: المستقيم والمهبل (س 22-24)</option>
+                    <option value="6">القسم السادس: الاستنشاق (س 25-30)</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Flashcard Arena -->
+        <div class="relative w-full perspective-1000 min-h-[380px] sm:min-h-[350px] mb-8 cursor-pointer group" onclick="flipCard()">
+            <div id="flashcard" class="w-full h-full min-h-[380px] sm:min-h-[350px] relative transition-transform duration-500 transform-style-3d shadow-xl rounded-2xl">
+                
+                <!-- Front Side (Question) -->
+                <div class="absolute inset-0 w-full h-full bg-white border-2 border-slate-200 rounded-2xl p-8 flex flex-col justify-between backface-hidden shadow-sm group-hover:border-purple-300 transition-colors">
+                    <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+                        <span id="card-id-badge" class="text-xs font-bold px-3 py-1 rounded-full bg-purple-50 text-purple-600 border border-purple-100">سؤال 1 من 30</span>
+                        <span class="text-xs text-slate-400 font-medium flex items-center gap-1.5">
+                            <i class="fa-solid fa-hand-pointer text-purple-500 animate-pulse"></i> اضغط للقلب وعرض الإجابة
+                        </span>
+                    </div>
+                    
+                    <div class="my-auto py-6 text-center">
+                        <h2 id="question-text" class="text-lg sm:text-xl font-bold text-slate-900 leading-relaxed font-cairo">
+                            ما هو تعريف علم الأدوية (Pharmacology)؟
+                        </h2>
+                    </div>
+
+                    <div class="text-center border-t border-slate-100 pt-3">
+                        <span class="text-xs text-slate-400">انقر في أي مكان على البطاقة لرؤية الإجابة النموذجية</span>
+                    </div>
+                </div>
+
+                <!-- Back Side (Answer) -->
+                <div class="absolute inset-0 w-full h-full bg-slate-900 border-2 border-slate-800 rounded-2xl p-8 flex flex-col justify-between backface-hidden rotate-y-180 text-white shadow-xl">
+                    <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+                        <span class="text-xs font-bold px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center gap-1.5">
+                            <i class="fa-solid fa-circle-check"></i> الإجابة النموذجية
+                        </span>
+                        <span class="text-xs text-slate-400 font-medium">اضغط للعودة للسؤال</span>
+                    </div>
+                    
+                    <div class="my-auto py-6 overflow-y-auto max-h-[200px] text-right">
+                        <div id="answer-text" class="text-base sm:text-lg text-slate-100 leading-relaxed">
+                            هو العلم الذي يدرس العقاقير، واستعمالاتها العلاجية، وتأثيراتها السمية.
+                        </div>
+                    </div>
+
+                    <div class="text-center border-t border-slate-800 pt-3">
+                        <span class="text-xs text-slate-400">انقر للعودة للسؤال السابق</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Navigation Controls Bar -->
+        <div class="flex items-center justify-between gap-4 bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+            <button onclick="prevCard()" class="px-5 py-2.5 rounded-xl bg-slate-100 hover:bg-purple-50 text-slate-700 hover:text-purple-600 font-semibold text-sm transition flex items-center gap-2 border border-slate-200 active:scale-95">
+                <i class="fa-solid fa-arrow-right"></i> السابق
+            </button>
+
+            <!-- Quick Jump / Shuffle -->
+            <div class="flex items-center gap-2">
+                <button onclick="shuffleCards()" title="خلط البطاقات عشوائياً" class="p-2.5 rounded-xl bg-slate-100 hover:bg-purple-50 text-slate-600 hover:text-purple-600 border border-slate-200 transition text-sm">
+                    <i class="fa-solid fa-shuffle"></i>
+                </button>
+                <button onclick="markAsFavorite()" id="fav-btn" title="تمييز بنجمة" class="p-2.5 rounded-xl bg-slate-100 hover:bg-amber-50 text-slate-600 hover:text-amber-500 border border-slate-200 transition text-sm">
+                    <i class="fa-regular fa-star" id="fav-icon"></i>
+                </button>
+            </div>
+
+            <button onclick="nextCard()" class="px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-semibold text-sm transition flex items-center gap-2 shadow-md shadow-purple-200 active:scale-95">
+                التالي <i class="fa-solid fa-arrow-left"></i>
+            </button>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200 py-4 text-center text-xs text-slate-500">
+        <p>تطبيق فلاش كاردز مراجعة علم الأدوية التجريبي - مخصص لتطبيقات تيليجرام (Telegram Mini App)</p>
+    </footer>
+
+    <!-- Script Logic -->
+    <script>
+        // Database of all 30 Flashcards with section mapping
+        const flashcardsData = [
+            // القسم الأول (1 - 6)
+            {
+                id: 1,
+                sectionId: "1",
+                sectionName: "القسم الأول: المفاهيم الأساسية والتعاريف العلمية",
+                question: "ما هو تعريف علم الأدوية (Pharmacology)؟",
+                answer: "هو العلم الذي يدرس العقاقير، واستعمالاتها العلاجية، وتأثيراتها السمية."
+            },
+            {
+                id: 2,
+                sectionId: "1",
+                sectionName: "القسم الأول: المفاهيم الأساسية والتعاريف العلمية",
+                question: "كيف تعرّف إدارة الغذاء والدواء (FDA) العقار (Drug)؟",
+                answer: "تعرّف FDA العقار بأنه أية مادة أو خليط من مواد مختلفة يُستعمل طبياً لغرض المعالجة أو الوقاية أو الحد من الآلام التي يعاني منها المريض."
+            },
+            {
+                id: 3,
+                sectionId: "1",
+                sectionName: "القسم الأول: المفاهيم الأساسية والتعاريف العلمية",
+                question: "ما المقصود بحرائك الأدوية (Pharmacokinetics)؟",
+                answer: "فرع من علم الأدوية يهتم بدراسة حركية الأدوية في الجسم، وتشمل أربع مراحل أساسية: امتصاص الدواء، توزعه، تفاعلاته الحيوية (الأيض)، وإطراحه من الجسم."
+            },
+            {
+                id: 4,
+                sectionId: "1",
+                sectionName: "القسم الأول: المفاهيم الأساسية والتعاريف العلمية",
+                question: "ما المقصود بدينمية الدواء (Pharmacodynamics)؟",
+                answer: "فرع يهتم بدراسة التأثيرات الكيميائية الحيوية والفيزيولوجية للعقاقير، وآلية عملها، والعلاقة بين فعل الأدوية وطبيعة تركيبها الكيميائي."
+            },
+            {
+                id: 5,
+                sectionId: "1",
+                sectionName: "القسم الأول: المفاهيم الأساسية والتعاريف العلمية",
+                question: "ما الفرق بين علم الأدوية العلاجي وعلم السموم (Toxicology)؟",
+                answer: "• علم الأدوية العلاجي: يختص بتطبيقات واستعمالات العقاقير الطبية في المعالجة والوقاية من الأمراض.<br>• علم السموم (Toxicology): يهتم بدراسة التأثيرات السمية للعقاقير المستعملة في العلاج."
+            },
+            {
+                id: 6,
+                sectionId: "1",
+                sectionName: "القسم الأول: المفاهيم الأساسية والتعاريف العلمية",
+                question: "اذكر كتب العقاقير ودساتير الأدوية الرسمية المعتمدة المذكورة في الجلسة.",
+                answer: "1. دستور الأدوية الخاص بالولايات المتحدة الأمريكية (USP)<br>2. دستور الأدوية البريطاني (BP)<br>3. كتاب الوصفات العام<br>4. مدونة الأدوية البريطانية<br>5. دستور الأدوية المصري<br>6. دستور الأدوية العالمي<br>7. دستور الأدوية العام"
+            },
+
+            // القسم الثاني (7 - 14)
+            {
+                id: 7,
+                sectionId: "2",
+                sectionName: "القسم الثاني: مصادر الأدوية (Sources of Drugs)",
+                question: "كم عدد المصادر الأساسية للحصول على الأدوية؟ اذكرها.",
+                answer: "يوجد ستة مصادر أساسية:<br>1. المصادر النباتية<br>2. المصادر الحيوانية<br>3. المصادر المعدنية<br>4. المصادر المكروبيولوجية<br>5. المصادر الاصطناعية<br>6. مصادر تقنية الـ DNA المأشوب"
+            },
+            {
+                id: 8,
+                sectionId: "2",
+                sectionName: "القسم الثاني: مصادر الأدوية (Sources of Drugs)",
+                question: "اذكر أمثلة على أوراق النباتات المستعملة كمصدر للأدوية والمواد الفعالة المستخرجة منها.",
+                answer: "• أوراق نبات ست الحسن: تحتوي قلويدات فعالة (الأتروبين، الهيوسين/السكوبولامين، والهيوسيامين).<br>• أوراق نبات السينامكي: تحتوي جليكوسيد أنثراسين.<br>• أوراق نبات اليوكالبتوس: تحتوي زيت اليوكالبتوس الطيار."
+            },
+            {
+                id: 9,
+                sectionId: "2",
+                sectionName: "القسم الثاني: مصادر الأدوية (Sources of Drugs)",
+                question: "حدد الجزء النباتي والمواد الفعالة المكونة لكل من: الجوز المقيئ، عرق الذهب، والخشخاش.",
+                answer: "• بذور الجوز المقيئ: استركنين، بروسين، فوميسين، وكوليبرين.<br>• جذور عرق الذهب: قلويد الأميتين.<br>• ثمار الخشخاش: مورفين، كودايين، ناركوتين، وبابافرين."
+            },
+            {
+                id: 10,
+                sectionId: "2",
+                sectionName: "القسم الثاني: مصادر الأدوية (Sources of Drugs)",
+                question: "اذكر خمسة أمثلة لمركبات وأدوية تُستخرج من مصادر حيوانية مع تحديد العضو أو النسيج المصدر.",
+                answer: "1. الأنسولين: من بنكرياس الأبقار والخنازير.<br>2. فيتامينات A و D: من كبد الأسماك (سمك القد).<br>3. الثيروكسين: من الغدة الدرقية للأغنام.<br>4. اللقاحات: تُحضر باستعمال دم الحيوانات.<br>5. موجهات الغدد التناسلية: من الفص الأمامي للغدة النخامية."
+            },
+            {
+                id: 11,
+                sectionId: "2",
+                sectionName: "القسم الثاني: مصادر الأدوية (Sources of Drugs)",
+                question: "اذكر أربعة أمثلة لمركبات دوائية ذات مصدر معدني واستعمالاتها الطبية.",
+                answer: "1. سلفات المغنيزيوم: مسهلات حجمية.<br>2. بيكربونات الصوديوم: مضاد للحموضة أو الإجهاد الحراري.<br>3. اليود: معقم للجروح الحديثة.<br>4. يودور البوتاسيوم: مادة منفثة (مقشعة)."
+            },
+            {
+                id: 12,
+                sectionId: "2",
+                sectionName: "القسم الثاني: مصادر الأدوية (Sources of Drugs)",
+                question: "أعطِ مثالاً على مصدر مكروبيولوجي لدواء حيوي وما الكائن المنتِج له؟",
+                answer: "فطر البنسليوم نوتاتوم (Penicillium notatum) الذي يفرز المضاد الحيوي البنسلين، بالإضافة لاستخدام الفيروسات والبكتيريا في اللقاحات."
+            },
+            {
+                id: 13,
+                sectionId: "2",
+                sectionName: "القسم الثاني: مصادر الأدوية (Sources of Drugs)",
+                question: "كيف ساهم تطور التقنيات الكيميائية في جعل المصادر الاصطناعية هي الأكثر شيوعاً؟",
+                answer: "أدى ظهور الكيمياء الحديثة وتقنيات التحليل المتقدمة مثل (HPLC) و (GC) إلى إمكانية تصنيع مركبات حديثة وبكميات كبيرة، لتصبح معظم الأدوية المستخدمة علاجياً ذات مصدر صناعي."
+            },
+            {
+                id: 14,
+                sectionId: "2",
+                sectionName: "القسم الثاني: مصادر الأدوية (Sources of Drugs)",
+                question: "ما هي تقنية الـ DNA المأشوب وما أهميتها في إنتاج الأدوية؟",
+                answer: "هي عملية صناعية تعتمد على تعديل الحمض النووي للكائنات الدقيقة الحية (المؤتلف/المأشوب) لإنتاج أدوية ولقاحات عالية النقاء والفاعلية مثل الأنسولين البشري."
+            },
+
+            // القسم الثالث (15 - 16)
+            {
+                id: 15,
+                sectionId: "3",
+                sectionName: "القسم الثالث: الطرق العامة لإعطاء الدواء",
+                question: "ما هي الطرق الرئيسية الثلاث لإعطاء الدواء للجسم؟",
+                answer: "1. عن طريق فتحات الجسم الطبيعية.<br>2. عن طريق الحقن (الزرق).<br>3. عن طريق التطبيق الموضعي للأدوية."
+            },
+            {
+                id: 16,
+                sectionId: "3",
+                sectionName: "القسم الثالث: الطرق العامة لإعطاء الدواء",
+                question: "اذكر العوامل التي تتحكم باختيار طريقة إعطاء المادة الدوائية في التجارب.",
+                answer: "• حجم المادة الدوائية وسرعة امتصاصها.<br>• مكان وطريقة توزيع المادة في الجسم.<br>• درجة حموضة المادة (pH).<br>• نوع الدواء وطبيعة المرض.<br>• الهدف المرجو من التجربة وحيوان التجربة المستعمل."
+            },
+
+            // القسم الرابع (17 - 21)
+            {
+                id: 17,
+                sectionId: "4",
+                sectionName: "القسم الرابع: إعطاء الدواء عن طريق الفم",
+                question: "ما هي ميزات إعطاء الدواء عن طريق الفم؟",
+                answer: "يُعد الطريق الأكثر استخداماً، ويتميز بأنه آمن ولا يحتاج إلى أدوات للتعقيم من أجل إعطاء الدواء."
+            },
+            {
+                id: 18,
+                sectionId: "4",
+                sectionName: "القسم الرابع: إعطاء الدواء عن طريق الفم",
+                question: "ما هي مساوئ ومحاذير إعطاء الدواء فموياً؟",
+                answer: "• لا يمكن إعطاء الأدوية المهيجة وغير المستساغة.<br>• لا يمكن إعطاء الأدوية التي تتخرب بالعصارات الهضمية (مثل الأنسولين والأدرينالين).<br>• إمكانية حدوث امتصاص غير كامل وبالتالي فعالية أقل."
+            },
+            {
+                id: 19,
+                sectionId: "4",
+                sectionName: "القسم الرابع: إعطاء الدواء عن طريق الفم",
+                question: "لماذا تُغطى الحبوب والبلعات أحياناً بالكيراتين أو السيللوز أو حمض الفوسفات؟",
+                answer: "لتجنب التأثر أو التخرب بالعصارة المعدية، ولضمان امتصاصها عن طريق الأمعاء من أجل إطالة مفعول المادة الدوائية."
+            },
+            {
+                id: 20,
+                sectionId: "4",
+                sectionName: "القسم الرابع: إعطاء الدواء عن طريق الفم",
+                question: "قارن بين طريقتي إعطاء الدواء فموياً عند الفئران (Mice).",
+                answer: "• مع الطعام أو ماء الشرب: أبسط طريقة ولكنها غير عملية للمواد المهيجة أو غير الثابتة وتتطلب معرفة استهلاك الطعام بدقة.<br>• الإدخال المباشر للمعدة (Oral gavage): الطريقة المفضلة لحساب الجرعة بدقة باستخدام محقن ذو رأس كروي بعد مسك الفأر من الطية الظهرية خلف الرقبة."
+            },
+            {
+                id: 21,
+                sectionId: "4",
+                sectionName: "القسم الرابع: إعطاء الدواء عن طريق الفم",
+                question: "كيف يتم إعطاء الدواء فموياً عند الأرانب (Rabbits)؟",
+                answer: "عن طريق ماء الشرب أو الطعام، أو باستخدام القسطرة المطاطية/البلاستيكية المزلقة والتي تُدخل من خلال الفتحة خلف الأسنان الأمامية لتصل مباشرة إلى معدة الأرنب."
+            },
+
+            // القسم الخامس (22 - 24)
+            {
+                id: 22,
+                sectionId: "5",
+                sectionName: "القسم الخامس: المستقيم والمهبل",
+                question: "متى يُعتبر طريق الإعطاء الشرجي (عن طريق المستقيم) مجدياً ومفيداً؟",
+                answer: "• للأدوية التي تتعرض للاستقلاب الكبدي الأول (لتجنب المرور الكبدي الجزئي).<br>• للمعالجة الموضعية للمستقيم.<br>• إذا كان المريض يعاني من التقيؤ.<br>• عند فقدان الوعي المترافق مع التشنج (بشكل تحاميل أو حقن شرجية)."
+            },
+            {
+                id: 23,
+                sectionId: "5",
+                sectionName: "القسم الخامس: المستقيم والمهبل",
+                question: "هل يُستخدم طريق المستقيم أو المهبل كطريق شائع عند حيوانات التجربة؟",
+                answer: "لا، فنادراً ما يُستخدم المستقيم عند حيوانات التجربة، بينما يُستخدم المهبل نادراً جداً وفقط لمعرفة التأثير الموضعي للأدوية على المهبل أو الرحم."
+            },
+            {
+                id: 24,
+                sectionId: "5",
+                sectionName: "القسم الخامس: المستقيم والمهبل",
+                question: "كيف يُطبق إعطاء الدواء عن طريق المهبل عند حيوانات التجربة (مثل الفأرة)؟",
+                answer: "تُستخدم أدوية على شكل سوائل أو كريمات، ويتم إدخال قسطرة مطاطية موصولة بمحقن بعمق 2.5 سم داخل مهبل الفأرة لتحديد كمية المادة المحقونة."
+            },
+
+            // القسم السادس (25 - 30)
+            {
+                id: 25,
+                sectionId: "6",
+                sectionName: "القسم السادس: الاستنشاق (Inhalation)",
+                question: "ما هي الأشكال الصيدلانية المستعملة عند إعطاء الدواء عن طريق فتحات الأنف (الاستنشاق)؟",
+                answer: "يُعطى الدواء على شكل بخاخ أو أبخرة (غازات أو سوائل طيارة) تنشر المادة بشكل ذرات صغيرة على الأغشية المخاطية."
+            },
+            {
+                id: 26,
+                sectionId: "6",
+                sectionName: "القسم السادس: الاستنشاق (Inhalation)",
+                question: "ما الفرق بين الاستخدام الموضعي والجهازي للأدوية الاستنشاقية؟",
+                answer: "• التأثير الموضعي: يتوضع الدواء على الأغشية المخاطية التنفسية (مثل علاج الربو).<br>• التأثير العام (الجهازي): يُستخدم لإحداث تأثير شامل (مثل التخدير العام الاستنشاقي)."
+            },
+            {
+                id: 27,
+                sectionId: "6",
+                sectionName: "القسم السادس: الاستنشاق (Inhalation)",
+                question: "علل: تتساوى سرعة تأثير الأدوية المعطاة بالاستنشاق تقريباً مع سرعة إعطائها بالحقن الوريدي.",
+                answer: "يعود ذلك إلى سعة السطح الامتصاصي الكبيرة جداً في الرئتين، وصول المادة مباشرة للأوعية الدموية، وقلة الأنسجة الضامة مما يتيح امتصاص شبه كامل."
+            },
+            {
+                id: 28,
+                sectionId: "6",
+                sectionName: "القسم السادس: الاستنشاق (Inhalation)",
+                question: "ما هو القطر المثالي لجزيئات المادة الدوائية المحمولة بالهواء لضمان وصولها إلى الرئتين؟",
+                answer: "يجب أن يكون القطر المثالي للجزيئات بين 0.5 إلى 2 ميكرومتر."
+            },
+            {
+                id: 29,
+                sectionId: "6",
+                sectionName: "القسم السادس: الاستنشاق (Inhalation)",
+                question: "ما هي إيجابيات إعطاء الدواء عن طريق الاستنشاق؟",
+                answer: "• امتصاص سريع وتأثيرات سريعة جداً.<br>• مفيد جداً لعلاج الأمراض التنفسية لارتفاع تركيز الدواء في الجهاز التنفسي.<br>• إمكانية ضبط تركيز المخدرات الاستنشاقية في بلازما الدم بدقة."
+            },
+            {
+                id: 30,
+                sectionId: "6",
+                sectionName: "القسم السادس: الاستنشاق (Inhalation)",
+                question: "ما هي سلبيات ومخاطر إعطاء الدواء عن طريق الاستنشاق؟",
+                answer: "• وصول المادة مباشرة للقلب عبر الأوردة الرئوية قد يؤدي لتسمم قلبي.<br>• إمكانية حدوث تهيج موضعي وزيادة الإفرازات التنفسية التي قد تؤدي لخطر الاختناق."
+            }
+        ];
+
+        let currentFilteredCards = [...flashcardsData];
+        let currentIndex = 0;
+        let isFlipped = false;
+        let favorites = new Set();
+
+        const flashcardEl = document.getElementById('flashcard');
+        const questionTextEl = document.getElementById('question-text');
+        const answerTextEl = document.getElementById('answer-text');
+        const currentCardNumEl = document.getElementById('current-card-num');
+        const totalCardsNumEl = document.getElementById('total-cards-num');
+        const cardIdBadgeEl = document.getElementById('card-id-badge');
+        const currentSectionNameEl = document.getElementById('current-section-name');
+        const favIconEl = document.getElementById('fav-icon');
+
+        // Telegram Web App Initialization
+        function initTelegramApp() {
+            if (window.Telegram && window.Telegram.WebApp) {
+                const tg = window.Telegram.WebApp;
+                tg.ready();
+                tg.expand();
+
+                // Apply Telegram theme parameters if available
+                if (tg.colorScheme === 'dark') {
+                    // Telegram dark mode adjustments if needed
+                }
+
+                // Show Telegram user info if available
+                if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+                    const user = tg.initDataUnsafe.user;
+                    const name = user.first_name || user.username || 'مستخدم تيليجرام';
+                    document.getElementById('tg-username').textContent = name;
+                    document.getElementById('telegram-user-badge').classList.remove('hidden');
+                }
+            }
+        }
+
+        function updateCardDisplay() {
+            if (currentFilteredCards.length === 0) {
+                questionTextEl.innerHTML = "لا توجد أسئلة متاحة في هذا القسم.";
+                answerTextEl.innerHTML = "يرجى اختيار قسم آخر.";
+                currentCardNumEl.textContent = 0;
+                totalCardsNumEl.textContent = 0;
+                cardIdBadgeEl.textContent = "سؤال 0 من 0";
+                return;
+            }
+
+            if (currentIndex >= currentFilteredCards.length) {
+                currentIndex = 0;
+            }
+
+            const currentCard = currentFilteredCards[currentIndex];
+
+            // Reset flip state if flipped
+            if (isFlipped) {
+                flipCard(true); // force reset
+            }
+
+            questionTextEl.innerHTML = currentCard.question;
+            answerTextEl.innerHTML = currentCard.answer;
+            currentCardNumEl.textContent = currentIndex + 1;
+            totalCardsNumEl.textContent = currentFilteredCards.length;
+            cardIdBadgeEl.textContent = `سؤال ${currentIndex + 1} من ${currentFilteredCards.length}`;
+            currentSectionNameEl.textContent = currentCard.sectionName;
+
+            // Update favorite icon state
+            if (favorites.has(currentCard.id)) {
+                favIconEl.className = "fa-solid fa-star text-amber-500";
+            } else {
+                favIconEl.className = "fa-regular fa-star";
+            }
+        }
+
+        function flipCard(forceReset = false) {
+            if (forceReset) {
+                isFlipped = false;
+                flashcardEl.classList.remove('rotate-y-180');
+                return;
+            }
+            isFlipped = !isFlipped;
+            if (isFlipped) {
+                flashcardEl.classList.add('rotate-y-180');
+            } else {
+                flashcardEl.classList.remove('rotate-y-180');
+            }
+        }
+
+        function nextCard() {
+            if (currentFilteredCards.length === 0) return;
+            currentIndex = (currentIndex + 1) % currentFilteredCards.length;
+            updateCardDisplay();
+        }
+
+        function prevCard() {
+            if (currentFilteredCards.length === 0) return;
+            currentIndex = (currentIndex - 1 + currentFilteredCards.length) % currentFilteredCards.length;
+            updateCardDisplay();
+        }
+
+        function filterSection(sectionId) {
+            if (sectionId === 'all') {
+                currentFilteredCards = [...flashcardsData];
+            } else {
+                currentFilteredCards = flashcardsData.filter(card => card.sectionId === sectionId);
+            }
+            currentIndex = 0;
+            updateCardDisplay();
+        }
+
+        function shuffleCards() {
+            for (let i = currentFilteredCards.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [currentFilteredCards[i], currentFilteredCards[j]] = [currentFilteredCards[j], currentFilteredCards[i]];
+            }
+            currentIndex = 0;
+            updateCardDisplay();
+        }
+
+        function markAsFavorite() {
+            if (currentFilteredCards.length === 0) return;
+            const currentCard = currentFilteredCards[currentIndex];
+            if (favorites.has(currentCard.id)) {
+                favorites.delete(currentCard.id);
+                favIconEl.className = "fa-regular fa-star";
+            } else {
+                favorites.add(currentCard.id);
+                favIconEl.className = "fa-solid fa-star text-amber-500";
+            }
+        }
+
+        function resetProgress() {
+            currentIndex = 0;
+            document.getElementById('section-filter').value = 'all';
+            currentFilteredCards = [...flashcardsData];
+            updateCardDisplay();
+        }
+
+        // Keyboard navigation support
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === 'ArrowUp') {
+                prevCard();
+            } else if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') {
+                nextCard();
+            } else if (e.key === ' ' || e.key === 'Enter') {
+                e.preventDefault();
+                flipCard();
+            }
+        });
+
+        // Initialize on load
+        window.onload = function () {
+            initTelegramApp();
+            updateCardDisplay();
+        }
+    </script>
+</body>
+</html>
