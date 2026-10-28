@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>اختبار أساسيات علم الطفيليات - الجلسة الأولى</title>
+  
+  <!-- CDNs المعتمدة للتنسيق والهوية البصرية -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@800;900&family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- سكريبت تيليجرام لتطبيقات الويب المصغرة (TMA SDK) -->
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+  <!-- مكتبة المعادلات الرياضية والكيميائية KaTeX -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+
+  <style>
+    body {
+      font-family: 'IBM Plex Sans Arabic', sans-serif;
+      background-color: #0b0b0f !important;
+      color: #FFFFFF;
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+    
+    h1, h2, h3, h4, h5, h6, .cairo-font {
+      font-family: 'Cairo', sans-serif;
+      font-weight: 900;
+    }
+
+    :root {
+      --dominant-violet: #8B5CF6;
+      --dominant-gold: #F59E0B;
+      --gold-glow: rgba(245, 158, 11, 0.25);
+      --violet-glow: rgba(139, 92, 246, 0.25);
+    }
+
+    /* البطاقات الزجاجية المحسنة */
+    .cyber-card-gold-violet {
+      background: rgba(15, 15, 22, 0.8);
+      border: 1px solid rgba(245, 158, 11, 0.2);
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.45), 0 0 15px rgba(139, 92, 246, 0.08);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .cyber-card-gold-violet:hover {
+      border-color: rgba(245, 158, 11, 0.45);
+      box-shadow: 0 0 25px rgba(139, 92, 246, 0.25), 0 0 10px rgba(245, 158, 11, 0.2);
+    }
+
+    /* خيارات الإجابة */
+    .quiz-option-btn {
+      background: rgba(23, 23, 33, 0.7);
+      border: 1px solid rgba(139, 92, 246, 0.15);
+      transition: all 0.2s ease-in-out;
+    }
+    .quiz-option-btn:hover:not(:disabled) {
+      border-color: var(--dominant-gold);
+      background: rgba(245, 158, 11, 0.1);
+      box-shadow: 0 0 15px rgba(245, 158, 11, 0.15);
+      transform: translateY(-2px);
+    }
+
+    /* شريط التقدّم النيون */
+    .progress-gold-violet {
+      background: linear-gradient(90deg, #8B5CF6 0%, #D97706 50%, #F59E0B 100%);
+      box-shadow: 0 0 12px rgba(245, 158, 11, 0.4);
+    }
+
+    /* تحسين حقول الإدخال */
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    input[type="number"] {
+      -moz-appearance: textfield;
+    }
+
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #0b0b0f; }
+    ::-webkit-scrollbar-thumb { background: rgba(245, 158, 11, 0.3); border-radius: 3px; }
+
+    /* أنيميشن فتح التبويب الجانبي */
+    .drawer-open {
+      transform: translateX(0) !important;
+    }
+  </style>
+</head>
+<body class="flex flex-col justify-between relative selection:bg-amber-500 selection:text-black">
+
+  <!-- ==================== الهيدر الرئيسي ==================== -->
+  <header class="border-b border-amber-500/20 bg-zinc-950/90 p-4 relative z-20">
+    <div class="max-w-4xl mx-auto flex flex-wrap justify-between items-center gap-3">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-violet-600 via-amber-500 to-amber-400 flex items-center justify-center shadow-lg shadow-amber-500/10 text-lg border border-amber-400/30">
+          🔬
+        </div>
+        <div>
+          <h1 id="quiz-deck-title" class="text-base md:text-lg font-black bg-gradient-to-r from-amber-200 via-violet-300 to-amber-400 bg-clip-text text-transparent">
+            جاري التحميل...
+          </h1>
+          <p id="user-welcome-msg" class="text-[11px] text-zinc-400">منصة الاختبارات الحركية المحددة بوقت</p>
+        </div>
+      </div>
+
+      <!-- أدوات التحكم والعدادات + زر الملخص المدمج -->
+      <div class="flex items-center gap-2 md:gap-3">
+        <!-- زر فتح الملخص العلمي المدمج -->
+        <button onclick="toggleSummaryDrawer()" class="flex items-center gap-2 bg-gradient-to-r from-amber-500/20 via-violet-600/20 to-amber-500/20 hover:from-amber-500/30 hover:to-violet-600/30 border border-amber-400/40 px-3 py-1.5 rounded-xl text-amber-300 text-xs font-bold transition-all shadow-md shadow-amber-500/10 active:scale-95">
+          <span>📖</span>
+          <span>الملخص العلمي</span>
+        </button>
+
+        <!-- العداد الزمني -->
+        <div id="header-timer-box" class="hidden items-center gap-1.5 bg-zinc-900/90 border border-amber-500/40 px-3 py-1.5 rounded-xl shadow-lg shadow-amber-500/5">
+          <span class="text-amber-400 text-xs animate-pulse">⏳</span>
+          <span id="timer-display" class="text-xs font-black text-amber-300 font-mono tracking-wider">00:00</span>
+        </div>
+
+        <!-- عداد الـ Streak -->
+        <div class="flex items-center gap-2 bg-zinc-900/90 border border-violet-500/40 px-3 py-1.5 rounded-xl shadow-lg shadow-violet-500/5">
+          <span class="text-amber-400 text-xs">🔥</span>
+          <div class="text-right">
+            <span class="text-[9px] text-zinc-500 block leading-none">التتابع</span>
+            <span id="streak-count" class="text-xs font-black text-violet-300 font-mono">0</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==================== التبويب الجانبي (الملخص العلمي) ==================== -->
+  <div id="summary-backdrop" onclick="toggleSummaryDrawer()" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-40 hidden transition-opacity"></div>
+
+  <aside id="summary-drawer" class="fixed top-0 right-0 h-full w-full max-w-2xl bg-zinc-950 border-l border-amber-500/30 z-50 transition-transform duration-300 ease-in-out transform translate-x-full overflow-y-auto p-6 space-y-6 shadow-2xl">
+    
+    <!-- رأس الدرج -->
+    <div class="flex justify-between items-center border-b border-zinc-800 pb-4 sticky top-0 bg-zinc-950/95 z-10 backdrop-blur-md pt-2">
+      <div class="flex items-center gap-2">
+        <span class="text-xl">📚</span>
+        <h2 class="text-base md:text-lg font-black text-amber-300">الملخص الشامل: أساسيات علم الطفيليات (الجلسة الأولى)</h2>
+      </div>
+      <button onclick="toggleSummaryDrawer()" class="w-8 h-8 rounded-lg bg-zinc-900 border border-zinc-800 hover:border-amber-400 text-zinc-400 hover:text-white flex items-center justify-center transition-all font-bold">
+        ✕
+      </button>
+    </div>
+
+    <!-- محتوى الملخص -->
+    <div id="summary-content-area" class="space-y-6 text-xs md:text-sm text-zinc-300 leading-relaxed">
+      
+      <!-- 1. العلاقات البيئية والغذائية -->
+      <div class="p-4 bg-zinc-900/60 rounded-xl border border-amber-500/20 space-y-2">
+        <h3 class="text-amber-400 font-bold text-sm flex items-center gap-2"><span>🤝</span> 1. العلاقات الغذائية والبيئية بين الكائنات:</h3>
+        <ul class="list-disc list-inside space-y-1.5 text-zinc-300">
+          <li><strong class="text-white">التقايض (Mutualism):</strong> تبادل منفعة بين كائنين بحيث يستفيد كلاهما، مثل <span class="text-violet-300">السوطيات الابتدائية</span> في القناة الهضمية لحشرة الأرضة.</li>
+          <li><strong class="text-white">المؤاكلة (Commensalism):</strong> يعتمد أحد الكائنين على الآخر في الطعام والمسكن <span class="text-emerald-400">دون إحداث أي ضرر</span> للمضيف.</li>
+          <li><strong class="text-white">التطفل (Parasitism):</strong> علاقة تعود بالنفع على طرف (الطفيل Parasite) وبالضرر على الطرف الآخر (المضيف Host).</li>
+        </ul>
+      </div>
+
+      <!-- 2. تصنيف الطفيليات وأنواعها -->
+      <div class="p-4 bg-zinc-900/60 rounded-xl border border-violet-500/20 space-y-2">
+        <h3 class="text-violet-400 font-bold text-sm flex items-center gap-2"><span>🦠</span> 2. أنواع الطفيليات وأمثلتها:</h3>
+        <div class="grid grid-cols-1 gap-2.5 pt-1">
+          <div class="p-2.5 bg-zinc-950/80 rounded-lg border border-zinc-800">
+            <span class="text-amber-300 font-bold">• خارجية (Ectoparasite):</span> تعيش على السطح الخارجي لجسم المضيف دون اختراق أنسجته.
+          </div>
+          <div class="p-2.5 bg-zinc-950/80 rounded-lg border border-zinc-800">
+            <span class="text-amber-300 font-bold">• داخلية (Endoparasite):</span> تعيش داخل الجسم والأنسجة، مثل: <span class="text-violet-300">الليشمانيا (Leishmania)</span>.
+          </div>
+          <div class="p-2.5 bg-zinc-950/80 rounded-lg border border-zinc-800">
+            <span class="text-amber-300 font-bold">• إجبارية (Obligate parasite):</span> لا يمكنها العيش إلا متطفلة، مثل: <span class="text-violet-300">أنواع الملاريا (Plasmodium species)</span>.
+          </div>
+          <div class="p-2.5 bg-zinc-950/80 rounded-lg border border-zinc-800">
+            <span class="text-amber-300 font-bold">• اختيارية (Facultative parasite):</span> كائنات غير ممرضة (مؤاكلة) تتواجد عادة في جسم العائل وتتحول إلى ممرضة ضمن ظروف خاصة (صحية، نفسية، بيئية)، مثل: <span class="text-violet-300">المتحولة القولونية (Entamoeba coli)</span>.
+          </div>
+          <div class="p-2.5 bg-zinc-950/80 rounded-lg border border-zinc-800">
+            <span class="text-amber-300 font-bold">• تائهة (Erratic parasite):</span> تتواجد في عضو غريب لا تتواجد فيه عادةً، مثل: تواجد <span class="text-violet-300">السرمية الدودية (الحرقص) في المهبل</span> بدلاً من الأمعاء الغليظة.
+          </div>
+          <div class="p-2.5 bg-zinc-950/80 rounded-lg border border-zinc-800">
+            <span class="text-amber-300 font-bold">• عرضية (Accidental parasite):</span> توجد أحياناً في غير مضيفها الأساسي ويمكنها أن تكمل دورة حياتها، مثل: إصابة الإنسان بـ <span class="text-violet-300">ثنائية الفوهة الكلبية</span> (مضيفها الأساسي الكلاب).
+          </div>
+          <div class="p-2.5 bg-zinc-950/80 rounded-lg border border-zinc-800">
+            <span class="text-amber-300 font-bold">• نوعية (Specific parasites):</span> مهيأة للعيش في مضيف محدد وعضو محدد ولا تتواجد في مضيف آخر، مثل: <span class="text-violet-300">الشريطية العزلاء (Taenia saginata)</span> التي لا تصيب إلا الإنسان ولا تتواجد إلا في أمعائه الدقيقة.
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. طرق انتقال الطفيليات -->
+      <div class="p-4 bg-zinc-900/60 rounded-xl border border-amber-500/20 space-y-2">
+        <h3 class="text-amber-400 font-bold text-sm flex items-center gap-2"><span>🔄</span> 3. طرق انتقال العدوى الطفيلية:</h3>
+        <ul class="list-disc list-inside space-y-2 text-zinc-300">
+          <li><strong class="text-white">عن طريق الفم:</strong> هي <span class="text-amber-300">أكثر الطرق شيوعاً</span> وتحدث عبر الأغذية والمياه الملوثة بالأطوار المعدية.</li>
+          <li><strong class="text-white">عن طريق الجلد والأغشية المخاطية:</strong> مثل تغلغل اليرقة الفيلارية لدودة <span class="text-violet-300">(Strongyloides stercoralis)</span> في الجلد السليم للشخص الماشي حافياً.</li>
+          <li><strong class="text-white">من الأم للجنين (عبر المشيمة):</strong> مثل: <span class="text-violet-300">Toxoplasma gondii</span>، <span class="text-violet-300">Plasmodium species</span>، و <span class="text-violet-300">Trypanosoma cruzi</span>.</li>
+          <li><strong class="text-white">نقل الدم أو منتجاته:</strong> ينتقل عبره كل من <span class="text-violet-300">Plasmodium</span> و <span class="text-violet-300">Leishmania</span> و <span class="text-violet-300">Toxoplasma</span> (بينما لا تنتقل عبره أميبا اللثة <em>Entamoeba gingivalis</em>).</li>
+          <li><strong class="text-white">الاتصال الجنسي:</strong> مثل طفيلي المشعرات المهبلية <span class="text-violet-300">(Trichomonas vaginalis)</span>.</li>
+          <li><strong class="text-white">لدغة الحشرات:</strong> مثل انتشار الملاريا عبر <span class="text-amber-300">أنثى الأنفيل</span>، وداء النوم الإفريقي عبر <span class="text-amber-300">ذبابة تسي تسي</span>.</li>
+          <li><strong class="text-white">رذاذ الشخص المتكلم (الانتقال المباشر):</strong> مثل انتقال أميبا اللثة <span class="text-violet-300">(Entamoeba gingivalis)</span>.</li>
+        </ul>
+      </div>
+
+      <!-- 4. التسمية العلمية -->
+      <div class="p-4 bg-zinc-900/60 rounded-xl border border-violet-500/20 space-y-2">
+        <h3 class="text-violet-400 font-bold text-sm flex items-center gap-2"><span>🏷️</span> 4. نظام التسمية العلمية للطفيليات:</h3>
+        <ul class="list-disc list-inside space-y-1.5 text-zinc-300">
+          <li>يعتمد على <strong class="text-white">النظام الثنائي</strong> الذي اقترحه العالم <span class="text-amber-300">لينيوس (Linnaeus)</span>.</li>
+          <li>يكتب اسم <strong class="text-white">الجنس (Genus)</strong> بحرف كبير (Capital)، واسم <strong class="text-white">النوع (Species)</strong> بحرف صغير (small).</li>
+          <li><strong class="text-white">مصادر اشتقاق الأسماء العلمية:</strong> أسماء المكتشفين، الموطن الأصلي أو المنطقة الجغرافية، وحجم الطفيليات وشكلها (ولا علاقة للعمر الزمني للمضيف بذلك).</li>
+        </ul>
+      </div>
+
+    </div>
+  </aside>
+
+  <!-- ==================== المحتوى المركزي ==================== -->
+  <main class="max-w-3xl mx-auto w-full flex-grow p-4 md:p-6 z-10 flex flex-col justify-center">
+
+    <!-- ================= 1. شاشة ضبط الوقت (قبل البدء) ================= -->
+    <div id="timer-setup-card" class="cyber-card-gold-violet p-6 md:p-8 rounded-2xl border-2 border-amber-500/30 text-center space-y-6">
+      <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-violet-600/20 to-amber-500/20 border border-amber-400/40 flex items-center justify-center text-amber-400 text-3xl mx-auto shadow-inner">
+        ⏱️
+      </div>
+
+      <div>
+        <h2 class="text-lg md:text-xl font-black text-white">إعداد مؤقت الجلسة التكرارية</h2>
+        <p class="text-xs text-zinc-400 mt-1">حدد الوقت المخصص لإتمام مراجعة الـ 25 سؤالاً الخاصة بالجلسة الأولى</p>
+      </div>
+
+      <!-- أدوات التحكم بالدقائق والثواني -->
+      <div class="flex justify-center items-center gap-4 py-2">
+        <!-- الدقائق -->
+        <div class="flex flex-col items-center">
+          <label class="text-[10px] text-amber-400 font-bold mb-1">الدقائق</label>
+          <div class="flex items-center bg-zinc-950 rounded-xl border border-amber-500/40 p-1">
+            <button onclick="adjustTimeInput('minutes', 1)" class="w-8 h-8 rounded-lg bg-zinc-900 hover:bg-amber-500/20 text-amber-400 font-bold text-sm transition-all">+</button>
+            <input type="number" id="input-minutes" min="0" max="180" value="15" class="w-12 bg-transparent text-center font-mono font-bold text-base text-amber-300 focus:outline-none">
+            <button onclick="adjustTimeInput('minutes', -1)" class="w-8 h-8 rounded-lg bg-zinc-900 hover:bg-amber-500/20 text-amber-400 font-bold text-sm transition-all">-</button>
+          </div>
+        </div>
+
+        <span class="text-2xl font-black text-violet-400 mt-4">:</span>
+
+        <!-- الثواني -->
+        <div class="flex flex-col items-center">
+          <label class="text-[10px] text-violet-400 font-bold mb-1">الثواني</label>
+          <div class="flex items-center bg-zinc-950 rounded-xl border border-violet-500/40 p-1">
+            <button onclick="adjustTimeInput('seconds', 5)" class="w-8 h-8 rounded-lg bg-zinc-900 hover:bg-violet-500/20 text-violet-400 font-bold text-sm transition-all">+</button>
+            <input type="number" id="input-seconds" min="0" max="59" value="00" class="w-12 bg-transparent text-center font-mono font-bold text-base text-violet-300 focus:outline-none">
+            <button onclick="adjustTimeInput('seconds', -5)" class="w-8 h-8 rounded-lg bg-zinc-900 hover:bg-violet-500/20 text-violet-400 font-bold text-sm transition-all">-</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- الخيارات السريعة الجاهزة -->
+      <div class="flex justify-center gap-2 flex-wrap text-xs">
+        <button onclick="setPresetTime(5, 0)" class="px-3 py-1.5 rounded-lg bg-zinc-900 border border-zinc-800 hover:border-amber-400 text-zinc-300 transition-all">⚡ 5 دقائق</button>
+        <button onclick="setPresetTime(15, 0)" class="px-3 py-1.5 rounded-lg bg-zinc-900 border border-zinc-800 hover:border-amber-400 text-zinc-300 transition-all">🎯 15 دقيقة</button>
+        <button onclick="setPresetTime(30, 0)" class="px-3 py-1.5 rounded-lg bg-zinc-900 border border-zinc-800 hover:border-amber-400 text-zinc-300 transition-all">🧠 30 دقيقة</button>
+        <button onclick="setPresetTime(0, 0)" class="px-3 py-1.5 rounded-lg bg-zinc-900 border border-zinc-800 hover:border-violet-400 text-zinc-300 transition-all">♾️ بدون وقت</button>
+      </div>
+
+      <button onclick="startSessionWithTimer()" class="w-full py-3.5 bg-gradient-to-r from-violet-600 via-amber-500 to-amber-400 text-black font-black rounded-xl text-xs md:text-sm hover:opacity-95 transition-all shadow-lg shadow-amber-500/20">
+        🚀 ابدأ التحدي الآن
+      </button>
+    </div>
+
+    <!-- ================= 2. ساحة الكويز النشطة ================= -->
+    <div id="quiz-quiz-container" class="hidden space-y-6">
+      
+      <!-- شريط التقدم التفاعلي -->
+      <div class="space-y-2">
+        <div class="flex justify-between items-center text-xs text-zinc-400 font-medium">
+          <span class="flex items-center gap-1.5 text-amber-400 font-bold">
+            <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
+            <span>الأسئلة المنجزة</span>
+          </span>
+          <span class="font-mono text-violet-300 font-bold" id="quiz-queue-count">0 / 25</span>
+        </div>
+
+        <div class="w-full bg-zinc-950 h-2.5 rounded-full border border-zinc-800 overflow-hidden p-0.5">
+          <div id="quiz-progress-fill" class="progress-gold-violet h-full w-0 rounded-full transition-all duration-300 ease-out"></div>
+        </div>
+      </div>
+
+      <!-- بطاقة السؤال النشط -->
+      <div class="cyber-card-gold-violet p-6 md:p-8 rounded-2xl border-2 border-violet-900/40 relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-32 h-32 bg-amber-500/5 rounded-full blur-2xl pointer-events-none"></div>
+        <div class="absolute bottom-0 left-0 w-32 h-32 bg-violet-600/5 rounded-full blur-2xl pointer-events-none"></div>
+
+        <div id="quiz-active-area" class="space-y-6">
+          <!-- نص السؤال -->
+          <div class="p-5 bg-zinc-950/70 rounded-xl border border-amber-500/20 shadow-inner">
+            <span class="text-[10px] text-amber-400 font-bold block mb-1">السؤال الحالي:</span>
+            <p id="quiz-question-text" class="text-sm md:text-base font-bold text-gray-100 leading-relaxed"></p>
+          </div>
+
+          <!-- شبكة الخيارات -->
+          <div id="quiz-options-grid" class="grid grid-cols-1 gap-3"></div>
+
+          <!-- لوحة التفسير العلمي -->
+          <div id="quiz-feedback-panel" class="hidden p-5 rounded-xl text-xs md:text-sm transition-all duration-300"></div>
+        </div>
+
+        <!-- لوحة النجاح واكتمال الكويز -->
+        <div id="quiz-success-panel" class="hidden flex flex-col items-center justify-center py-8 text-center space-y-4">
+          <div class="w-16 h-16 rounded-2xl bg-amber-500/10 border border-amber-400/40 flex items-center justify-center text-amber-400 text-3xl shadow-lg shadow-amber-500/20 animate-bounce">
+            🏆
+          </div>
+          <div>
+            <h3 class="text-lg font-black text-white">تم إتمام الاختبار بنجاح متفوق!</h3>
+            <p class="text-xs text-zinc-400 mt-1">نجحت في حل جميع الأسئلة الـ 25 وتثبيت مفاهيم الجلسة الأولى في الوقت المحدد.</p>
+          </div>
+
+          <div class="grid grid-cols-3 gap-3 w-full max-w-sm pt-2">
+            <div class="p-3 bg-zinc-950 rounded-xl border border-zinc-800 text-center">
+              <span class="text-[9px] text-zinc-500 block">المحاولات</span>
+              <span id="stat-total-attempts" class="text-xs font-bold text-amber-400 font-mono">0</span>
+            </div>
+            <div class="p-3 bg-zinc-950 rounded-xl border border-zinc-800 text-center">
+              <span class="text-[9px] text-zinc-500 block">نسبة الدقة</span>
+              <span id="stat-accuracy" class="text-xs font-bold text-emerald-400 font-mono">100%</span>
+            </div>
+            <div class="p-3 bg-zinc-950 rounded-xl border border-zinc-800 text-center">
+              <span class="text-[9px] text-zinc-500 block">الوقت المستغرق</span>
+              <span id="stat-time-spent" class="text-xs font-bold text-violet-300 font-mono">00:00</span>
+            </div>
+          </div>
+
+          <button onclick="showSetupScreen()" class="mt-4 px-6 py-2.5 bg-gradient-to-r from-violet-600 to-amber-500 text-white font-black rounded-xl text-xs hover:opacity-90 transition-all shadow-lg shadow-violet-900/30">
+            🔄 إعداد جلسة جديدة
+          </button>
+        </div>
+
+        <!-- لوحة انتهاء الوقت (Timeout Panel) -->
+        <div id="quiz-timeout-panel" class="hidden flex flex-col items-center justify-center py-8 text-center space-y-4">
+          <div class="w-16 h-16 rounded-2xl bg-rose-500/10 border border-rose-500/40 flex items-center justify-center text-rose-400 text-3xl shadow-lg shadow-rose-950/50 animate-pulse">
+            ⏰
+          </div>
+          <div>
+            <h3 class="text-lg font-black text-rose-400">انتهى الوقت المخصص!</h3>
+            <p class="text-xs text-zinc-400 mt-1">حاول زيادة الوقت المحدد أو تحسين سرعة إجابتك في المرة القادمة.</p>
+          </div>
+
+          <button onclick="showSetupScreen()" class="mt-4 px-6 py-2.5 bg-gradient-to-r from-amber-500 to-rose-600 text-black font-black rounded-xl text-xs hover:opacity-90 transition-all shadow-lg shadow-amber-500/20">
+            🔄 إعادة التحدي وتعديل الوقت
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ==================== الفوتر ==================== -->
+  <footer class="bg-zinc-950/80 border-t border-zinc-900 py-3 text-center">
+    <p class="text-[10px] text-zinc-600">نظام التقييم التكراري المطور | أساسيات علم الطفيليات - الجلسة الأولى</p>
+  </footer>
+
+  <!-- ==================== هيكل بيانات الأسئلة (25 سؤالاً) ==================== -->
+  <script>
+    const QUIZ_DATA = {
+      title: "أساسيات علم الطفيليات (الجلسة الأولى)",
+      questions: [
+        {
+          id: "q1",
+          q: "1. تعد السرمية الدودية (الحرقص) في المهبل طفيليات:",
+          options: ["تائهة", "عرضية", "إجبارية", "اختيارية"],
+          correct: 0,
+          exp: "الطفيليات التائهة (Erratic parasite) هي التي تتواجد في عضو غريب لا تتواجد فيه عادةً، فالموطن الطبيعي للحرقص هو الأمعاء الغليظة وتواجدها في المهبل يعد تائهاً."
+        },
+        {
+          id: "q2",
+          q: "2. طفيليات تنتقل من الأم للجنين:",
+          options: ["Plasmodium species", "Trypanosoma cruzi", "Toxoplasma gondii", "كل ما سبق صحيح"],
+          correct: 3,
+          exp: "جميع هذه الطفيليات (الملاريا، المثقبيات الكروزية، والمقوسة القندية) لها القدرة على الانتقال عمودياً عبر المشيمة من الأم الحامل إلى الجنين."
+        },
+        {
+          id: "q3",
+          q: "3. تعرف العلاقة الغذائية التي تعود بالنفع على أحد الكائنين والضرر على الآخر بـ:",
+          options: ["التقايض (Mutualism)", "التطفل (Parasitism)", "المؤاكلة (Commensalism)", "التكافل العرضي"],
+          correct: 1,
+          exp: "التطفل (Parasitism) هو علاقة ينتفع فيها أحد الكائنين (الطفيل) بينما يلحق الضرر بالطرف الآخر (المضيف)."
+        },
+        {
+          id: "q4",
+          q: "4. كائن حي يعتمد في حياته وغذائه على كائن حي آخر يدعى المضيف هو:",
+          options: ["الطفيل (Parasite)", "المؤاكل", "الناقل الآلي", "المضيف النهائي"],
+          correct: 0,
+          exp: "الطفيل (Parasite) هو الكائن الحي الذي يعتمد في معيشته وغذائه على كائن آخر يسمى المضيف مسبباً له الأذى."
+        },
+        {
+          id: "q5",
+          q: "5. الطفيليات التي تعيش على السطح الخارجي لجسم المضيف دون أن تخترق أنسجته تعد طفيليات:",
+          options: ["داخلية (Endoparasite)", "إجبارية (Obligate parasite)", "خارجية (Ectoparasite)", "تائهة (Erratic parasite)"],
+          correct: 2,
+          exp: "الطفيليات الخارجية (Ectoparasites) هي التي تعيش على السطح الخارجي لجسم المضيف دون اختراق أنسجته الداخلية."
+        },
+        {
+          id: "q6",
+          q: "6. تعد الليشمانيا (Leishmania) مثالاً على الطفيليات:",
+          options: ["الخارجية", "الداخلية", "التائهة", "العرضية"],
+          correct: 1,
+          exp: "الليشمانيا (Leishmania) تعيش وتتكاثر داخل خلايا وأنسجة جسم المضيف (الخلايا البلعمية)، لذا تصنف كطفيليات داخلية (Endoparasite)."
+        },
+        {
+          id: "q7",
+          q: "7. الطفيليات التي تتواجد في عضو غريب لا تتواجد فيه عادةً تسمى:",
+          options: ["طفيليات نوعية", "طفيليات اختيارية", "طفيليات تائهة (Erratic parasite)", "طفيليات إجبارية"],
+          correct: 2,
+          exp: "الطفيليات التائهة (Erratic parasite) هي التي تضل طريقها وتتواجد في عضو غير مألوف لها داخل جسم المضيف."
+        },
+        {
+          id: "q8",
+          q: "8. أي مما يلي يُعد مثالاً على الطفيليات الإجبارية (Obligate parasite) التي لا يمكنها العيش إلا متطفلة؟",
+          options: ["المتحولة القولونية (Entamoeba coli)", "أنواع الملاريا (Plasmodium species)", "ثنائية الفوهة الكلبية", "الشريطية العزلاء"],
+          correct: 1,
+          exp: "أنواع الملاريا (Plasmodium species) هي المثال النموذجي للطفيليات الإجبارية التي تعتمد كلياً على التطفل ولا تستطيع العيش حرة."
+        },
+        {
+          id: "q9",
+          q: "9. كائنات غير ممرضة مؤاكلة تتواجد عادة في جسم العائل وتتحول إلى ممرضة ضمن ظروف خاصة (صحية، نفسية، بيئية):",
+          options: ["الطفيليات الإجبارية", "الطفيليات الاختيارية (Facultative parasite)", "الطفيليات النوعية", "الطفيليات الخارجية"],
+          correct: 1,
+          exp: "الطفيليات الاختيارية (Facultative parasites) تتعايش كمؤاكلة غير ممرضة في الحالة الطبيعية وتتحول إلى ممرضة عند ضعف مناعة العائل أو تغير الظروف."
+        },
+        {
+          id: "q10",
+          q: "10. تعد المتحولة القولونية (Entamoeba coli) مثالاً على الطفيليات:",
+          options: ["الإجبارية", "الاختيارية", "النوعية", "الخارجية"],
+          correct: 1,
+          exp: "المتحولة القولونية (Entamoeba coli) تتواجد عادة في الأمعاء كمؤاكل غير ممرض، وتعد مثالاً على الطفيليات الاختيارية."
+        },
+        {
+          id: "q11",
+          q: "11. طفيليات توجد أحياناً في غير مضيفها الأساسي ويمكنها أن تكمل دورة حياتها:",
+          options: ["طفيليات نوعية", "طفيليات عرضية (Accidental parasite)", "طفيليات إجبارية", "طفيليات تائهة"],
+          correct: 1,
+          exp: "الطفيليات العرضية (Accidental parasites) تصيب بالصدفة مضيفاً غير مضيفها الأساسي وتستطيع إكمال دورة حياتها فيه."
+        },
+        {
+          id: "q12",
+          q: "12. الإصابة بثنائية الفوهة الكلبية عند الإنسان (علماً أن مضيفها الأساسي هو الكلاب) تعد تطفلاً:",
+          options: ["نوعياً", "إجبارياً", "عرضياً", "تائهاً"],
+          correct: 2,
+          exp: "بما أن المضيف الأساسي هو الكلاب وإصابة الإنسان بها تحدث مصادفة مع إكمال دورة حياتها، فإنها تصنف كطفيليات عرضية (Accidental)."
+        },
+        {
+          id: "q13",
+          q: "13. الطفيليات المهيأة للعيش في مضيف محدد وعضو محدد ولا يمكنها التواجد في مضيف آخر هي:",
+          options: ["الطفيليات النوعية (Specific parasites)", "الطفيليات الاختيارية (Facultative parasites)", "الطفيليات العرضية (Accidental parasites)", "الطفيليات الخارجية (Ectoparasites)"],
+          correct: 0,
+          exp: "الطفيليات النوعية (Specific parasites) تمتلك تخصصاً عالياً يلزمها بمضيف محدد وعضو محدد فقط."
+        },
+        {
+          id: "q14",
+          q: "14. الطفيلي الذي لا يصيب إلا الإنسان ولا يتواجد إلا في أمعائه الدقيقة هو:",
+          options: ["الشريطية العزلاء (Taenia saginata)", "المتحولة القولونية (Entamoeba coli)", "ثنائية الفوهة الكلبية", "الليشمانيا (Leishmania)"],
+          correct: 0,
+          exp: "الشريطية العزلاء (Taenia saginata) هي طفيلي نوعي لا يتواجد طورها البالغ إلا في الأمعاء الدقيقة للإنسان حصراً."
+        },
+        {
+          id: "q15",
+          q: "15. نظام التسمية العلمية المعتمد للطفيليات هو النظام الثنائي الذي اقترحه العالم:",
+          options: ["لينيوس (Linnaeus)", "باستور (Pasteur)", "كوخ (Koch)", "داروين (Darwin)"],
+          correct: 0,
+          exp: "العالم كارل لينيوس (Linnaeus) هو واضع نظام التسمية الثنائية (Binomial nomenclature) المعتمد لتسمية الكائنات الحية."
+        },
+        {
+          id: "q16",
+          q: "16. في بنية الاسم العلمي للطفيلي، يكتب اسم الجنس (Genus) واسم النوع (Species) كالتالي:",
+          options: ["الجنس بحرف صغير، والنوع بحرف كبير", "الجنس بحرف كبير، والنوع بحرف صغير", "كلاهما بحرف كبير", "كلاهما بحرف صغير"],
+          correct: 1,
+          exp: "القاعدة العالمية في التسمية الثنائية تقضي بأن يبدأ اسم الجنس (Genus) بحرف كبير، بينما يكتب اسم النوع (Species) بحروف صغيرة."
+        },
+        {
+          id: "q17",
+          q: "17. العلاقة بين السوطيات الابتدائية في القناة الهضمية لحشرة الأرضة تصنف كعلاقة:",
+          options: ["تطفل (Parasitism)", "تقايض (Mutualism)", "مؤاكلة (Commensalism)", "عدوى ذاتية"],
+          correct: 1,
+          exp: "هي علاقة تقايض (Mutualism)؛ حيث تهضم السوطيات السليلوز لحشرة الأرضة، بينما توفر الأرضة المأوى والغذاء للسوطيات."
+        },
+        {
+          id: "q18",
+          q: "18. العلاقة التي يعتمد فيها أحد الكائنين على الآخر في الطعام والمسكن دون إحداث أي ضرر تسمى:",
+          options: ["تقايض", "تطفل", "تطفل إجباري", "مؤاكلة (Commensalism)"],
+          correct: 3,
+          exp: "المؤاكلة (Commensalism) هي انتفاع طرف بالمسكن والغذاء دون أن ينتفع المضيف أو يتضرر."
+        },
+        {
+          id: "q19",
+          q: "19. أكثر طرق انتقال الطفيليات شيوعاً وتحدث عن طريق الأغذية والمياه الملوثة بالأطوار المعدية هي:",
+          options: ["عن طريق الجلد", "عن طريق الفم", "الانتقال المباشر", "نقل الدم"],
+          correct: 1,
+          exp: "الانتقال عن طريق الفم (Oral route) عبر الماء والغذاء الملوث هو الطريق الأكثر شيوعاً للعدوى بالطفيليات."
+        },
+        {
+          id: "q20",
+          q: "20. تغلغل اليرقة الفيلارية لدودة (Strongyloides stercoralis) في الجلد السليم للشخص الماشي حافياً يُعد مثالاً للانتقال عن طريق:",
+          options: ["الفم", "الجلد والأغشية المخاطية", "الاتصال الجنسي", "رذاذ الكلام"],
+          correct: 1,
+          exp: "اليرقة الفيلارية لـ Strongyloides stercoralis تخترق الجلد السليم مباشرة عند المشي حافياً على تربة ملوثة."
+        },
+        {
+          id: "q21",
+          q: "21. كل الطفيليات التالية يمكن أن تنتقل عبر نقل الدم أو منتجاته ما عدا:",
+          options: ["Plasmodium species", "Leishmania species", "Toxoplasma species", "Entamoeba gingivalis"],
+          correct: 3,
+          exp: "أميبا اللثة (Entamoeba gingivalis) تعيش في الفم وتنتقل عبر الرذاذ أو التقبيل، ولا تتواجد في الدم لتنتقل عبره."
+        },
+        {
+          id: "q22",
+          q: "22. يعد طفيلي المشعرات المهبلية (Trichomonas vaginalis) مثالاً على انتقال الطفيليات عن طريق:",
+          options: ["لدغة الحشرات", "الاتصال الجنسي", "نقل الدم", "العدوى الذاتية"],
+          correct: 1,
+          exp: "المشعرات المهبلية (Trichomonas vaginalis) تنتقل بشكل رئيسي عن طريق الاتصال الجنسي المباشر."
+        },
+        {
+          id: "q23",
+          q: "23. تنتشر الملاريا عبر أنثى الأنفيل وداء النوم الإفريقي عبر ذبابة تسي تسي عن طريق:",
+          options: ["الاتصال الجنسي", "المآكل الملوثة", "لدغة الحشرات", "تغلغل الجلد السليم"],
+          correct: 2,
+          exp: "كل من أنثى بعوضة الأنفيل وذبابة تسي تسي تعملان كعوائل ناقلة تحقن الطفيليات عبر لدغة الحشرات."
+        },
+        {
+          id: "q24",
+          q: "24. تنتقل أميبا اللثة (Entamoeba gingivalis) بين الأشخاص عن طريق:",
+          options: ["رذاذ الشخص المتكلم (الانتقال المباشر)", "لدغ الحشرات", "تلوث مياه الشرب", "تغلغل الجلد"],
+          correct: 0,
+          exp: "تنتقل أميبا اللثة مباشرة من فم لآخر عبر رذاذ الشخص المتكلم أو التقبيل أو مشاركة أدوات الطعام."
+        },
+        {
+          id: "q25",
+          q: "25. كل ما يلي يُعد من مصادر اشتقاق الأسماء العلمية للطفيليات ما عدا:",
+          options: ["أسماء مكتشفي الطفيليات", "الموطن الأصلي أو المنطقة الجغرافية", "حجم الطفيليات وشكلها", "العمر الزمني للمضيف"],
+          correct: 3,
+          exp: "تشتق الأسماء العلمية من اسم المكتشف أو المنطقة الجغرافية أو الشكل والحجم، ولكن لا علاقة للعمر الزمني للمضيف بتسمية الطفيلي."
+        }
+      ]
+    };
+  </script>
+
+  <!-- ==================== المحرك البرمجي المطور ==================== -->
+  <script>
+    /*************************************************************************
+     * 1. الصوت والتفاعل اللمسي (Audio & Haptics):
+     *************************************************************************/
+    const AudioFX = {
+      ctx: null,
+      init() { if (!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)(); },
+      playCorrect() {
+        try {
+          this.init(); const ctx = this.ctx; const osc = ctx.createOscillator(); const gain = ctx.createGain();
+          osc.connect(gain); gain.connect(ctx.destination); osc.type = 'sine';
+          osc.frequency.setValueAtTime(523.25, ctx.currentTime); osc.frequency.setValueAtTime(659.25, ctx.currentTime + 0.1);
+          gain.gain.setValueAtTime(0.15, ctx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.35);
+          osc.start(); osc.stop(ctx.currentTime + 0.35);
+        } catch(e) {}
+      },
+      playIncorrect() {
+        try {
+          this.init(); const ctx = this.ctx; const osc = ctx.createOscillator(); const gain = ctx.createGain();
+          osc.connect(gain); gain.connect(ctx.destination); osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(110, ctx.currentTime); gain.gain.setValueAtTime(0.2, ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.4);
+          osc.start(); osc.stop(ctx.currentTime + 0.4);
+        } catch(e) {}
+      }
+    };
+
+    const tg = window.Telegram?.WebApp;
+    const HapticFX = {
+      triggerSuccess() { if (tg?.HapticFeedback) try { tg.HapticFeedback.notificationOccurred('success'); } catch(e){} },
+      triggerError() { if (tg?.HapticFeedback) try { tg.HapticFeedback.notificationOccurred('error'); } catch(e){} },
+      triggerSelection() { if (tg?.HapticFeedback) try { tg.HapticFeedback.impactOccurred('light'); } catch(e){} }
+    };
+
+    /*************************************************************************
+     * 2. متغيرات حالة الكويز والمؤقت الزمني:
+     *************************************************************************/
+    let quizQueue = [];
+    let originalQuizLength = 0;
+    let streakCount = 0;
+    let totalAttempts = 0;
+    let correctAttempts = 0;
+
+    let timerInterval = null;
+    let totalTimeAllocated = 0;
+    let timeRemaining = 0;
+    let isTimerEnabled = false;
+
+    document.addEventListener("DOMContentLoaded", () => {
+      document.getElementById("quiz-deck-title").innerText = QUIZ_DATA.title;
+
+      if (tg) {
+        try {
+          tg.ready(); tg.expand();
+          tg.setHeaderColor('#0b0b0f'); tg.setBackgroundColor('#0b0b0f');
+          const user = tg.initDataUnsafe?.user;
+          if (user) {
+            document.getElementById("user-welcome-msg").innerText = `مرحباً ${user.first_name || 'طالبنا العزيز'} • اختر الوقت وابدأ`;
+          }
+        } catch (e) {}
+      }
+    });
+
+    /*************************************************************************
+     * 3. إدارة التبويب الجانبي:
+     *************************************************************************/
+    function toggleSummaryDrawer() {
+      const drawer = document.getElementById("summary-drawer");
+      const backdrop = document.getElementById("summary-backdrop");
+      if (!drawer || !backdrop) return;
+
+      const isOpen = drawer.classList.contains("drawer-open");
+      if (isOpen) {
+        drawer.classList.remove("drawer-open");
+        backdrop.classList.add("hidden");
+      } else {
+        drawer.classList.add("drawer-open");
+        backdrop.classList.remove("hidden");
+        renderMath(drawer);
+      }
+      HapticFX.triggerSelection();
+    }
+
+    /*************************************************************************
+     * 4. إدارات المؤقت:
+     *************************************************************************/
+    function adjustTimeInput(type, change) {
+      const input = document.getElementById(type === 'minutes' ? 'input-minutes' : 'input-seconds');
+      if (!input) return;
+      let val = parseInt(input.value || 0) + change;
+      if (val < 0) val = 0;
+      if (type === 'minutes' && val > 180) val = 180;
+      if (type === 'seconds' && val > 59) val = 59;
+      input.value = val < 10 ? `0${val}` : val;
+      HapticFX.triggerSelection();
+    }
+
+    function setPresetTime(mins, secs) {
+      document.getElementById('input-minutes').value = mins < 10 ? `0${mins}` : mins;
+      document.getElementById('input-seconds').value = secs < 10 ? `0${secs}` : secs;
+      HapticFX.triggerSelection();
+    }
+
+    function startSessionWithTimer() {
+      const mins = parseInt(document.getElementById('input-minutes').value || 0);
+      const secs = parseInt(document.getElementById('input-seconds').value || 0);
+
+      totalTimeAllocated = (mins * 60) + secs;
+      timeRemaining = totalTimeAllocated;
+      isTimerEnabled = totalTimeAllocated > 0;
+
+      document.getElementById("timer-setup-card").classList.add("hidden");
+      document.getElementById("quiz-quiz-container").classList.remove("hidden");
+
+      const headerTimerBox = document.getElementById("header-timer-box");
+      if (isTimerEnabled) {
+        headerTimerBox.classList.remove("hidden");
+        headerTimerBox.classList.add("flex");
+        startTimerCountdown();
+      } else {
+        headerTimerBox.classList.add("hidden");
+      }
+
+      resetQuizSession();
+    }
+
+    function startTimerCountdown() {
+      clearInterval(timerInterval);
+      updateTimerUI();
+
+      timerInterval = setInterval(() => {
+        timeRemaining--;
+        updateTimerUI();
+
+        if (timeRemaining <= 0) {
+          clearInterval(timerInterval);
+          handleTimeout();
+        }
+      }, 1000);
+    }
+
+    function updateTimerUI() {
+      const display = document.getElementById("timer-display");
+      if (!display) return;
+
+      const m = Math.floor(timeRemaining / 60);
+      const s = timeRemaining % 60;
+      const formatted = `${m < 10 ? '0' + m : m}:${s < 10 ? '0' + s : s}`;
+      display.innerText = formatted;
+
+      if (timeRemaining <= 30 && isTimerEnabled) {
+        display.classList.add("text-rose-400", "animate-pulse");
+        display.classList.remove("text-amber-300");
+      } else {
+        display.classList.add("text-amber-300");
+        display.classList.remove("text-rose-400", "animate-pulse");
+      }
+    }
+
+    function handleTimeout() {
+      HapticFX.triggerError();
+      AudioFX.playIncorrect();
+
+      document.getElementById("quiz-active-area").classList.add("hidden");
+      document.getElementById("quiz-success-panel").classList.add("hidden");
+      document.getElementById("quiz-timeout-panel").classList.remove("hidden");
+    }
+
+    function showSetupScreen() {
+      clearInterval(timerInterval);
+      document.getElementById("timer-setup-card").classList.remove("hidden");
+      document.getElementById("quiz-quiz-container").classList.add("hidden");
+      document.getElementById("header-timer-box").classList.add("hidden");
+    }
+
+    /*************************************************************************
+     * 5. محرك الكويز والتكرار المطور:
+     *************************************************************************/
+    function resetQuizSession() {
+      quizQueue = JSON.parse(JSON.stringify(QUIZ_DATA.questions));
+      originalQuizLength = quizQueue.length;
+      streakCount = 0;
+      totalAttempts = 0;
+      correctAttempts = 0;
+
+      document.getElementById("streak-count").innerText = "0";
+      document.getElementById("quiz-active-area").classList.remove("hidden");
+      document.getElementById("quiz-success-panel").classList.add("hidden");
+      document.getElementById("quiz-timeout-panel").classList.add("hidden");
+
+      updateProgress();
+      renderCurrentQuestion();
+    }
+
+    function updateProgress() {
+      const completed = originalQuizLength - quizQueue.length;
+      const percent = originalQuizLength > 0 ? Math.min(100, Math.max(0, (completed / originalQuizLength) * 100)) : 0;
+      
+      const fillEl = document.getElementById("quiz-progress-fill");
+      if (fillEl) {
+        fillEl.style.width = `${percent}%`;
+      }
+      
+      const countEl = document.getElementById("quiz-queue-count");
+      if (countEl) {
+        countEl.innerText = `${completed} / ${originalQuizLength}`;
+      }
+    }
+
+    function renderCurrentQuestion() {
+      if (quizQueue.length === 0) {
+        clearInterval(timerInterval);
+        document.getElementById("quiz-active-area").classList.add("hidden");
+        document.getElementById("quiz-success-panel").classList.remove("hidden");
+        
+        document.getElementById("stat-total-attempts").innerText = totalAttempts;
+        const acc = totalAttempts > 0 ? Math.round((correctAttempts / totalAttempts) * 100) : 100;
+        document.getElementById("stat-accuracy").innerText = `${acc}%`;
+
+        const timeSpentSeconds = totalTimeAllocated - timeRemaining;
+        const m = Math.floor(timeSpentSeconds / 60);
+        const s = timeSpentSeconds % 60;
+        document.getElementById("stat-time-spent").innerText = isTimerEnabled ? `${m}:${s < 10 ? '0' + s : s}` : '∞';
+
+        HapticFX.triggerSuccess();
+        return;
+      }
+
+      const activeQ = quizQueue[0];
+      document.getElementById("quiz-question-text").innerText = activeQ.q;
+
+      const feedbackPanel = document.getElementById("quiz-feedback-panel");
+      feedbackPanel.classList.add("hidden");
+
+      const optionsContainer = document.getElementById("quiz-options-grid");
+      optionsContainer.innerHTML = "";
+
+      activeQ.options.forEach((optText, idx) => {
+        const btn = document.createElement("button");
+        btn.className = "quiz-option-btn w-full p-4 text-right text-xs md:text-sm font-medium rounded-xl text-gray-200 flex justify-between items-center";
+        btn.innerHTML = `<span>${optText}</span><span class="text-amber-500/50 text-[10px]">◀</span>`;
+        btn.onclick = () => handleAnswerSubmission(idx, activeQ, btn);
+        optionsContainer.appendChild(btn);
+      });
+
+      renderMath(document.getElementById("quiz-active-area"));
+    }
+
+    function handleAnswerSubmission(selectedIndex, currentQuestion, clickedBtn) {
+      totalAttempts++;
+      const allBtns = document.querySelectorAll(".quiz-option-btn");
+      allBtns.forEach(b => b.disabled = true);
+
+      const feedbackPanel = document.getElementById("quiz-feedback-panel");
+      feedbackPanel.classList.remove("hidden");
+
+      const isCorrect = selectedIndex === currentQuestion.correct;
+
+      if (isCorrect) {
+        correctAttempts++;
+        streakCount++;
+        AudioFX.playCorrect();
+        HapticFX.triggerSuccess();
+
+        clickedBtn.className = "w-full p-4 text-right text-xs md:text-sm font-medium rounded-xl border-2 border-emerald-500 bg-emerald-950/40 text-emerald-300 flex justify-between items-center";
+        
+        feedbackPanel.className = "p-5 rounded-xl text-xs md:text-sm bg-emerald-950/40 border border-emerald-500/40 text-emerald-300 space-y-2";
+        feedbackPanel.innerHTML = `
+          <div class="flex items-center gap-2 font-black text-emerald-400">
+            <span>✓ إجابة صحيحة ومتقنة!</span>
+          </div>
+          <p class="leading-relaxed text-zinc-300">${currentQuestion.exp}</p>
+          <button onclick="advanceQueue(true)" class="mt-2 px-5 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-black rounded-lg text-xs hover:opacity-90 transition-all">
+            التالي ➔
+          </button>
+        `;
+      } else {
+        streakCount = 0;
+        AudioFX.playIncorrect();
+        HapticFX.triggerError();
+
+        clickedBtn.className = "w-full p-4 text-right text-xs md:text-sm font-medium rounded-xl border-2 border-rose-500 bg-rose-950/40 text-rose-300 flex justify-between items-center";
+        
+        feedbackPanel.className = "p-5 rounded-xl text-xs md:text-sm bg-rose-950/40 border border-rose-500/40 text-rose-300 space-y-2";
+        feedbackPanel.innerHTML = `
+          <div class="flex items-center gap-2 font-black text-rose-400">
+            <span>✕ إجابة غير دقيقة!</span>
+          </div>
+          <p class="leading-relaxed text-zinc-300">${currentQuestion.exp}</p>
+          <p class="text-[10px] text-amber-400 font-bold">💡 نُقل السؤال إلى نهاية الطابور لتكراره وتأكيد حفظه.</p>
+          <button onclick="advanceQueue(false)" class="mt-2 px-5 py-2 bg-gradient-to-r from-rose-600 to-amber-600 text-white font-black rounded-lg text-xs hover:opacity-90 transition-all">
+            متابعة التكرار ➔
+          </button>
+        `;
+      }
+
+      document.getElementById("streak-count").innerText = streakCount;
+      renderMath(feedbackPanel);
+    }
+
+    function advanceQueue(wasCorrect) {
+      if (wasCorrect) {
+        quizQueue.shift();
+      } else {
+        const failedQ = quizQueue.shift();
+        quizQueue.push(failedQ);
+      }
+
+      updateProgress();
+      renderCurrentQuestion();
+    }
+
+    function renderMath(element) {
+      if (window.renderMathInElement && element) {
+        try {
+          window.renderMathInElement(element, {
+            delimiters: [
+              {left: "$$", right: "$$", display: true},
+              {left: "$", right: "$", display: false}
+            ],
+            throwOnError: false
+          });
+        } catch (e) {}
+      }
+    }
+  </script>
+</body>
+</html>
