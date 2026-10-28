@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>اختبار أسئلة الطفيليات الطبية</title>
+  
+  <!-- CDNs المعتمدة للتنسيق والهوية البصرية -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@800;900&family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- سكريبت تيليجرام لتطبيقات الويب المصغرة (TMA SDK) -->
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+  <!-- مكتبة المعادلات الرياضية والكيميائية KaTeX -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+
+  <style>
+    body {
+      font-family: 'IBM Plex Sans Arabic', sans-serif;
+      background-color: #0b0b0f !important;
+      color: #FFFFFF;
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+    
+    h1, h2, h3, h4, h5, h6, .cairo-font {
+      font-family: 'Cairo', sans-serif;
+      font-weight: 900;
+    }
+
+    :root {
+      --dominant-violet: #8B5CF6;
+      --dominant-gold: #F59E0B;
+      --gold-glow: rgba(245, 158, 11, 0.25);
+      --violet-glow: rgba(139, 92, 246, 0.25);
+    }
+
+    /* البطاقات الزجاجية المحسنة */
+    .cyber-card-gold-violet {
+      background: rgba(15, 15, 22, 0.8);
+      border: 1px solid rgba(245, 158, 11, 0.2);
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.45), 0 0 15px rgba(139, 92, 246, 0.08);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .cyber-card-gold-violet:hover {
+      border-color: rgba(245, 158, 11, 0.45);
+      box-shadow: 0 0 25px rgba(139, 92, 246, 0.25), 0 0 10px rgba(245, 158, 11, 0.2);
+    }
+
+    /* خيارات الإجابة */
+    .quiz-option-btn {
+      background: rgba(23, 23, 33, 0.7);
+      border: 1px solid rgba(139, 92, 246, 0.15);
+      transition: all 0.2s ease-in-out;
+    }
+    .quiz-option-btn:hover:not(:disabled) {
+      border-color: var(--dominant-gold);
+      background: rgba(245, 158, 11, 0.1);
+      box-shadow: 0 0 15px rgba(245, 158, 11, 0.15);
+      transform: translateY(-2px);
+    }
+
+    /* شريط التقدّم النيون */
+    .progress-gold-violet {
+      background: linear-gradient(90deg, #8B5CF6 0%, #D97706 50%, #F59E0B 100%);
+      box-shadow: 0 0 12px rgba(245, 158, 11, 0.4);
+    }
+
+    /* تحسين حقول الإدخال */
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    input[type="number"] {
+      -moz-appearance: textfield;
+    }
+
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #0b0b0f; }
+    ::-webkit-scrollbar-thumb { background: rgba(245, 158, 11, 0.3); border-radius: 3px; }
+  </style>
+</head>
+<body class="flex flex-col justify-between relative selection:bg-amber-500 selection:text-black">
+
+  <!-- ==================== الهيدر الرئيسي ==================== -->
+  <header class="border-b border-amber-500/20 bg-zinc-950/90 p-4 relative z-20">
+    <div class="max-w-4xl mx-auto flex flex-wrap justify-between items-center gap-3">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-violet-600 via-amber-500 to-amber-400 flex items-center justify-center shadow-lg shadow-amber-500/10 text-lg border border-amber-400/30">
+          🦠
+        </div>
+        <div>
+          <h1 id="quiz-deck-title" class="text-base md:text-lg font-black bg-gradient-to-r from-amber-200 via-violet-300 to-amber-400 bg-clip-text text-transparent">
+            جاري التحميل...
+          </h1>
+          <p id="user-welcome-msg" class="text-[11px] text-zinc-400">منصة الاختبارات الحركية المحددة بوقت</p>
+        </div>
+      </div>
+
+      <!-- أدوات التحكم والعدادات (بدون قسم الملخص) -->
+      <div class="flex items-center gap-2 md:gap-3">
+        <!-- العداد الزمني -->
+        <div id="header-timer-box" class="hidden items-center gap-1.5 bg-zinc-900/90 border border-amber-500/40 px-3 py-1.5 rounded-xl shadow-lg shadow-amber-500/5">
+          <span class="text-amber-400 text-xs animate-pulse">⏳</span>
+          <span id="timer-display" class="text-xs font-black text-amber-300 font-mono tracking-wider">00:00</span>
+        </div>
+
+        <!-- عداد الـ Streak -->
+        <div class="flex items-center gap-2 bg-zinc-900/90 border border-violet-500/40 px-3 py-1.5 rounded-xl shadow-lg shadow-violet-500/5">
+          <span class="text-amber-400 text-xs">🔥</span>
+          <div class="text-right">
+            <span class="text-[9px] text-zinc-500 block leading-none">التتابع</span>
+            <span id="streak-count" class="text-xs font-black text-violet-300 font-mono">0</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==================== المحتوى المركزي ==================== -->
+  <main class="max-w-3xl mx-auto w-full flex-grow p-4 md:p-6 z-10 flex flex-col justify-center">
+
+    <!-- ================= 1. شاشة ضبط الوقت (قبل البدء) ================= -->
+    <div id="timer-setup-card" class="cyber-card-gold-violet p-6 md:p-8 rounded-2xl border-2 border-amber-500/30 text-center space-y-6">
+      <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-violet-600/20 to-amber-500/20 border border-amber-400/40 flex items-center justify-center text-amber-400 text-3xl mx-auto shadow-inner">
+        ⏱️
+      </div>
+
+      <div>
+        <h2 class="text-lg md:text-xl font-black text-white">إعداد مؤقت الجلسة التكرارية</h2>
+        <p class="text-xs text-zinc-400 mt-1">حدد الوقت المخصص لإتمام مراجعة الـ 25 سؤالاً الخاصة بالطفيليات الطبية</p>
+      </div>
+
+      <!-- أدوات التحكم بالدقائق والثواني -->
+      <div class="flex justify-center items-center gap-4 py-2">
+        <!-- الدقائق -->
+        <div class="flex flex-col items-center">
+          <label class="text-[10px] text-amber-400 font-bold mb-1">الدقائق</label>
+          <div class="flex items-center bg-zinc-950 rounded-xl border border-amber-500/40 p-1">
+            <button onclick="adjustTimeInput('minutes', 1)" class="w-8 h-8 rounded-lg bg-zinc-900 hover:bg-amber-500/20 text-amber-400 font-bold text-sm transition-all">+</button>
+            <input type="number" id="input-minutes" min="0" max="180" value="15" class="w-12 bg-transparent text-center font-mono font-bold text-base text-amber-300 focus:outline-none">
+            <button onclick="adjustTimeInput('minutes', -1)" class="w-8 h-8 rounded-lg bg-zinc-900 hover:bg-amber-500/20 text-amber-400 font-bold text-sm transition-all">-</button>
+          </div>
+        </div>
+
+        <span class="text-2xl font-black text-violet-400 mt-4">:</span>
+
+        <!-- الثواني -->
+        <div class="flex flex-col items-center">
+          <label class="text-[10px] text-violet-400 font-bold mb-1">الثواني</label>
+          <div class="flex items-center bg-zinc-950 rounded-xl border border-violet-500/40 p-1">
+            <button onclick="adjustTimeInput('seconds', 5)" class="w-8 h-8 rounded-lg bg-zinc-900 hover:bg-violet-500/20 text-violet-400 font-bold text-sm transition-all">+</button>
+            <input type="number" id="input-seconds" min="0" max="59" value="00" class="w-12 bg-transparent text-center font-mono font-bold text-base text-violet-300 focus:outline-none">
+            <button onclick="adjustTimeInput('seconds', -5)" class="w-8 h-8 rounded-lg bg-zinc-900 hover:bg-violet-500/20 text-violet-400 font-bold text-sm transition-all">-</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- الخيارات السريعة الجاهزة -->
+      <div class="flex justify-center gap-2 flex-wrap text-xs">
+        <button onclick="setPresetTime(5, 0)" class="px-3 py-1.5 rounded-lg bg-zinc-900 border border-zinc-800 hover:border-amber-400 text-zinc-300 transition-all">⚡ 5 دقائق</button>
+        <button onclick="setPresetTime(15, 0)" class="px-3 py-1.5 rounded-lg bg-zinc-900 border border-zinc-800 hover:border-amber-400 text-zinc-300 transition-all">🎯 15 دقيقة</button>
+        <button onclick="setPresetTime(30, 0)" class="px-3 py-1.5 rounded-lg bg-zinc-900 border border-zinc-800 hover:border-amber-400 text-zinc-300 transition-all">🧠 30 دقيقة</button>
+        <button onclick="setPresetTime(0, 0)" class="px-3 py-1.5 rounded-lg bg-zinc-900 border border-zinc-800 hover:border-violet-400 text-zinc-300 transition-all">♾️ بدون وقت</button>
+      </div>
+
+      <button onclick="startSessionWithTimer()" class="w-full py-3.5 bg-gradient-to-r from-violet-600 via-amber-500 to-amber-400 text-black font-black rounded-xl text-xs md:text-sm hover:opacity-95 transition-all shadow-lg shadow-amber-500/20">
+        🚀 ابدأ التحدي الآن
+      </button>
+    </div>
+
+    <!-- ================= 2. ساحة الكويز النشطة ================= -->
+    <div id="quiz-quiz-container" class="hidden space-y-6">
+      
+      <!-- شريط التقدم التفاعلي -->
+      <div class="space-y-2">
+        <div class="flex justify-between items-center text-xs text-zinc-400 font-medium">
+          <span class="flex items-center gap-1.5 text-amber-400 font-bold">
+            <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
+            <span>الأسئلة المنجزة</span>
+          </span>
+          <span class="font-mono text-violet-300 font-bold" id="quiz-queue-count">0 / 25</span>
+        </div>
+
+        <div class="w-full bg-zinc-950 h-2.5 rounded-full border border-zinc-800 overflow-hidden p-0.5">
+          <div id="quiz-progress-fill" class="progress-gold-violet h-full w-0 rounded-full transition-all duration-300 ease-out"></div>
+        </div>
+      </div>
+
+      <!-- بطاقة السؤال النشط -->
+      <div class="cyber-card-gold-violet p-6 md:p-8 rounded-2xl border-2 border-violet-900/40 relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-32 h-32 bg-amber-500/5 rounded-full blur-2xl pointer-events-none"></div>
+        <div class="absolute bottom-0 left-0 w-32 h-32 bg-violet-600/5 rounded-full blur-2xl pointer-events-none"></div>
+
+        <div id="quiz-active-area" class="space-y-6">
+          <!-- نص السؤال -->
+          <div class="p-5 bg-zinc-950/70 rounded-xl border border-amber-500/20 shadow-inner">
+            <span class="text-[10px] text-amber-400 font-bold block mb-1">السؤال الحالي:</span>
+            <p id="quiz-question-text" class="text-sm md:text-base font-bold text-gray-100 leading-relaxed"></p>
+          </div>
+
+          <!-- شبكة الخيارات -->
+          <div id="quiz-options-grid" class="grid grid-cols-1 gap-3"></div>
+
+          <!-- لوحة التفسير العلمي -->
+          <div id="quiz-feedback-panel" class="hidden p-5 rounded-xl text-xs md:text-sm transition-all duration-300"></div>
+        </div>
+
+        <!-- لوحة النجاح واكتمال الكويز -->
+        <div id="quiz-success-panel" class="hidden flex flex-col items-center justify-center py-8 text-center space-y-4">
+          <div class="w-16 h-16 rounded-2xl bg-amber-500/10 border border-amber-400/40 flex items-center justify-center text-amber-400 text-3xl shadow-lg shadow-amber-500/20 animate-bounce">
+            🏆
+          </div>
+          <div>
+            <h3 class="text-lg font-black text-white">تم إتمام الاختبار بنجاح متفوق!</h3>
+            <p class="text-xs text-zinc-400 mt-1">نجحت في حل جميع الأسئلة الـ 25 وتثبيت مفاهيم الطفيليات الطبية.</p>
+          </div>
+
+          <div class="grid grid-cols-3 gap-3 w-full max-w-sm pt-2">
+            <div class="p-3 bg-zinc-950 rounded-xl border border-zinc-800 text-center">
+              <span class="text-[9px] text-zinc-500 block">المحاولات</span>
+              <span id="stat-total-attempts" class="text-xs font-bold text-amber-400 font-mono">0</span>
+            </div>
+            <div class="p-3 bg-zinc-950 rounded-xl border border-zinc-800 text-center">
+              <span class="text-[9px] text-zinc-500 block">نسبة الدقة</span>
+              <span id="stat-accuracy" class="text-xs font-bold text-emerald-400 font-mono">100%</span>
+            </div>
+            <div class="p-3 bg-zinc-950 rounded-xl border border-zinc-800 text-center">
+              <span class="text-[9px] text-zinc-500 block">الوقت المستغرق</span>
+              <span id="stat-time-spent" class="text-xs font-bold text-violet-300 font-mono">00:00</span>
+            </div>
+          </div>
+
+          <button onclick="showSetupScreen()" class="mt-4 px-6 py-2.5 bg-gradient-to-r from-violet-600 to-amber-500 text-white font-black rounded-xl text-xs hover:opacity-90 transition-all shadow-lg shadow-violet-900/30">
+            🔄 إعداد جلسة جديدة
+          </button>
+        </div>
+
+        <!-- لوحة انتهاء الوقت (Timeout Panel) -->
+        <div id="quiz-timeout-panel" class="hidden flex flex-col items-center justify-center py-8 text-center space-y-4">
+          <div class="w-16 h-16 rounded-2xl bg-rose-500/10 border border-rose-500/40 flex items-center justify-center text-rose-400 text-3xl shadow-lg shadow-rose-950/50 animate-pulse">
+            ⏰
+          </div>
+          <div>
+            <h3 class="text-lg font-black text-rose-400">انتهى الوقت المخصص!</h3>
+            <p class="text-xs text-zinc-400 mt-1">حاول زيادة الوقت المحدد أو تحسين سرعة إجابتك في المرة القادمة.</p>
+          </div>
+
+          <button onclick="showSetupScreen()" class="mt-4 px-6 py-2.5 bg-gradient-to-r from-amber-500 to-rose-600 text-black font-black rounded-xl text-xs hover:opacity-90 transition-all shadow-lg shadow-amber-500/20">
+            🔄 إعادة التحدي وتعديل الوقت
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ==================== الفوتر ==================== -->
+  <footer class="bg-zinc-950/80 border-t border-zinc-900 py-3 text-center">
+    <p class="text-[10px] text-zinc-600">نظام التقييم التكراري المطور | أسئلة الطفيليات الطبية</p>
+  </footer>
+
+  <!-- ==================== هيكل بيانات الأسئلة (25 سؤالاً) ==================== -->
+  <script>
+    const QUIZ_DATA = {
+      title: "أسئلة الطفيليات الطبية",
+      questions: [
+        {
+          id: "q1",
+          q: "1. نعالج بمركب الـ Daraprim:",
+          options: ["المقوسة القندية", "الجيارديا اللمبلية", "المثقبية الغمبية", "المتحولة القولونية"],
+          correct: 0,
+          exp: "يُستخدم مركب الدارابريم (Daraprim / Pyrimethamine) بالمشاركة مع السلفوناميدات كعلاج أساسي لداء المقوسات الناجم عن المقوسة القندية (Toxoplasma gondii)."
+        },
+        {
+          id: "q2",
+          q: "2. تعطى مشتقات الهيدروكسي تشينولين (Hydroxy chinolin derivate) لمعالجة:",
+          options: ["المتحولة الثنائية الهشة", "الجيارديا اللمبلية", "خافية الأبواغ الصغيرة", "القربية القولونية"],
+          correct: 0,
+          exp: "تعطى مشتقات الهيدروكسي تشينولين لمعالجة الإصابة بالمتحولة الثنائية الهشة (Dientamoeba fragilis)."
+        },
+        {
+          id: "q3",
+          q: "3. لا تفيد الطرق المناعية المصلية في الكشف عنه:",
+          options: ["الجيارديا اللمبلية", "المقوسة القندية", "خافية الأبواغ الصغيرة", "المتحولة الحالة للنسج"],
+          correct: 0,
+          exp: "الجيارديا اللمبلية لا تغزو الأنسجة بل تبقى في لمعة الأمعاء، لذلك لا تحرض استجابة مناعية مصلية قوية ولا تفيد الطرق المصلية في تشخيصها."
+        },
+        {
+          id: "q4",
+          q: "4. الخاطئ عن المتحولات الحالة للنسج:",
+          options: ["الطور الخامج الكيسة الناضجة تحوي 4 نوى", "تملك نوعين من الأتاريف", "الأشكال الكبيرة من الأتاريف تسبب خمج كامن", "تملك الكيسات نواة أو نواتين وعندما تصبح ناضجة تملك أربعة نوى"],
+          correct: 2,
+          exp: "الأشكال الكبيرة (Magna form) من أتاريف المتحولة الحالة للنسج هي الأشكال الغازية الممرضة التي تبتلع الكريات الحمر وتسبب الزحار الحاد، وليست مسؤولة عن الخمج الكامن (الذي تسببه الأشكال الصغيرة Minuta)."
+        },
+        {
+          id: "q5",
+          q: "5. طفيليات تنتقل من الأم للجنين:",
+          options: ["Plasmodium species", "Trypanosoma cruzi", "Toxoplasma gondii", "كل ما سبق صحيح"],
+          correct: 3,
+          exp: "جميع هذه الطفيليات (الملاريا، المثقبية الكروزية، والمقوسة القندية) قادرة على عبور المشيمة والانتقال من الأم الحامل إلى الجنين."
+        },
+        {
+          id: "q6",
+          q: "6. يعالج بإعطاء Suramin و Pentamidin و Melarsoprol:",
+          options: ["المثقبية الغمبية", "المثقبية الكروزية", "البابسية المتباعدة", "البابسية الدقيقة"],
+          correct: 0,
+          exp: "تُستخدم مركبات السورامين والبنتاميدين (في الطور الدموي اللمفاوي) والميلارسوبرول (في الطور العصبي) لعلاج داء النوم الإفريقي الناجم عن المثقبية الغمبية."
+        },
+        {
+          id: "q7",
+          q: "7. تعد السرمية الدودية (الحرقص) في المهبل:",
+          options: ["تائهة", "عرضية", "إجبارية", "اختيارية"],
+          correct: 0,
+          exp: "تواجد ديدان الحرقص في المهبل بدلاً من موطنها الطبيعي (الأمعاء الغليظة) يُصنف كتطفل تائه (Erratic parasite)."
+        },
+        {
+          id: "q8",
+          q: "8. تعد الكيسات الناضجة الحاوية على 4 نوى الطور الخامج لطفيلي:",
+          options: ["Entamoeba histolytica", "Entamoeba coli", "Dientamoeba fragilis", "Cryptosporidium parvum"],
+          correct: 0,
+          exp: "الطور الخامج للمتحولة الحالة للنسج (Entamoeba histolytica) هو الكيسة الناضجة الرباعية النوى (4 نوى)."
+        },
+        {
+          id: "q9",
+          q: "9. الطور الخامج للمتحولة الثنائية الهشة (Dientamoeba fragilis) هو:",
+          options: ["الكيسات الناضجة", "الأتاريف (Trophozoites)", "الكيسات البيضية", "اليرقات المؤطرة"],
+          correct: 1,
+          exp: "المتحولة الثنائية الهشة لا تملك طوراً كيسياً معروفاً، لذا فإن شكلها الإعاشي (الأتروفة Trophozoite) هو الطور الخامج."
+        },
+        {
+          id: "q10",
+          q: "10. تلعب بيوض ديدان السرمية الدودية (الحرقص) دوراً هاماً في النقل الآلي لأتاريف طفيلي:",
+          options: ["Dientamoeba fragilis", "Giardia lamblia", "Balantidium coli", "Cryptosporidium parvum"],
+          correct: 0,
+          exp: "نظراً لعدم وجود كيسات للمتحولة الثنائية الهشة (Dientamoeba fragilis)، فإن أتاريفها تنتقل محمية داخل بيوض ديدان الحرقص (Enterobius vermicularis)."
+        },
+        {
+          id: "q11",
+          q: "11. الطور الخامج للمتحولة القولونية (Entamoeba coli) هو الكيسات الناضجة التي تحوي غالباً:",
+          options: ["2 نواة", "4 نوى", "8 نوى", "16 نواة"],
+          correct: 2,
+          exp: "تتميز الكيسة الناضجة للمتحولة القولونية (Entamoeba coli) باحتوائها غالباً على 8 نوى، وبذلك تُفرق عن كيسة المتحولة الحالة للنسج التي تحوي 4 نوى."
+        },
+        {
+          id: "q12",
+          q: "12. الأشكال الكبيرة (Magna form) لأتاريف المتحولة الحالة للنسج تتميز بـ:",
+          options: ["قياسها 12-20 ميكرومتر وتسبب خمجاً كامناً", "وجود كريات دموية حمراء مبلعمة في فجواتها الاغتذائية وهي الشكل الممرض", "احتواؤها على الجراثيم فقط في فجواتها", "كونها أشكالاً متعايشة غير ممرضة"],
+          correct: 1,
+          exp: "الشكل الكبير (Magna) هو الطور الغازي الممرض للمتحولة الحالة للنسج، ويتميز بوجود كريات دم حمراء مبلعمة داخل هيولاه."
+        },
+        {
+          id: "q13",
+          q: "13. النوع غير الممرض من المتحولات المستقلة نسيجياً عن Entamoeba histolytica والمسؤول عن 90% من الانتشار هو:",
+          options: ["Entamoeba dispar", "Entamoeba coli", "Entamoeba gingivalis", "Endolimax nana"],
+          correct: 0,
+          exp: "المتحولة المتباينة (Entamoeba dispar) مطابقة شكلياً للمتحولة الحالة للنسج ولكنها غير ممرضة، وتشكل نحو 90% من الحالات المشخصة سابقاً."
+        },
+        {
+          id: "q14",
+          q: "14. تعطى مشتقات 5- خماسي نيترو الإيميدازول (مثل الفلاجيل / الميترونيدازول) لمعالجة داء:",
+          options: ["الجيارديات (Giardiasis)", "المقوسات", "خافية الأبواغ", "داء الفطور السطحية"],
+          correct: 0,
+          exp: "مركبات 5-نيترو إيميدازول (وعلى رأسها الميترونيدازول/الفلاجيل) هي العلاج النوعي الأول لداء الجيارديات (Giardiasis)."
+        },
+        {
+          id: "q15",
+          q: "15. طفيلي انتهازي ذاع صيته بعد انتشار داء الإيدز وتصل نسبة الوفيات الناجمة عنه إلى 7%:",
+          options: ["Cryptosporidium parvum", "Giardia lamblia", "Entamoeba coli", "Balantidium coli"],
+          correct: 0,
+          exp: "خافية الأبواغ الصغيرة (Cryptosporidium parvum) هي من أهم الطفيليات الانتهازية لدى مرضى الإيدز ومثبطي المناعة وتسبب إسهالات مائية شديدة ومهددة للحياة."
+        },
+        {
+          id: "q16",
+          q: "16. يكشف عن الكيسات البيضية لخافية الأبواغ الصغيرة (Cryptosporidium parvum) في البراز باستخدام طريقة تلوين:",
+          options: ["تسيل نيلسن المعدل الصامد للحمض (Modified Ziehl-Neelsen)", "أزرق الميثيلين", "السودان الثالث", "الكريستال البنفسجي"],
+          correct: 0,
+          exp: "تتميز الكيسات البيضية لخافية الأبواغ بأنها صامدة للحمض، لذا تُصبغ بصبغة تسيل نيلسن المعدلة فتظهر بلون أحمر وردي واضح على خلفية زرقاء أو خضراء."
+        },
+        {
+          id: "q17",
+          q: "17. العائل النهائي (Definitive Host) لطفيلي المقوسة القندية (Toxoplasma gondii) هو:",
+          options: ["الإنسان", "الهر وأفراد الفصيلة السنورية", "الأغنام والأبقار", "الخنازير"],
+          correct: 1,
+          exp: "القطط وأفراد الفصيلة السنورية هي العائل النهائي الوحيد للمقوسة القندية، حيث يحدث فيها التكاثر الجنسي وتطرح الكيسات البيضية في برازها."
+        },
+        {
+          id: "q18",
+          q: "18. الطور الخامج للمقوسة القندية (Toxoplasma gondii) عند انتقاله للإنسان والعوائل المتوسطة يشمل:",
+          options: ["الكيسات البيضية والكيسات النسيجية الكاذبة (الأقسومات الكيسية)", "الأتاريف فقط", "اليرقات الناضجة", "البيوض ذات الغلاف السميك"],
+          correct: 0,
+          exp: "يُصاب الإنسان بداء المقوسات إما بابتلاع الكيسات البيضية المطروحة من القطط أو بتناول اللحوم غير المطهية الحاوية على الكيسات النسيجية الكاذبة."
+        },
+        {
+          id: "q19",
+          q: "19. العلاج الكيميائي لداء المقوسات مثل البريميثامين والدارابريم يتميز بـ:",
+          options: ["القضاء على الكيسات النسيجية الكاذبة فقط", "التأثير فقط على الأتاريف واستبعادها دون التأثير على الكيسات النسيجية الكاذبة", "القضاء التام على جميع الأطوار بجرعة واحدة", "عدم فاعليته إطلاقاً"],
+          correct: 1,
+          exp: "الأدوية مثل البريميثامين (الدارابريم) تؤثر فقط على الأشكال المتكاثرة السريعة (الأتاريف/الحوينات السريعة) ولا تستطيع القضاء على الكيسات النسيجية الكاذبة الكامنة."
+        },
+        {
+          id: "q20",
+          q: "20. العائل الخازن الرئيسي لطفيلي القربية القولونية (Balantidium coli) هو:",
+          options: ["الخنزير", "القط", "الكلب", "الأغنام"],
+          correct: 0,
+          exp: "الخنزير هو المستودع والعائل الرئيسي لطفيلي القربية القولونية (Balantidium coli) ومنه تنتقل العدوى للإنسان."
+        },
+        {
+          id: "q21",
+          q: "21. يعد داء القربيات / الزحار البالانتيديومي (Balantidiasis) داءً مهنياً يصيب بشكل خاص:",
+          options: ["مربي الخنازير والأطباء البيطريين والجزارين", "مزارعي الخضروات", "عمال المناجم", "صيادي الأسماك"],
+          correct: 0,
+          exp: "نظراً لأن الخنازير هي العائل الخازن الرئيسي للقربية القولونية، فإن المرض ينتشر مهنياً بين مربي الخنازير والجزارين والأطباء البيطريين."
+        },
+        {
+          id: "q22",
+          q: "22. يشخص الفحص العياني للبراز في حالة الإصابة بالجياردية اللمبلية (Giardia lamblia) بـ:",
+          options: ["لون أخضر أو أصفر مسمر وقوام أملس ورائحة نافذة وكريهة جداً", "لون أسود داكن وقوام صلب", "لون أحمر قان مع قطع شريطية", "لون أبيض كلسي بلا رائحة"],
+          correct: 0,
+          exp: "تسبب الجياردية سوء امتصاص للدهون، مما يجعل البراز ذا لون أخضر أو أصفر مسمر وقوام دهني أملس مع رائحة كريهة ونافذة جداً."
+        },
+        {
+          id: "q23",
+          q: "23. عند تعذر علاج داء خافية الأبواغ الصغيرة بعلاج مزيل للمسبب، تعالج الأعراض كالإسهالات المائية باستخدام:",
+          options: ["الأوراليت (Oralite)", "السورامين", "البنسلين", "الكلوروكين"],
+          correct: 0,
+          exp: "بسبب عدم وجود دواء نوعي شافٍ تماماً لخافية الأبواغ، يعتمد التدبير العلاجي على تعويض السوائل والشوارد المفقودة في الإسهال المائي باستخدام محاليل الإماهة الفموية (الأوراليت Oralite)."
+        },
+        {
+          id: "q24",
+          q: "24. البحث المجهري عن أتاريف الجياردية (Trophozoites) في البراز الطازج عديم القوام يتطلب فحص العينة خلال زمن لا يتجاوز:",
+          options: ["ساعتين", "12 ساعة", "24 ساعة", "48 ساعة"],
+          correct: 0,
+          exp: "أتاريف الجياردية سريعة التلف وتفقد حركتها المميزة (حركة تساقط أوراق الخريف) خارج الجسم، لذلك يجب فحص البراز السائل الطازج خلال مدة لا تتجاوز ساعتين."
+        },
+        {
+          id: "q25",
+          q: "25. تستخدم كيتات مناعية معتمدة على طريقة مطورة عن الإليزا (ELISA) في البراز للكشف عن الكيسات البيضية لطفيلي:",
+          options: ["Cryptosporidium parvum", "Dientamoeba fragilis", "Entamoeba coli", "Enterobius vermicularis"],
+          correct: 0,
+          exp: "تُستخدم الكيتات المناعية المعتمدة على تقنية ELISA في عينات البراز للكشف السريع والدقيق عن المستضدات والكيسات البيضية لطفيلي خافية الأبواغ الصغيرة (Cryptosporidium parvum)."
+        }
+      ]
+    };
+  </script>
+
+  <!-- ==================== المحرك البرمجي المطور ==================== -->
+  <script>
+    /*************************************************************************
+     * 1. الصوت والتفاعل اللمسي (Audio & Haptics):
+     *************************************************************************/
+    const AudioFX = {
+      ctx: null,
+      init() { if (!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)(); },
+      playCorrect() {
+        try {
+          this.init(); const ctx = this.ctx; const osc = ctx.createOscillator(); const gain = ctx.createGain();
+          osc.connect(gain); gain.connect(ctx.destination); osc.type = 'sine';
+          osc.frequency.setValueAtTime(523.25, ctx.currentTime); osc.frequency.setValueAtTime(659.25, ctx.currentTime + 0.1);
+          gain.gain.setValueAtTime(0.15, ctx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.35);
+          osc.start(); osc.stop(ctx.currentTime + 0.35);
+        } catch(e) {}
+      },
+      playIncorrect() {
+        try {
+          this.init(); const ctx = this.ctx; const osc = ctx.createOscillator(); const gain = ctx.createGain();
+          osc.connect(gain); gain.connect(ctx.destination); osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(110, ctx.currentTime); gain.gain.setValueAtTime(0.2, ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.4);
+          osc.start(); osc.stop(ctx.currentTime + 0.4);
+        } catch(e) {}
+      }
+    };
+
+    const tg = window.Telegram?.WebApp;
+    const HapticFX = {
+      triggerSuccess() { if (tg?.HapticFeedback) try { tg.HapticFeedback.notificationOccurred('success'); } catch(e){} },
+      triggerError() { if (tg?.HapticFeedback) try { tg.HapticFeedback.notificationOccurred('error'); } catch(e){} },
+      triggerSelection() { if (tg?.HapticFeedback) try { tg.HapticFeedback.impactOccurred('light'); } catch(e){} }
+    };
+
+    /*************************************************************************
+     * 2. متغيرات حالة الكويز والمؤقت الزمني:
+     *************************************************************************/
+    let quizQueue = [];
+    let originalQuizLength = 0;
+    let streakCount = 0;
+    let totalAttempts = 0;
+    let correctAttempts = 0;
+
+    let timerInterval = null;
+    let totalTimeAllocated = 0;
+    let timeRemaining = 0;
+    let isTimerEnabled = false;
+
+    document.addEventListener("DOMContentLoaded", () => {
+      document.getElementById("quiz-deck-title").innerText = QUIZ_DATA.title;
+
+      if (tg) {
+        try {
+          tg.ready(); tg.expand();
+          tg.setHeaderColor('#0b0b0f'); tg.setBackgroundColor('#0b0b0f');
+          const user = tg.initDataUnsafe?.user;
+          if (user) {
+            document.getElementById("user-welcome-msg").innerText = `مرحباً ${user.first_name || 'طالبنا العزيز'} • اختر الوقت وابدأ`;
+          }
+        } catch (e) {}
+      }
+    });
+
+    /*************************************************************************
+     * 3. إدارات المؤقت:
+     *************************************************************************/
+    function adjustTimeInput(type, change) {
+      const input = document.getElementById(type === 'minutes' ? 'input-minutes' : 'input-seconds');
+      if (!input) return;
+      let val = parseInt(input.value || 0) + change;
+      if (val < 0) val = 0;
+      if (type === 'minutes' && val > 180) val = 180;
+      if (type === 'seconds' && val > 59) val = 59;
+      input.value = val < 10 ? `0${val}` : val;
+      HapticFX.triggerSelection();
+    }
+
+    function setPresetTime(mins, secs) {
+      document.getElementById('input-minutes').value = mins < 10 ? `0${mins}` : mins;
+      document.getElementById('input-seconds').value = secs < 10 ? `0${secs}` : secs;
+      HapticFX.triggerSelection();
+    }
+
+    function startSessionWithTimer() {
+      const mins = parseInt(document.getElementById('input-minutes').value || 0);
+      const secs = parseInt(document.getElementById('input-seconds').value || 0);
+
+      totalTimeAllocated = (mins * 60) + secs;
+      timeRemaining = totalTimeAllocated;
+      isTimerEnabled = totalTimeAllocated > 0;
+
+      document.getElementById("timer-setup-card").classList.add("hidden");
+      document.getElementById("quiz-quiz-container").classList.remove("hidden");
+
+      const headerTimerBox = document.getElementById("header-timer-box");
+      if (isTimerEnabled) {
+        headerTimerBox.classList.remove("hidden");
+        headerTimerBox.classList.add("flex");
+        startTimerCountdown();
+      } else {
+        headerTimerBox.classList.add("hidden");
+      }
+
+      resetQuizSession();
+    }
+
+    function startTimerCountdown() {
+      clearInterval(timerInterval);
+      updateTimerUI();
+
+      timerInterval = setInterval(() => {
+        timeRemaining--;
+        updateTimerUI();
+
+        if (timeRemaining <= 0) {
+          clearInterval(timerInterval);
+          handleTimeout();
+        }
+      }, 1000);
+    }
+
+    function updateTimerUI() {
+      const display = document.getElementById("timer-display");
+      if (!display) return;
+
+      const m = Math.floor(timeRemaining / 60);
+      const s = timeRemaining % 60;
+      const formatted = `${m < 10 ? '0' + m : m}:${s < 10 ? '0' + s : s}`;
+      display.innerText = formatted;
+
+      if (timeRemaining <= 30 && isTimerEnabled) {
+        display.classList.add("text-rose-400", "animate-pulse");
+        display.classList.remove("text-amber-300");
+      } else {
+        display.classList.add("text-amber-300");
+        display.classList.remove("text-rose-400", "animate-pulse");
+      }
+    }
+
+    function handleTimeout() {
+      HapticFX.triggerError();
+      AudioFX.playIncorrect();
+
+      document.getElementById("quiz-active-area").classList.add("hidden");
+      document.getElementById("quiz-success-panel").classList.add("hidden");
+      document.getElementById("quiz-timeout-panel").classList.remove("hidden");
+    }
+
+    function showSetupScreen() {
+      clearInterval(timerInterval);
+      document.getElementById("timer-setup-card").classList.remove("hidden");
+      document.getElementById("quiz-quiz-container").classList.add("hidden");
+      document.getElementById("header-timer-box").classList.add("hidden");
+    }
+
+    /*************************************************************************
+     * 4. محرك الكويز والتكرار المطور:
+     *************************************************************************/
+    function resetQuizSession() {
+      quizQueue = JSON.parse(JSON.stringify(QUIZ_DATA.questions));
+      originalQuizLength = quizQueue.length;
+      streakCount = 0;
+      totalAttempts = 0;
+      correctAttempts = 0;
+
+      document.getElementById("streak-count").innerText = "0";
+      document.getElementById("quiz-active-area").classList.remove("hidden");
+      document.getElementById("quiz-success-panel").classList.add("hidden");
+      document.getElementById("quiz-timeout-panel").classList.add("hidden");
+
+      updateProgress();
+      renderCurrentQuestion();
+    }
+
+    function updateProgress() {
+      const completed = originalQuizLength - quizQueue.length;
+      const percent = originalQuizLength > 0 ? Math.min(100, Math.max(0, (completed / originalQuizLength) * 100)) : 0;
+      
+      const fillEl = document.getElementById("quiz-progress-fill");
+      if (fillEl) {
+        fillEl.style.width = `${percent}%`;
+      }
+      
+      const countEl = document.getElementById("quiz-queue-count");
+      if (countEl) {
+        countEl.innerText = `${completed} / ${originalQuizLength}`;
+      }
+    }
+
+    function renderCurrentQuestion() {
+      if (quizQueue.length === 0) {
+        clearInterval(timerInterval);
+        document.getElementById("quiz-active-area").classList.add("hidden");
+        document.getElementById("quiz-success-panel").classList.remove("hidden");
+        
+        document.getElementById("stat-total-attempts").innerText = totalAttempts;
+        const acc = totalAttempts > 0 ? Math.round((correctAttempts / totalAttempts) * 100) : 100;
+        document.getElementById("stat-accuracy").innerText = `${acc}%`;
+
+        const timeSpentSeconds = totalTimeAllocated - timeRemaining;
+        const m = Math.floor(timeSpentSeconds / 60);
+        const s = timeSpentSeconds % 60;
+        document.getElementById("stat-time-spent").innerText = isTimerEnabled ? `${m}:${s < 10 ? '0' + s : s}` : '∞';
+
+        HapticFX.triggerSuccess();
+        return;
+      }
+
+      const activeQ = quizQueue[0];
+      document.getElementById("quiz-question-text").innerText = activeQ.q;
+
+      const feedbackPanel = document.getElementById("quiz-feedback-panel");
+      feedbackPanel.classList.add("hidden");
+
+      const optionsContainer = document.getElementById("quiz-options-grid");
+      optionsContainer.innerHTML = "";
+
+      activeQ.options.forEach((optText, idx) => {
+        const btn = document.createElement("button");
+        btn.className = "quiz-option-btn w-full p-4 text-right text-xs md:text-sm font-medium rounded-xl text-gray-200 flex justify-between items-center";
+        btn.innerHTML = `<span>${optText}</span><span class="text-amber-500/50 text-[10px]">◀</span>`;
+        btn.onclick = () => handleAnswerSubmission(idx, activeQ, btn);
+        optionsContainer.appendChild(btn);
+      });
+
+      renderMath(document.getElementById("quiz-active-area"));
+    }
+
+    function handleAnswerSubmission(selectedIndex, currentQuestion, clickedBtn) {
+      totalAttempts++;
+      const allBtns = document.querySelectorAll(".quiz-option-btn");
+      allBtns.forEach(b => b.disabled = true);
+
+      const feedbackPanel = document.getElementById("quiz-feedback-panel");
+      feedbackPanel.classList.remove("hidden");
+
+      const isCorrect = selectedIndex === currentQuestion.correct;
+
+      if (isCorrect) {
+        correctAttempts++;
+        streakCount++;
+        AudioFX.playCorrect();
+        HapticFX.triggerSuccess();
+
+        clickedBtn.className = "w-full p-4 text-right text-xs md:text-sm font-medium rounded-xl border-2 border-emerald-500 bg-emerald-950/40 text-emerald-300 flex justify-between items-center";
+        
+        feedbackPanel.className = "p-5 rounded-xl text-xs md:text-sm bg-emerald-950/40 border border-emerald-500/40 text-emerald-300 space-y-2";
+        feedbackPanel.innerHTML = `
+          <div class="flex items-center gap-2 font-black text-emerald-400">
+            <span>✓ إجابة صحيحة ومتقنة!</span>
+          </div>
+          <p class="leading-relaxed text-zinc-300">${currentQuestion.exp}</p>
+          <button onclick="advanceQueue(true)" class="mt-2 px-5 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-black rounded-lg text-xs hover:opacity-90 transition-all">
+            التالي ➔
+          </button>
+        `;
+      } else {
+        streakCount = 0;
+        AudioFX.playIncorrect();
+        HapticFX.triggerError();
+
+        clickedBtn.className = "w-full p-4 text-right text-xs md:text-sm font-medium rounded-xl border-2 border-rose-500 bg-rose-950/40 text-rose-300 flex justify-between items-center";
+        
+        feedbackPanel.className = "p-5 rounded-xl text-xs md:text-sm bg-rose-950/40 border border-rose-500/40 text-rose-300 space-y-2";
+        feedbackPanel.innerHTML = `
+          <div class="flex items-center gap-2 font-black text-rose-400">
+            <span>✕ إجابة غير دقيقة!</span>
+          </div>
+          <p class="leading-relaxed text-zinc-300">${currentQuestion.exp}</p>
+          <p class="text-[10px] text-amber-400 font-bold">💡 نُقل السؤال إلى نهاية الطابور لتكراره وتأكيد حفظه.</p>
+          <button onclick="advanceQueue(false)" class="mt-2 px-5 py-2 bg-gradient-to-r from-rose-600 to-amber-600 text-white font-black rounded-lg text-xs hover:opacity-90 transition-all">
+            متابعة التكرار ➔
+          </button>
+        `;
+      }
+
+      document.getElementById("streak-count").innerText = streakCount;
+      renderMath(feedbackPanel);
+    }
+
+    function advanceQueue(wasCorrect) {
+      if (wasCorrect) {
+        quizQueue.shift();
+      } else {
+        const failedQ = quizQueue.shift();
+        quizQueue.push(failedQ);
+      }
+
+      updateProgress();
+      renderCurrentQuestion();
+    }
+
+    function renderMath(element) {
+      if (window.renderMathInElement && element) {
+        try {
+          window.renderMathInElement(element, {
+            delimiters: [
+              {left: "$$", right: "$$", display: true},
+              {left: "$", right: "$", display: false}
+            ],
+            throwOnError: false
+          });
+        } catch (e) {}
+      }
+    }
+  </script>
+</body>
+</html>
