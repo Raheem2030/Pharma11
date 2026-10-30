@@ -135,12 +135,6 @@
                         <span>الكويز (30)</span>
                     </button>
                 </div>
-
-                <!-- Share / Telegram Action -->
-                <button onclick="shareOnTelegram()" title="مشاركة عبر تيليجرام" class="px-3 py-2 rounded-xl bg-sky-50 hover:bg-sky-100 active:scale-95 text-sky-600 border border-sky-200/80 font-heading font-bold text-xs flex items-center gap-1.5 transition-all">
-                    <i class="fa-brands fa-telegram text-base"></i>
-                    <span class="hidden xs:inline">تيليجرام</span>
-                </button>
             </div>
         </div>
     </header>
@@ -228,12 +222,6 @@
         </section>
 
     </main>
-
-    <!-- Toast Notification for Share/Copy Feedback -->
-    <div id="app-toast" class="fixed top-16 left-1/2 -translate-x-1/2 z-50 hidden bg-slate-900 text-white px-4 py-2.5 rounded-2xl shadow-xl text-xs font-heading font-bold flex items-center gap-2">
-        <i class="fa-solid fa-circle-check text-emerald-400"></i>
-        <span id="app-toast-text">تم النسخ بنجاح</span>
-    </div>
 
     <!-- Bottom Navigation Bar for Phones & Telegram Mini App -->
     <nav class="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200 shadow-[0_-4px_20px_rgba(15,23,42,0.06)] safe-nav-bottom pt-2 px-3">
@@ -950,41 +938,6 @@
         // ==========================================
         // TELEGRAM MINI APP & MOBILE INTEGRATION
         // ==========================================
-        function showToast(message) {
-            const toast = document.getElementById('app-toast');
-            const text = document.getElementById('app-toast-text');
-            text.textContent = message;
-            toast.classList.remove('hidden');
-            setTimeout(() => {
-                toast.classList.add('hidden');
-            }, 2600);
-        }
-
-        function shareOnTelegram() {
-            const answeredIds = Object.keys(userQuizAnswers);
-            let correctCount = 0;
-            answeredIds.forEach(id => {
-                const q = quizData.find(item => item.id === parseInt(id));
-                if (q && userQuizAnswers[id] === q.correct) correctCount++;
-            });
-
-            const shareText = answeredIds.length > 0
-                ? `حصلت على ${correctCount} من 30 في اختبار فارماكولوجيا الجهاز العصبي نظير الودي 💊! راجع الـ 50 فلاش كاردز والاختبار التفاعلي:`
-                : `تطبيق مراجعة فارماكولوجيا نظير الودي (50 بطاقة فلاش كاردز + 30 سؤال كويز تفاعلي مع التعليل) 💊:`;
-
-            const pageUrl = window.location.href;
-            const tgShareUrl = `https://t.me/share/url?url=${encodeURIComponent(pageUrl)}&text=${encodeURIComponent(shareText)}`;
-
-            if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initData) {
-                try {
-                    window.Telegram.WebApp.openTelegramLink(tgShareUrl);
-                    return;
-                } catch (e) {}
-            }
-
-            window.open(tgShareUrl, '_blank');
-        }
-
         function initTelegramMiniApp() {
             if (window.Telegram && window.Telegram.WebApp) {
                 const tg = window.Telegram.WebApp;
