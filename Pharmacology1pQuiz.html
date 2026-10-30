@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
+    <meta name="theme-color" content="#7C3AED">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="فارماكولوجيا نظير الودي">
+    <link rel="manifest" href='data:application/manifest+json,{"name":"فارماكولوجيا نظير الودي - بطاقات واختبار","short_name":"فارماكولوجي","lang":"ar","dir":"rtl","start_url":".","display":"standalone","orientation":"portrait-primary","background_color":"%23F8FAFC","theme_color":"%237C3AED","categories":["education","medical"]}'>
+    <title>فارماكولوجيا نظير الودي | البطاقات والاختبار</title>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts: Cairo & IBM Plex Sans Arabic -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@600;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- FontAwesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- KaTeX for Formulas -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+
+    <!-- Telegram Web App SDK -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        cairo: ['Cairo', 'sans-serif'],
+                        ibm: ['IBM Plex Sans Arabic', 'sans-serif'],
+                    }
+                }
+            }
+        };
+    </script>
+
+    <style>
+        :root {
+            --tg-safe-top: env(safe-area-inset-top, 0px);
+            --tg-safe-bottom: env(safe-area-inset-bottom, 0px);
+        }
+
+        * {
+            -webkit-tap-highlight-color: transparent;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            overscroll-behavior-y: contain;
+            font-family: 'IBM Plex Sans Arabic', sans-serif;
+            background-color: #F8FAFC;
+            color: #1E293B;
+        }
+
+        h1, h2, h3, h4, .font-heading {
+            font-family: 'Cairo', sans-serif;
+        }
+
+        /* Hide scrollbar for Chrome, Safari and Opera in filter bars */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .safe-top {
+            padding-top: calc(var(--tg-safe-top) + 0.5rem);
+        }
+
+        .safe-bottom {
+            padding-bottom: calc(var(--tg-safe-bottom) + 5.5rem);
+        }
+
+        .safe-nav-bottom {
+            padding-bottom: calc(var(--tg-safe-bottom) + 0.65rem);
+        }
+
+        .flashcard-answer {
+            display: none;
+        }
+
+        .flashcard-card.open .flashcard-answer {
+            display: block;
+            animation: slideDown 0.22s ease-out;
+        }
+
+        .flashcard-card.open .chevron-icon {
+            transform: rotate(180deg);
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="min-h-screen safe-bottom selection:bg-violet-600 selection:text-white">
+
+    <!-- Top Sticky App Bar (Optimized for Mobile & Telegram Mini App) -->
+    <header class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-sm safe-top">
+        <div class="max-w-4xl mx-auto px-3.5 py-2.5 flex items-center justify-between gap-2">
+            <!-- Brand Title -->
+            <div class="flex items-center gap-2.5">
+                <div class="w-10 h-10 rounded-2xl bg-violet-100 text-violet-700 flex items-center justify-center shadow-inner shrink-0">
+                    <i class="fa-solid fa-staff-snake text-lg"></i>
+                </div>
+                <div>
+                    <h1 class="font-heading font-extrabold text-sm sm:text-base text-slate-900 leading-tight">فارماكولوجيا نظير الودي</h1>
+                    <div class="flex items-center gap-1.5 text-[11px] text-slate-500 font-medium">
+                        <span class="inline-block w-2 h-2 rounded-full bg-emerald-500"></span>
+                        <span id="tg-user-badge">تطبيق مراجعة تفاعلي للموبايل وتيليجرام</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Desktop Switcher & Telegram Share Button -->
+            <div class="flex items-center gap-1.5">
+                <div class="hidden sm:flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200">
+                    <button onclick="switchTab('flashcards')" data-tab="flashcards" class="tab-btn active px-3.5 py-1.5 rounded-lg font-heading font-bold text-xs transition-all flex items-center gap-1.5 bg-violet-600 text-white shadow-sm">
+                        <i class="fa-solid fa-layer-group"></i>
+                        <span>الفلاش كاردز (50)</span>
+                    </button>
+                    <button onclick="switchTab('quiz')" data-tab="quiz" class="tab-btn px-3.5 py-1.5 rounded-lg font-heading font-bold text-xs transition-all flex items-center gap-1.5 text-slate-600 hover:text-violet-700">
+                        <i class="fa-solid fa-circle-check"></i>
+                        <span>الكويز (30)</span>
+                    </button>
+                </div>
+
+                <!-- Share / Telegram Action -->
+                <button onclick="shareOnTelegram()" title="مشاركة عبر تيليجرام" class="px-3 py-2 rounded-xl bg-sky-50 hover:bg-sky-100 active:scale-95 text-sky-600 border border-sky-200/80 font-heading font-bold text-xs flex items-center gap-1.5 transition-all">
+                    <i class="fa-brands fa-telegram text-base"></i>
+                    <span class="hidden xs:inline">تيليجرام</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="max-w-4xl mx-auto px-3.5 pt-4">
+
+        <!-- ========================================== -->
+        <!-- TAB 1: FLASHCARDS (50 CARDS)               -->
+        <!-- ========================================== -->
+        <section id="view-flashcards" class="space-y-4">
+            <!-- Control Bar -->
+            <div class="bg-white rounded-2xl p-3.5 border border-slate-200 shadow-sm flex flex-wrap items-center justify-between gap-2">
+                <div class="flex items-center gap-2">
+                    <span class="px-2.5 py-1 rounded-lg bg-violet-100 text-violet-800 font-heading font-bold text-xs">
+                        <i class="fa-solid fa-clone ml-1"></i> <span id="fc-count-badge">50</span> بطاقة
+                    </span>
+                    <span class="text-xs text-slate-500 font-medium">اضغط على أي بطاقة لإظهار أو إخفاء الجواب</span>
+                </div>
+                <div class="flex items-center gap-1.5 w-full sm:w-auto justify-end">
+                    <button onclick="toggleAllFlashcards(true)" class="flex-1 sm:flex-initial justify-center px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-violet-50 hover:text-violet-700 active:scale-95 text-slate-700 font-heading font-bold text-xs flex items-center gap-1.5 transition">
+                        <i class="fa-solid fa-eye text-violet-600"></i> فتح الكل
+                    </button>
+                    <button onclick="toggleAllFlashcards(false)" class="flex-1 sm:flex-initial justify-center px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-rose-50 hover:text-rose-700 active:scale-95 text-slate-700 font-heading font-bold text-xs flex items-center gap-1.5 transition">
+                        <i class="fa-solid fa-eye-slash text-rose-500"></i> طي الكل
+                    </button>
+                </div>
+            </div>
+
+            <!-- Horizontal Scrollable Category Filter -->
+            <div id="flashcard-filters" class="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-1"></div>
+
+            <!-- Flashcards Grid -->
+            <div id="flashcards-container" class="grid grid-cols-1 md:grid-cols-2 gap-3.5"></div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- TAB 2: INTERACTIVE QUIZ (30 MCQs)          -->
+        <!-- ========================================== -->
+        <section id="view-quiz" class="hidden space-y-4">
+            <!-- Live Score & Action Bar -->
+            <div class="bg-white rounded-2xl p-3.5 border border-slate-200 shadow-sm space-y-3">
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                    <div class="flex items-center gap-2">
+                        <div class="w-8 h-8 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center">
+                            <i class="fa-solid fa-trophy text-sm"></i>
+                        </div>
+                        <div>
+                            <h2 class="font-heading font-bold text-sm text-slate-900">بنك الأسئلة التفاعلي (30 MCQ)</h2>
+                            <p class="text-[11px] text-slate-500">تصحيح فوري مع التعليل الفارماكولوجي لكل سؤال</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-1.5 w-full sm:w-auto justify-end">
+                        <button onclick="revealAllQuizAnswers()" class="flex-1 sm:flex-initial justify-center px-3 py-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 active:scale-95 text-emerald-700 border border-emerald-200 font-heading font-bold text-xs flex items-center gap-1.5 transition">
+                            <i class="fa-solid fa-check-double"></i> حل الكل
+                        </button>
+                        <button onclick="resetQuiz()" class="flex-1 sm:flex-initial justify-center px-3 py-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 active:scale-95 text-rose-700 border border-rose-200 font-heading font-bold text-xs flex items-center gap-1.5 transition">
+                            <i class="fa-solid fa-rotate-right"></i> تصفير
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 3 Compact Stats Pills -->
+                <div class="grid grid-cols-3 gap-2 pt-1">
+                    <div class="bg-slate-50 border border-slate-200/80 rounded-xl p-2 text-center">
+                        <div class="text-[11px] font-heading font-bold text-slate-500">تمت الإجابة</div>
+                        <div id="quiz-answered" class="font-heading font-extrabold text-base sm:text-lg text-violet-700">0 / 30</div>
+                    </div>
+                    <div class="bg-emerald-50/60 border border-emerald-200/80 rounded-xl p-2 text-center">
+                        <div class="text-[11px] font-heading font-bold text-emerald-700">إجابة صحيحة</div>
+                        <div id="quiz-correct" class="font-heading font-extrabold text-base sm:text-lg text-emerald-600">0</div>
+                    </div>
+                    <div class="bg-amber-50/60 border border-amber-200/80 rounded-xl p-2 text-center">
+                        <div class="text-[11px] font-heading font-bold text-amber-700">النتيجة المئوية</div>
+                        <div id="quiz-percent" class="font-heading font-extrabold text-base sm:text-lg text-amber-600">0%</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Horizontal Scrollable Section Filter -->
+            <div id="quiz-filters" class="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-1"></div>
+
+            <!-- Quiz Questions List -->
+            <div id="quiz-container" class="space-y-3.5"></div>
+        </section>
+
+    </main>
+
+    <!-- Toast Notification for Share/Copy Feedback -->
+    <div id="app-toast" class="fixed top-16 left-1/2 -translate-x-1/2 z-50 hidden bg-slate-900 text-white px-4 py-2.5 rounded-2xl shadow-xl text-xs font-heading font-bold flex items-center gap-2">
+        <i class="fa-solid fa-circle-check text-emerald-400"></i>
+        <span id="app-toast-text">تم النسخ بنجاح</span>
+    </div>
+
+    <!-- Bottom Navigation Bar for Phones & Telegram Mini App -->
+    <nav class="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200 shadow-[0_-4px_20px_rgba(15,23,42,0.06)] safe-nav-bottom pt-2 px-3">
+        <div class="max-w-md mx-auto grid grid-cols-2 gap-2.5">
+            <button onclick="switchTab('flashcards')" data-tab="flashcards" class="tab-btn active py-2.5 px-4 rounded-2xl font-heading font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all bg-violet-600 text-white shadow-md shadow-violet-500/20">
+                <i class="fa-solid fa-clone text-sm"></i>
+                <span>الفلاش كاردز (50)</span>
+            </button>
+            <button onclick="switchTab('quiz')" data-tab="quiz" class="tab-btn py-2.5 px-4 rounded-2xl font-heading font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all bg-slate-100 text-slate-600">
+                <i class="fa-solid fa-clipboard-question text-sm"></i>
+                <span>الكويز (30 سؤال)</span>
+            </button>
+        </div>
+    </nav>
+
+    <script>
+        // ==========================================
+        // DATA 1: ALL 50 FLASHCARDS
+        // ==========================================
+        const flashcardsData = [
+            // القسم 1: الأهداف الدوائية والمستقبلات (1 - 6)
+            { id: 1, cat: "1. الأهداف والمستقبلات", accent: "purple", icon: "fa-bullseye",
+              q: "ما هو «الهدف الدوائي» (Pharmacological Target) وما هي أنواعه الأربعة الرئيسية؟",
+              a: "هو الكيان الكيميائي الذي يرتبط به الدواء أولاً داخل الجسم لإحداث تأثير دوائي. أنواعه الأربعة: المستقبلات، القنوات الأيونية، الإنزيمات، والنواقل الجزيئية.",
+              exp: "تعمل الأدوية عبر استهداف جزيئات حيوية محددة؛ والأهداف الأربعة هي الركائز الأساسية التي تنظم عمل الخلايا والأنسجة." },
+            { id: 2, cat: "1. الأهداف والمستقبلات", accent: "purple", icon: "fa-satellite-dish",
+              q: "عرّف المستقبلات الدوائية (Receptors) وأين تتوضع في الخلية؟",
+              a: "هي جزيئات بروتينية متخصصة مستهدفة، تتواجد غالباً على سطح الخلية (بجزء خارج خلوي وآخر داخل خلوي) أو داخل الخلية.",
+              exp: "تعمل كأجهزة استقبال للرابط الكيميائي (اللجين) ونقل الإشارة الكيميائية إلى استجابة حيوية داخل الخلية." },
+            { id: 3, cat: "1. الأهداف والمستقبلات", accent: "emerald", icon: "fa-layer-group",
+              q: "ما هي الأنواع الأربعة الرئيسية للمستقبلات الدوائية؟",
+              a: "1. القنوات الأيونية ذات البوابة اللجائندية، 2. المستقبلات المقترنة بالبروتين G (GPCR)، 3. المستقبلات المرتبطة بالإنزيمات، 4. المستقبلات داخل الخلوية.",
+              exp: "تختلف هذه العوائل في سرعة الاستجابة، وآلية نقل الإشارة الخلوية، ونوع المراسيل الثانوية المستخدمة." },
+            { id: 4, cat: "1. الأهداف والمستقبلات", accent: "cyan", icon: "fa-bolt",
+              q: "لماذا تُعد القنوات الأيونية ذات البوابة اللجائندية أسرع المستقبلات من حيث بدء الاستجابة؟",
+              a: "لأنها لا تحتاج إلى مراسيل ثانوية (Second messengers)؛ فتح المسام وتدفق الأيونات يحدث فور ارتباط اللجين.",
+              exp: "ارتباط الناقل بموقعه خارج الخلية يغير شكل القناة مباشرة فيسمح بمرور الأيونات (مثل الصوديوم) وزوال الاستقطاب خلال أجزاء من المليثانية." },
+            { id: 5, cat: "1. الأهداف والمستقبلات", accent: "cyan", icon: "fa-plug-circle-bolt",
+              q: "ما آلية عمل المستقبل النيكوتيني ($nAChR$) وما الأيون المسؤول عن تأثيره؟",
+              a: "يرتبط الأستيل كولين بالجزء الخارجي للمستقبل، فيفتح القناة ليسمح بتدفق أيونات الصوديوم ($Na^+$) لداخل الخلية محدثاً زوال استقطاب (Depolarization).",
+              exp: "دخول الصوديوم الموجب يقلل السلبية داخل الخلية مما يسبب استثارة عصبية أو تقلصاً عضلياً حسب نسيج العضو الهدف." },
+            { id: 6, cat: "1. الأهداف والمستقبلات", accent: "amber", icon: "fa-gears",
+              q: "كيف يعمل المستقبل المقترن بالبروتين G (GPCR) في حالة الراحة مقارنة بحالة التفعيل؟",
+              a: "في حالة الراحة يكون المستقبل منفصلاً تماماً عن البروتين G. عند ارتباط اللجين بالناحية خارج الخلوية يتفعل البروتين G.",
+              exp: "البروتين G هو وسيط الإشارة الخلوية؛ تفعيله ينشط إنزيمات أو قنوات تحفز تشكيل مراسيل ثانوية داخل الخلية." },
+
+            // القسم 2: بروتينات G الإشارية (7 - 10)
+            { id: 7, cat: "2. بروتينات G الإشارية", accent: "emerald", icon: "fa-arrow-up-right-dots",
+              q: "ما هي آلية عمل والتأثير الخلوي لبروتين G المنبه ($G_s$)؟",
+              a: "يفعل إنزيم الأدينيليل سيكلاز (Adenylyl cyclase)، مما يحول $ATP$ إلى $cAMP$ (مرسال ثانوي)، فيزيد دخول الكالسيوم أو يفعل الإنزيمات.",
+              exp: "يُستخدم هذا المسار لزيادة الفعالية الحيوية؛ ومثاله تفعيل مستقبلات بيتا ($\\beta$) بتأثير الأدرينالين لزيادة ضربات القلب." },
+            { id: 8, cat: "2. بروتينات G الإشارية", accent: "rose", icon: "fa-arrow-down-wide-short",
+              q: "ما هي آلية عمل والتأثير الخلوي لبروتين G المثبط ($G_i$)؟",
+              a: "يثبط إنزيم الأدينيليل سيكلاز (Adenylyl cyclase)، فينقص تحول $ATP$ إلى $cAMP$، وينقص دخول الكالسيوم وتفتح قنوات البوتاسيوم.",
+              exp: "انخفاض $cAMP$ يؤدي لتثبيط النشاط الخلوي وفرط استقطاب؛ ومثاله تفعيل مستقبلات $M_2$ بالأستيل كولين لإبطاء القلب." },
+            { id: 9, cat: "2. بروتينات G الإشارية", accent: "purple", icon: "fa-code-branch",
+              q: "ما الإنزيم الذي يفعله بروتين $G_q$ وما هما المرسالان الثانويان الناتجان عنه؟",
+              a: "يفعل إنزيم الفوسفوليباز C (Phospholipase C)، فيستحدث مرسالين ثانويين هما: إينوزيتول ثلاثي الفوسفات ($IP_3$) وثنائي أسيل الغليسيرول ($DAG$).",
+              exp: "$IP_3$ يحرر الكالسيوم المخزون بالشبكة الهيولية، و$DAG$ مع الكالسيوم يفعلان بروتين كيناز C ($PKC$) لبدء شلال الفسفرة." },
+            { id: 10, cat: "2. بروتينات G الإشارية", accent: "cyan", icon: "fa-table-columns",
+              q: "أي المستقبلات الموسكارينية تقترن ببروتين $G_q$ وأيها تقترن ببروتين $G_i$؟",
+              a: "المستقبلات ($M_1, M_3, M_5$) تقترن ببروتين $G_q$. والمستقبلات ($M_2, M_4$) تقترن ببروتين $G_i$.",
+              exp: "النمط الفردي ($1,3,5$) ينشط الكالسيوم عبر $IP_3/DAG$، بينما النمط الزوجي ($2,4$) يثبط $cAMP$ ويفتح قنوات البوتاسيوم." },
+
+            // القسم 3: تنظيم الجهاز العصبي (11 - 14)
+            { id: 11, cat: "3. تنظيم الجهاز العصبي", accent: "cyan", icon: "fa-sitemap",
+              q: "ما هي مكونات القسم الصادر من الجملة العصبية المحيطية (PNS)؟",
+              a: "يتكون من الجملة العصبية الجسدية والجملة العصبية المستقلة (التي تضم: الودية، نظيرة الودية، والجملة المعوية).",
+              exp: "الجسدية تتحكم بالعضلات الإرادية، بينما المستقلة تنظم الأعضاء اللاإرادية والأحشاء." },
+            { id: 12, cat: "3. تنظيم الجهاز العصبي", accent: "purple", icon: "fa-circle-nodes",
+              q: "ما الفرق بين أجسام خلايا العصبونات قبل العقدية وبعد العقدية في الجهاز العصبي المستقل؟",
+              a: "قبل العقدية: تتوضع أجسامها داخل الجهاز العصبي المركزي (CNS). بعد العقدية: تتوضع أجسامها داخل العقد العصبية المحيطية.",
+              exp: "تنقل الألياف قبل العقدية الإشارة من الدماغ/النخاع إلى العقدة، بينما تنقل الألياف بعد العقدية الإشارة من العقدة إلى العضو الهدف." },
+            { id: 13, cat: "3. تنظيم الجهاز العصبي", accent: "emerald", icon: "fa-brain",
+              q: "ما المنشأ التشريحي لأعصاب الجهاز العصبي نظير الودي؟",
+              a: "تنشأ من نوى الأعصاب القحفية في جذع الدماغ، ومن القطعتين النخاعيتين العجزيتين الثانية والثالثة ($S_2, S_3$).",
+              exp: "يُدعى الجهاز نظير الودي لذلك بالمنشأ «القحفي العجزي» (Craniosacral)." },
+            { id: 14, cat: "3. تنظيم الجهاز العصبي", accent: "amber", icon: "fa-ruler-horizontal",
+              q: "كيف يختلف طول الألياف قبل وبعد العقدية في الجهاز نظير الودي؟",
+              a: "الألياف قبل العقدية طويلة، بينما الألياف بعد العقدية قصيرة (لأن العقد قريبة جداً أو داخل جدار العضو).",
+              exp: "طول الألياف قبل العقدية يسمح بالوصول المباشر لقرب العضو المستهدف قبل الاشتباك العصبوني." },
+
+            // القسم 4: الاستثناءات في التعصيب الذاتي (15 - 16)
+            { id: 15, cat: "4. استثناءات التعصيب الذاتي", accent: "amber", icon: "fa-triangle-exclamation",
+              q: "ما هي الأعضاء الثلاثة المسجلة كاستثناءات للتعصيب المزدوج (تملك تعصيباً ودياً فقط)؟",
+              a: "1. غدة الكظر، 2. الأوعية الدموية، 3. الغدد العرقية.",
+              exp: "معظم أعضاء الجسم تتلقى تعصيباً مزدوجاً (ودياً ونظير ودي)، لكن هذه الأنسجة الثلاثة تخضع للسيطرة الودية فقط." },
+            { id: 16, cat: "4. استثناءات التعصيب الذاتي", accent: "rose", icon: "fa-hand-sparkles",
+              q: "ما هو الناقل العصبي الصادر في غدة الكظر وفي الغدد العرقية بالرغم من تعصيبهما الودي؟",
+              a: "الناقل العصبي هو الأستيل كولين (Acetylcholine).",
+              exp: "الغدة الكظرية تعتبر بمثابة عقدة ودية متطورة تلتقي بليف قبل عقدي كولينرجي، والغدد العرقية (بالكف والجبهة) استثناء ودي يستجيب للأستيل كولين." },
+
+            // القسم 5: اصطناع وتوزع الأستيل كولين (17 - 20)
+            { id: 17, cat: "5. اصطناع وتوزع ACh", accent: "purple", icon: "fa-flask",
+              q: "أين يُصنع الأستيل كولين داخل العصبون، وما المادتان الأساسيتان اللازمتان لتكوينه؟",
+              a: "يُصنع في العصارة الخلوية (Cytosol) للنهايات العصبية الكولينرجية، من تفاعل الكولين مع الأستيل كو-أ ($Acetyl\\text{-}CoA$).",
+              exp: "الكولين يأتي من السائل خارج الخلوي، والأستيل كو-أ يُنتج داخل المتقدرات (Mitochondria) من الغلوكوز." },
+            { id: 18, cat: "5. اصطناع وتوزع ACh", accent: "rose", icon: "fa-gauge-high",
+              q: "ما هي الخطوة المحددة لسرعة اصطناع الأستيل كولين وما المركب الذي يثبطها؟",
+              a: "هي عملية نقل الكولين عبر الناقل الغشائي ($CHT$)؛ وتُثبط بمركبات الـ Hemicholiniums.",
+              exp: "منع دخول الكولين للخلية يوقف اصطناع الأستيل كولين ويعطل نقل السيالة الكولينرجية." },
+            { id: 19, cat: "5. اصطناع وتوزع ACh", accent: "purple", icon: "fa-square-root-variable",
+              q: "اكتب المعادلة الكيميائية الاصطناعية للأستيل كولين.",
+              a: "$$\\text{Choline} + \\text{Acetyl-CoA} \\longrightarrow \\text{Acetylcholine}$$",
+              exp: "يتم التفاعل بواسطة إنزيم كولين أستيل ترانسفيراز لربط مجموعة الأستيل بمركب الكولين." },
+            { id: 20, cat: "5. اصطناع وتوزع ACh", accent: "emerald", icon: "fa-location-crosshairs",
+              q: "أين يتواجد الناقل العصبي الأستيل كولين في أقسام الجهاز العصبي المختلفة؟",
+              a: "1. في الدماغ (CNS). 2. في الجهاز المستقل: قبل وبعد العقد نظيرة الودية، وقبل العقد الودية والعقد العصبية. 3. في الجهاز الجسدي: في الوصل العصبي العضلي.",
+              exp: "الأستيل كولين ناقل شامل يعمل في العقد الذاتية كافة، وفي نهايات المشابك نظيرة الودية والوصل العضلي الجسدي." },
+
+            // القسم 6: المستقبلات الكولينرجية (21 - 23)
+            { id: 21, cat: "6. المستقبلات الكولينرجية", accent: "cyan", icon: "fa-code-compare",
+              q: "ما الميزتان البنيويتان اللتان تفرقان بين المستقبل الموسكاريني ($M$) والنيكوتيني ($N$)؟",
+              a: "الموسكارينية ($M$) تنتمي لمستقبلات GPCR المقترنة بالبروتين G، بينما النيكوتينية ($N$) قنوات أيونية ذات بوابة لجائندية.",
+              exp: "الأول يتطلب وسائط بروتينية ومراسيل ثانوية، بينما الثاني يفتح مباشرة لتدفق شوارد الصوديوم." },
+            { id: 22, cat: "6. المستقبلات الكولينرجية", accent: "purple", icon: "fa-unlock-keyhole",
+              q: "كم عدد جزيئات الأستيل كولين اللازم ارتباطها لفتح المستقبل النيكوتيني؟",
+              a: "يتطلب ارتباط جزيئين (2) من الأستيل كولين مع المستقبل.",
+              exp: "ارتباط الجزيئين يحدث تغيراً فراغياً يفتح القناة الشاردية لتدفق الصوديوم." },
+            { id: 23, cat: "6. المستقبلات الكولينرجية", accent: "emerald", icon: "fa-map-pin",
+              q: "أين تتوضع المستقبلات النيكوتينية العصبية ($N_n$) والمستقبلات النيكوتينية العضلية ($N_m$)؟",
+              a: "$N_n$: في أجسام الخلايا بعد العقدية بالعقد الذاتية، لب الكظر، وبعض عصبونات CNS. $N_m$: في منطقة الوصل العصبي الحركي (العضلي).",
+              exp: "$N_n$ لنقل الإشارة العصبية المشبكية، و$N_m$ لتحفيز تقلص العضلات الهيكلية الإرادية." },
+
+            // القسم 7: التأثيرات على الأعضاء (24 - 29)
+            { id: 24, cat: "7. التأثيرات الجهازية", accent: "cyan", icon: "fa-eye",
+              q: "ما هو التأثير الفسيولوجي للأستيل كولين على العين عبر المستقبل $M_3$؟",
+              a: "يسبب تقلص العضلات الدائرية للقزحية مما يؤدي لتقبض الحدقة (Miosis).",
+              exp: "تقلص العضلة الدائرية يقلل قطر الحدقة وينقص تمددها عند التعرض للضوء أو العلاج بنظائر الودي." },
+            { id: 25, cat: "7. التأثيرات الجهازية", accent: "rose", icon: "fa-lungs",
+              q: "ما هو التأثير الفسيولوجي للأستيل كولين على الجهاز التنفسي ولماذا يُحظر على مرضى الربو؟",
+              a: "يرتبط بالمستقبل $M_3$ في العضلات الملساء فيسبب تشنجاً قصبياً وزيادة المفرزات المخاطية للقصبات محدثاً أعراض الربو القصبي.",
+              exp: "تضيق القصبات مع الإفرازات الكثيفة يسبب انسداد المجاري التنفسية وصعوبة التنفس." },
+            { id: 26, cat: "7. التأثيرات الجهازية", accent: "purple", icon: "fa-heart-pulse",
+              q: "ما هي السلسلة الإشارية لتأثير الأستيل كولين على القلب عبر المستقبل $M_2$؟",
+              a: "يرتبط بـ $M_2 \\rightarrow$ يتفعل بروتين $G_i \\rightarrow$ تثبيط إنزيم الأدينيليل سيكلاز $\\rightarrow$ انخفاض $cAMP \\rightarrow$ إنقاص معدل وقوة ضربات القلب.",
+              exp: "الوضع الطبيعي لإنزيم الأدينيليل سيكلاز يرفع $cAMP$ ليفتح قنوات الكالسيوم ويحفز الانقباض؛ تثبيطه يُحدث العكس تماماً (بطء القلب)." },
+            { id: 27, cat: "7. التأثيرات الجهازية", accent: "cyan", icon: "fa-droplet",
+              q: "بالرغم من عدم وجود تعصيب نظير ودي للأوعية الدموية، كيف يسبب الأستيل كولين المحقون خارجياً ارتخاءها؟",
+              a: "يرتبط بالمستقبلات الموسكارينية $M_3$ المتواجدة على بطانة الأوعية الدموية، فيحثها على تحرير أكسيد النتريك ($NO$) الذي يرخي الأوعية ويهبط الضغط.",
+              exp: "$M_3$ في البطانة الوعائية لا تستقبل أليافاً عصبية بل تستجيب للأستيل كولين الدائر في الدم لتصنيع $NO$ الوعائي المرخي." },
+            { id: 28, cat: "7. التأثيرات الجهازية", accent: "emerald", icon: "fa-bacteria",
+              q: "ما المسار الخلوي لتأثير الأستيل كولين في الأمعاء عبر المستقبل $M_3$؟",
+              a: "تفعيل $M_3$ محفز لبروتين $G_q \\rightarrow$ حلمأة مركب $PIP_2$ بفعل الفوسفوليباز C إلى $IP_3 + DAG \\rightarrow$ تحرير $Ca^{++}$ وزيادة الحركة الحوية والإفرازات.",
+              exp: "ارتفاع الكالسيوم الحر داخل الخلية العضلية الملساء يسبب انقباض الجدار المعوي وتسهيل الهضم والتدفق." },
+            { id: 29, cat: "7. التأثيرات الجهازية", accent: "amber", icon: "fa-restroom",
+              q: "ما هو التأثير المزدوج للأستيل كولين على المثانة البولية ومصرتها؟",
+              a: "يؤدي لتقلص جدار المثانة (عبر $M_3$) مع ارتخاء المصرة في نفس الوقت لتسهيل عملية تفريغ البول.",
+              exp: "العمل المتناسق يضمن فتح المخرج (ارتخاء المصرة) مع ضغط الجدار لتفريغ المحتوى تماماً." },
+
+            // القسم 8: التآزر والتعاكس والنيكوتين (30 - 32)
+            { id: 30, cat: "8. التآزر وتأثيرات النيكوتين", accent: "amber", icon: "fa-scale-balanced",
+              q: "قارن بين تأثير نظير الودي على جدار المعدة مقارنة بفتحة البواب.",
+              a: "يسبب زيادة تقلص عضلات جدار المعدة، وبالمقابل يسبب ارتخاء فتحة البواب.",
+              exp: "التعاكس بين الجدار والمصرة ضروري لفتح المعابر ومنع الانسداد أثناء تفعيل الجهاز نظير الودي الهضمي." },
+            { id: 31, cat: "8. التآزر وتأثيرات النيكوتين", accent: "rose", icon: "fa-smoking",
+              q: "كيف يسبب النيكوتين ارتفاع الضغط الدموي عبر المسار الكظري الوعائي؟",
+              a: "يحفز المستقبلات النيكوتينية العصبية ($N_n$) في لب الكظر لإفراز الأدرينالين، والذي يقبض الأوعية الدموية ويرفع الضغط.",
+              exp: "تحفيز $N_n$ في الكظر يطلق الهرمونات الودية (الأدرينالين) في الدوران الدموي العام." },
+            { id: 32, cat: "8. التآزر وتأثيرات النيكوتين", accent: "rose", icon: "fa-brain",
+              q: "كيف يسبب النيكوتين ارتفاع الضغط الدموي عبر المسار العصبي الهرموني ($ADH$)؟",
+              a: "ينشط مستقبلات $N_n$ في الدماغ، فيغير نشاط الخلايا العصبية ليزيد إفراز الهرمون المضاد لإدرار البول ($ADH$)، مما يرفع الضغط.",
+              exp: "زيادة $ADH$ تزيد إعادة امتصاص الماء وتسبب تقبضاً وعائياً مباشراً يرفع الضغط الدموي الحجمي." },
+
+            // القسم 9: دقائق فارماكولوجية متقدمة (33 - 50)
+            { id: 33, cat: "9. دقائق فارماكولوجية", accent: "purple", icon: "fa-microscope",
+              q: "ما هو الدور الدوائي لإنزيم البروتين كيناز C ($PKC$) في مسار مستقبلات $G_q$؟",
+              a: "يتفعل بواسطة الكالسيوم المحرر عبر $IP_3$ بالإضافة لمركب $DAG$ لمباشرة شلال فسفرة البروتينات الخلوية.",
+              exp: "الفسفرة تغير الفعالية الوظيفية للبروتينات والإنزيمات داخل الخلية لتنفيذ الاستجابة الدوائية." },
+            { id: 34, cat: "9. دقائق فارماكولوجية", accent: "cyan", icon: "fa-wave-square",
+              q: "ما الذي يحدث لقطبية الخلية عند فتح قنوات البوتاسيوم بتأثير المستقبلات المقترنة ببروتين $G_i$؟",
+              a: "يحدث فرط استقطاب (Hyperpolarization) في غشاء الخلية.",
+              exp: "خروج البوتاسيوم الموجب خارج الخلية يجعل الداخل أكثر سلبية مما يمنع استثارتها ويُحدث التثبيط." },
+            { id: 35, cat: "9. دقائق فارماكولوجية", accent: "purple", icon: "fa-dna",
+              q: "ما الاسم الكيميائي للمركب الأصلي الذي يفككه إنزيم الفوسفوليباز C لتكوين المراسيل الثانوية؟",
+              a: "فوسفاتيديل إينوزيتول 4,5-ثنائي الفوسفات ($Phosphatidylinositol\\ 4,5\\text{-}diphosphate / PIP_2$).",
+              exp: "حلمأة هذا الفوسفوليبيد الغشائي ينتج الجزيئين الفاعلين $IP_3$ الذائب و$DAG$ الدهني." },
+            { id: 36, cat: "9. دقائق فارماكولوجية", accent: "emerald", icon: "fa-flask-vial",
+              q: "ما تأثير تنبيه المستقبلات الموسكارينية $M_1$ وفي أي خلايا تتوضع بشكل رئيسي في الجهاز الهضمي؟",
+              a: "تتوضع في الخلايا الجدارية المعدية، وتنبيهها يؤدي لزيادة إفراز حمض المعدة ($HCl$) بالاشتراك مع $M_3$.",
+              exp: "تنشيط $M_1$ و$M_3$ يرفع الكالسيوم الداخلي في الخلايا الجدارية لتفعيل مضخة البروتونات." },
+            { id: 37, cat: "9. دقائق فارماكولوجية", accent: "emerald", icon: "fa-droplet",
+              q: "ما تأثير تنبيه المستقبلات $M_3$ على الغدد خارجية الإفراز (الدمعية، العرقية، الأنفية)؟",
+              a: "يؤدي إلى زيادة المفرزات في هذه الغدد كافة.",
+              exp: "ارتفاع الكالسيوم عبر مسار $G_q$ يحفز عملية إفراز المحتويات الإفرازية الخلوية (Exocytosis)." },
+            { id: 38, cat: "9. دقائق فارماكولوجية", accent: "cyan", icon: "fa-network-wired",
+              q: "أين تتواجد المستقبلات النيكوتينية العصبية ($N_n$) داخل الجهاز العصبي المركزي؟",
+              a: "تتواجد في بعض عصبونات الجهاز العصبي المركزي (بما فيها المناطق الدماغية المتحكمة بإفراز الهرمونات مثل $ADH$).",
+              exp: "تعمل هذه المستقبلات على تنظيم الإشارات العصبية وتحرير النواقل والهرمونات المركزية." },
+            { id: 39, cat: "9. دقائق فارماكولوجية", accent: "amber", icon: "fa-code-fork",
+              q: "ما الفرق في النواقل العصبية بين العقد الودية والنهايات الودية للغدد العرقية باليد؟",
+              a: "في العقد الودية: الأستيل كولين (على $N_n$). وفي النهايات الودية للغدد العرقية باليد: الأستيل كولين أيضاً (على $M_3$).",
+              exp: "استثناء نادر حيث تستخدم النهاية الودية بعد العقدية الأستيل كولين بدلاً من النورأدرينالين." },
+            { id: 40, cat: "9. دقائق فارماكولوجية", accent: "amber", icon: "fa-circle-question",
+              q: "لماذا لا ينخفض ضغط الدم عند تنبيه الجهاز نظير الودي طبيعياً في الجسم بغير إعطاء دواء خارجي؟",
+              a: "لعدم وجود تعصيب نظير ودي تشريحي للأوعية الدموية.",
+              exp: "مستقبلات $M_3$ الوعائية توجد كـ «مستقبلات غير معصبة» لا تنبه إلا عند وجود أستيل كولين أو شادات جارية في الدم." },
+            { id: 41, cat: "9. دقائق فارماكولوجية", accent: "rose", icon: "fa-heart-circle-minus",
+              q: "ما تأثير الأستيل كولين على سرعة التوصيل في العقدة الأذينية البطينية بالقلب عبر $M_2$؟",
+              a: "يقلل سرعة التوصيل الكهروبيولوجي ويخفض معدل النبض.",
+              exp: "خفض $cAMP$ وفرط الاستقطاب يطيلان فترة العصيان للنسيج التوصيلي القلبي." },
+            { id: 42, cat: "9. دقائق فارماكولوجية", accent: "rose", icon: "fa-skull-crossbones",
+              q: "ما هي أسباب أعراض زيادة التعرق والدمع عند التسمم بالمركبات الكولينرجية؟",
+              a: "بسبب التنشيط الزائد للمستقبلات الموسكارينية $M_3$ في الغدد العرقية والدمعية.",
+              exp: "تحفيز $M_3$ يزيد الإفرازات السائلة بجميع غدد الجسم الخارجية." },
+            { id: 43, cat: "9. دقائق فارماكولوجية", accent: "purple", icon: "fa-tags",
+              q: "صنف المستقبلات التالية حسب طبيعتها الكيميائية: ($nAChR, M_1, M_2, M_3, N_m$)؟",
+              a: "مستقبلات GPCR: ($M_1, M_2, M_3$). قنوات أيونية ذات بوابة لجائندية: ($nAChR, N_m$).",
+              exp: "المستقبلات الموسكارينية كلها مقترنة بالبروتين G، بينما النيكوتينية كلها قنوات أيونية لجائندية." },
+            { id: 44, cat: "9. دقائق فارماكولوجية", accent: "cyan", icon: "fa-magnet",
+              q: "كيف تتفاعل شبكة الكالسيوم الهيولية العضلية مع المرسال الثانوي $IP_3$؟",
+              a: "يرتبط $IP_3$ بمستقبلاته على غشاء الشبكة فيفتح قنواتها ليحرر الكالسيوم المخزون إلى العصارة الخلوية.",
+              exp: "خروج الكالسيوم يرفع تركيز الشوارد الحرة داخل الخلية لتبدأ الانقباضات العضلية والتأثيرات الحيوية." },
+            { id: 45, cat: "9. دقائق فارماكولوجية", accent: "emerald", icon: "fa-cubes-stacked",
+              q: "ما العلاقة بين الغلوكوز واصطناع الناقل العصبي الأستيل كولين؟",
+              a: "الغلوكوز يُستقلب داخل المتقدرات لينتج $Acetyl\\text{-}CoA$ الضروري للاندماج مع الكولين.",
+              exp: "أي خلل في استقلاب الغلوكوز أو عمل المتقدرات ينعكس سلباً على توفر الأستيل كو-أ وتصنيع الناقل." },
+            { id: 46, cat: "9. دقائق فارماكولوجية", accent: "rose", icon: "fa-battery-quarter",
+              q: "ما دور قنوات البوتاسيوم المفتوحة بتأثير بروتين $G_i$ في تقليل الفعالية القلبية؟",
+              a: "تسمح بخروج شحنات البوتاسيوم الموجبة لخارج الخلية القلبية فتمنع وصولها للكمون الفاعل بسهولة.",
+              exp: "زيادة السلبية الداخلية (فرط الاستقطاب) تثبط الاستثارة التلقائية لبطارية القلب ($SA\\ node$)." },
+            { id: 47, cat: "9. دقائق فارماكولوجية", accent: "emerald", icon: "fa-arrows-rotate",
+              q: "ما هي الاستجابة المعوية الشاملة الناتجة عن تنبيه $M_3$ من حيث العضلات والإفراز؟",
+              a: "زيادة تقلص العضلات الملساء للجدار، زيادة الحركة الحوية، وزيادة إفراز الإنزيمات والسوائل الهضمية.",
+              exp: "التفعيل النظير الودي يسرع وظائف الهضم والإفراغ المعوي بالكامل." },
+            { id: 48, cat: "9. دقائق فارماكولوجية", accent: "cyan", icon: "fa-not-equal",
+              q: "ما الفرق بين مستقبلات $M_2$ و $M_3$ من حيث نسيج التواجد والتأثير على العضلات؟",
+              a: "$M_2$ توجد بالقلب وتسبب التثبيط والاسترخاء؛ بينما $M_3$ توجد بالعضلات الملساء للأحشاء وتسبب التقلص والتنشيط.",
+              exp: "$M_2$ مقترنة بـ $G_i$ تثبيطاً، بينما $M_3$ مقترنة بـ $G_q$ تحفيزاً للكالسيوم والانقباض." },
+            { id: 49, cat: "9. دقائق فارماكولوجية", accent: "amber", icon: "fa-robot",
+              q: "لماذا يطلق على الجملة العصبية المستقلة اسم «المستقلة» (Autonomic)؟",
+              a: "لأنها تعمل وتنظم وظائف الأحشاء والأعضاء لاإرادياً دون حاجة للتفكير أو التحكم الواعي من الدماغ.",
+              exp: "تنظم الضغط، النبض، الهضم، والتنفس بشكل آلي تلقائي على مدار الساعة." },
+            { id: 50, cat: "9. دقائق فارماكولوجية", accent: "purple", icon: "fa-star",
+              q: "ملخص فارماكولوجي شامل: اذكر نوع بروتين G والاستجابة النهائية لكل من $M_1, M_2, M_3$.",
+              a: "$M_1$: بروتين $G_q \\rightarrow$ زيادة $HCl$ وإفرازات المعدة. $M_2$: بروتين $G_i \\rightarrow$ خفض نبض القلب وقوة الانقباض. $M_3$: بروتين $G_q \\rightarrow$ تقلص العضلات الملساء (القصبات، الأمعاء، المثانة، العين) وارتخاء الأوعية عبر $NO$.",
+              exp: "المخطط الشامل للوظائف الموسكارينية الأساسية المذكورة بالمحاضرة." }
+        ];
+
+        // ==========================================
+        // DATA 2: ALL 30 MCQs
+        // ==========================================
+        const quizData = [
+            // القسم الأول (1 - 6)
+            { id: 1, sec: "القسم 1: الأهداف والمستقبلات", accent: "emerald",
+              q: "أي من الكيانات التالية يُعد من الأهداف الدوائية الرئيسية الأربعة (Pharmacological Targets) التي ترتبط بها الأدوية أولاً داخل الجسم؟",
+              options: ["أ) المستقبلات والقنوات الأيونية", "ب) الإنزيمات والنواقل الجزيئية", "ج) البروتينات السكرية الخلوية فقط", "د) (أ و ب صحيحان)"],
+              correct: 3,
+              exp: "الأهداف الدوائية الرئيسية الأربعة المحددة في المحاضرة هي: 1. المستقبلات (Receptors)، 2. القنوات الأيونية (Ion channels)، 3. الإنزيمات (Enzymes)، 4. النواقل الجزيئية (Molecule transporters)." },
+            { id: 2, sec: "القسم 1: الأهداف والمستقبلات", accent: "emerald",
+              q: "ما هو التعريف الفارماكولوجي الدقيق لـ «المستقبلات» (Receptors) وموقع تواجدها في الخلية؟",
+              options: ["أ) إنزيمات حرة متواجدة حكراً داخل المتقدرات", "ب) جزيئات بروتينية متخصصة مستهدفة تتواجد غالباً على سطح الخلية أو داخلها", "ج) قنوات شوارد الصوديوم الحرة في السائل خارج الخلوي", "د) ألياف عضلية هيكلية تنقبض بتأثير الكالسيوم"],
+              correct: 1,
+              exp: "تعريف المستقبلات هي جزيئات بروتينية متخصصة مستهدفة (Specialized macromolecules targets)، تتواجد غالباً على سطح الخلية (ولها جزء خارج خلوي وجزء داخل خلوي) أو داخل الخلية." },
+            { id: 3, sec: "القسم 1: الأهداف والمستقبلات", accent: "emerald",
+              q: "تمتاز القنوات الأيونية ذات البوابة اللجائندية (Ligand-gated ion channels) عن باقي عوائل المستقبلات بـ:",
+              options: ["أ) كونها أبطأ المستقبلات استجابةً لحاجتها لمراسيل ثانوية", "ب) كونها أسرع المستقبلات من حيث بدء الاستجابة ومدتها لعدم حاجتها لمراسيل ثانوية", "ج) اقترانها المباشر بالبروتين Gi المثبط", "د) اقتصار تواجدها على بطانة الأوعية الدموية"],
+              correct: 1,
+              exp: "تُعد القنوات الأيونية ذات البوابة اللجائندية أسرع المستقبلات من حيث بدء الاستجابة ومدتها لأن فتح المسام الأيونية يتم بمجرد ارتباط اللجين دون الحاجة إلى تشكيل مراسيل ثانوية (Second messengers)." },
+            { id: 4, sec: "القسم 1: الأهداف والمستقبلات", accent: "emerald",
+              q: "عند ارتباط الأستيل كولين بالجزء خارج الخلوي للمستقبل النيكوتيني ($nAChR$)، ما هو الأيون الأساسي الذي يتدفق إلى داخل الخلية؟",
+              options: ["أ) البوتاسيوم ($K^+$)", "ب) الكالسيوم ($Ca^{++}$)", "ج) الصوديوم ($Na^+$)", "د) الكلور ($Cl^-$)"],
+              correct: 2,
+              exp: "آلية عمل المستقبل النيكوتيني ($nAChR$) تعتمد على تدفق شوارد الصوديوم ($Na^+$) عبر الغشاء الخلوي، مما يؤدي إلى زوال الاستقطاب (Depolarization) وتفعيل الاستجابة الفسيولوجية." },
+            { id: 5, sec: "القسم 1: الأهداف والمستقبلات", accent: "emerald",
+              q: "كيف يكون المستقبل المقترن بالبروتين G (GPCR) في حالة الراحة (في غياب اللجين)؟",
+              options: ["أ) مرتبطاً بشكل دائم ومفعل بالإنزيم المنفذ", "ب) منفصلاً تماماً عن البروتين G", "ج) مفتوحاً لتدفق الشوارد البوتاسية", "د) مفرزاً لأكسيد النتريك تلقائياً"],
+              correct: 1,
+              exp: "في حالة الراحة يكون المستقبل المقترن بالبروتين G منفصلاً تماماً عن البروتين G، ولا يتفعل البروتين G إلا عند الارتباط الملائم للجين (الدواء) مع الناحية خارج الخلوية للمستقبل." },
+            { id: 6, sec: "القسم 1: الأهداف والمستقبلات", accent: "emerald",
+              q: "أي من المستقبلات التالية ينتمي إلى عائلة القنوات الأيونية ذات البوابة اللجائندية وليس إلى المستقبلات المقترنة بالبروتين G؟",
+              options: ["أ) المستقبل الموسكاريني $M_1$", "ب) المستقبل الموسكاريني $M_2$", "ج) المستقبل النيكوتيني ($nAChR$)", "د) المستقبل الموسكاريني $M_3$"],
+              correct: 2,
+              exp: "المستقبلات الكولينرجية تُقسم إلى مستقبلات موسكارينية (GPCR) ومستقبلات نيكوتينية (قنوات أيونية ذات بوابة لجائندية)." },
+
+            // القسم الثاني (7 - 12)
+            { id: 7, sec: "القسم 2: آليات بروتينات G", accent: "amber",
+              q: "ما هو الإنزيم الرئيسي الذي يفعله البروتين المنبه $G_s$ والمرسال الثانوي الناتج عن نشاطه؟",
+              options: ["أ) الفوسفوليباز C والمرسال $IP_3$", "ب) الأدينيليل سيكلاز (Adenylyl cyclase) والمرسال الثانوي $cAMP$", "ج) كولين أستيل ترانسفيراز والصوديوم", "د) كل ما سبق خطأ"],
+              correct: 1,
+              exp: "تفعيل البروتين $G_s$ ينشط إنزيم الأدينيليل سيكلاز الذي يحول الـ $ATP$ إلى $cAMP$ (المرسال الثانوي)، مما يزيد دخول الكالسيوم أو يفعل الإنزيمات الخلوية." },
+            { id: 8, sec: "القسم 2: آليات بروتينات G", accent: "amber",
+              q: "يؤدي تنشيط المستقبلات المقترنة بالبروتين المثبط $G_i$ (مثل $M_2$) إلى كافة التأثيرات التالية، عدا:",
+              options: ["أ) تثبيط إنزيم الأدينيليل سيكلاز (Adenylyl cyclase)", "ب) نقص إنتاج المرسال الثانوي $cAMP$", "ج) نقص دخول شوارد الكالسيوم أو نقص الفعالية الإنزيمية", "د) تحرير الكالسيوم من الشبكة الهيولية عبر مسار $IP_3$"],
+              correct: 3,
+              exp: "تحرير الكالسيوم عبر مسار $IP_3$ هو آلية خاصة بالبروتين $G_q$ (مثل $M_1, M_3$) وليست آلية البروتين المثبط $G_i$." },
+            { id: 9, sec: "القسم 2: آليات بروتينات G", accent: "amber",
+              q: "عند ارتباط اللجين مع المستقبل المقترن بالبروتين $G_q$، يفعل البروتين إنزيم الفوسفوليباز C الذي يحلمئ $PIP_2$ لينتج مرسالين ثانويين هما:",
+              options: ["أ) $cAMP$ و $ATP$", "ب) إينوزيتول ثلاثي الفوسفات ($IP_3$) وثنائي أسيل الغليسيرول ($DAG$)", "ج) أكسيد النتريك ($NO$) والكولين", "د) كل ما سبق خطأ"],
+              correct: 1,
+              exp: "تفعيل إنزيم الفوسفوليباز C بواسطة البروتين $G_q$ يؤدي إلى حلمأة $PIP_2$ وتوليد مرسالين ثانويين هما $IP_3$ و $DAG$." },
+            { id: 10, sec: "القسم 2: آليات بروتينات G", accent: "amber",
+              q: "ما هي الوظيفة المباشرة لمركب إينوزيتول ثلاثي الفوسفات ($IP_3$) داخل الخلية عند تفعيله عبر $G_q$؟",
+              options: ["أ) تثبيط إنزيم الأدينيليل سيكلاز", "ب) تحرير شوارد الكالسيوم ($Ca^{++}$) من مخازنها في الشبكة الهيولية العضلية", "ج) نقل الكولين خارج الخلية", "د) فتح قنوات البوتاسيوم لتطبيق فرط استقطاب"],
+              correct: 1,
+              exp: "يتجه $IP_3$ إلى الشبكة الهيولية العضلية ويرتبط بمستقبلاته ليحرر شوارد الكالسيوم المخزونة إلى السيتوبلازم، مما يرفع الكالسيوم الحر." },
+            { id: 11, sec: "القسم 2: آليات بروتينات G", accent: "amber",
+              q: "يتشارك الكالسيوم المحرر مع مركب ثنائي أسيل الغليسيرول ($DAG$) في تفعيل أي إنزيم لمباشرة شلال الفسفرة الخلوية؟",
+              options: ["أ) الأدينيليل سيكلاز", "ب) الفوسفوليباز C", "ج) بروتين كيناز C (Protein Kinase C - PKC)", "د) كولين أستيل ترانسفيراز"],
+              correct: 2,
+              exp: "الكالسيوم الحر المرتفع بالاشتراك مع $DAG$ يفعلان إنزيم البروتين كيناز C ($PKC$) لمباشرة شلال فسفرة البروتينات الخلوية." },
+            { id: 12, sec: "القسم 2: آليات بروتينات G", accent: "amber",
+              q: "أي من العبارات التالية تعتبر عبارة صحيحة فيما يتعلق بأنماط بروتينات G والمستقبلات الموسكارينية؟",
+              options: ["أ) تقترن المستقبلات $M_1$ و $M_3$ بالبروتين $G_q$", "ب) يقترن المستقبل $M_2$ بالبروتين المثبط $G_i$", "ج) يؤدي تفعيل $M_2$ إلى نقص $cAMP$ وتباطؤ ضربات القلب", "د) كل ما سبق صحيح"],
+              correct: 3,
+              exp: "الخيارات الثلاثة تعبر بدقة عن التصنيف الفارماكولوجي الوارد بالمحاضرة: النمط الفردي ($M_1, M_3$) مع $G_q$، والنمط الزوجي ($M_2$) مع $G_i$." },
+
+            // القسم الثالث (13 - 16)
+            { id: 13, sec: "القسم 3: التنظيم التشريحي", accent: "cyan",
+              q: "يتكون القسم الصادر من الجملة العصبية المحيطية (PNS) من:",
+              options: ["أ) الدماغ والنخاع الشوكي فقط", "ب) الجملة العصبية المستقلة والجملة العصبية الجسدية", "ج) الألياف قبل العقدية نظيرة الودية فقط", "د) كل ما سبق خطأ"],
+              correct: 1,
+              exp: "الجملة العصبية المحيطية تضم قسماً وارداً وقسماً صادراً؛ والقسم الصادر يتكون من الجملة العصبية الجسدية (الإرادية) والجملة العصبية المستقلة (اللاإرادية)." },
+            { id: 14, sec: "القسم 3: التنظيم التشريحي", accent: "cyan",
+              q: "أين تتوضع أجسام الخلايا العصبية للعصبونات قبل العقدية في الجملة العصبية المستقلة؟",
+              options: ["أ) في العقد العصبية المحيطية", "ب) ضمن الجهاز العصبي المركزي (CNS)", "ج) في جدران الأعضاء المستهدفة مباشرة", "د) في لب الكظر فقط"],
+              correct: 1,
+              exp: "العصبونات قبل العقدية تتوضع أجسام خلاياها ضمن الجهاز العصبي المركزي (CNS) وتمتد أليافها إلى العقد؛ بينما العصبونات بعد العقدية تتوضع أجسامها في العقد العصبية." },
+            { id: 15, sec: "القسم 3: التنظيم التشريحي", accent: "cyan",
+              q: "تنشأ أعصاب الجملة العصبية نظيرة الودية (Parasympathetic) من:",
+              options: ["أ) القطع النخاعية الصدرية والقطنية فقط", "ب) نوى الأعصاب القحفية في جذع الدماغ والقطعتين النخاعيتين العجزيتين الثانية والثالثة ($S_2, S_3$)", "ج) العقد الذاتية الودية المحيطية", "د) لب الكظر والنخاع الشوكي الرقبي"],
+              correct: 1,
+              exp: "يُعرف الجهاز نظير الودي بالمنشأ «القحفي العجزي» (Craniosacral)، حيث ينشأ من نوى الأعصاب القحفية في جذع الدماغ والقطعتين العجزيتين $S_2, S_3$." },
+            { id: 16, sec: "القسم 3: التنظيم التشريحي", accent: "cyan",
+              q: "تتميز بنية الألياف العصبية للجهاز نظير الودي بكونها:",
+              options: ["أ) ألياف ما قبل العقد طويلة، وألياف ما بعد العقد قصيرة", "ب) ألياف ما قبل العقد قصيرة، وألياف ما بعد العقد طويلة", "ج) ألياف معدومة في المرحلة قبل العقدية", "د) كل ما سبق خطأ"],
+              correct: 0,
+              exp: "في الجهاز نظير الودي تكون العقد العصبية قريبة جداً أو في جدار العضو الهدف، لذا تكون الألياف ما قبل العقد طويلة والألياف ما بعد العقد قصيرة." },
+
+            // القسم الرابع (17 - 20)
+            { id: 17, sec: "القسم 4: استثناءات التعصيب", accent: "amber",
+              q: "جميع أعضاء الجسم تملك تعصيباً مزدوجاً (ودياً ونظير ودي)، باستثناء ثلاث حالات خاصة هي:",
+              options: ["أ) غدة الكظر، الأوعية الدموية، والغدد العرقية", "ب) القلب، الأمعاء، والمثانة", "ج) العين، القصبات الهوائية، والمعدة", "د) كل ما سبق خطأ"],
+              correct: 0,
+              exp: "الأعضاء الثلاثة المذكورة كاستثناءات تعصيب ذاتي في المحاضرة هي غدة الكظر، الأوعية الدموية، والغدد العرقية (حيث تخضع لتعصيب ودي فقط)." },
+            { id: 18, sec: "القسم 4: استثناءات التعصيب", accent: "amber",
+              q: "ما هو الناقل العصبي الموجود في النهاية العصبية للغدد العرقية في منطقة الكف والجبهة رغم تعصيبها الودي؟",
+              options: ["أ) النورأدرينالين", "ب) الأستيل كولين (Acetylcholine)", "ج) الدوبامين", "د) السيروتونين"],
+              correct: 1,
+              exp: "بالرغم من أن التعصيب للغدد العرقية هو تعصيب ودي، إلا أن الناقل العصبي الموجود في النهاية العصبية في منطقة الكف والجبهة هو الأستيل كولين (استثناء كولينرجي ودي)." },
+            { id: 19, sec: "القسم 4: استثناءات التعصيب", accent: "amber",
+              q: "ما هو الناقل العصبي المفرز في غدة الكظر وما طبيعة تعصيبها؟",
+              options: ["أ) النورأدرينالين وتعصيبها نظير ودي", "ب) الأستيل كولين وتعصيبها ودي فقط", "ج) الدوبامين وتعصيبها مزدوج", "د) كل ما سبق خطأ"],
+              correct: 1,
+              exp: "غدة الكظر ذات تعصيب ودي فقط، والناقل العصبي في الغدة (عند المشبك قبل العقدي) هو الأستيل كولين." },
+            { id: 20, sec: "القسم 4: استثناءات التعصيب", accent: "amber",
+              q: "ما هو موقع اصطناع الأستيل كولين والمكونان الكيميائيان الأساسيان للاصطناع؟",
+              options: ["أ) في المتقدرات من الغلوكوز والـ cAMP", "ب) في العصارة الخلوية للنهايات الكولينرجية من تفاعل الكولين مع الأستيل كو-أ ($Acetyl\\text{-}CoA$)", "ج) في جدار العقد العصبية من الصوديوم والبوتاسيوم", "د) كل ما سبق خطأ"],
+              correct: 1,
+              exp: "يُصنع الأستيل كولين في العصارة الخلوية (Cytosol) للنهايات العصبية الكولينرجية بتفاعل الكولين (المنقول من الخارج) مع الأستيل كو-أ (القادم من المتقدرات)." },
+
+            // القسم الخامس (21 - 24)
+            { id: 21, sec: "القسم 5: اصطناع ومستقبلات ACh", accent: "purple",
+              q: "ما هي العملية التي تحدد سرعة اصطناع الأستيل كولين وبأي مركب تُثبط؟",
+              options: ["أ) حلمأة الـ ATP بإنزيم الأدينيليل سيكلاز وتُثبط بالأدرينالين", "ب) نقل الكولين عبر الناقل الغشائي ($CHT$) وتُثبط بمركبات الـ $Hemicholiniums$", "ج) انقسام $PIP_2$ بالفوسفوليباز C وتُثبط بالأتروبين", "د) فتح قنوات الصوديوم وتُثبط بالنيكوتين"],
+              correct: 1,
+              exp: "عملية نقل الكولين إلى العصبونات بواسطة ناقل الكولين الغشائي ($CHT$) هي الخطوة المحددة لسرعة الاصطناع، وتُثبط بمركبات الـ Hemicholiniums." },
+            { id: 22, sec: "القسم 5: اصطناع ومستقبلات ACh", accent: "purple",
+              q: "يتواجد الناقل العصبي الأستيل كولين في كافة المواقع التالية في الجسم، عدا:",
+              options: ["أ) الأعصاب قبل العقدة نظيرة الودية وبعد العقدة نظيرة الودية", "ب) الأعصاب قبل العقدة الودية وفي العقد العصبية", "ج) الملتقى العصبي العضلي في الجهاز العصبي الجسدي", "د) الأعصاب بعد العقدة الودية المعصبة لعضلة القلب"],
+              correct: 3,
+              exp: "الأستيل كولين يوجد في الدماغ، وقبل/بعد العقد نظيرة الودية، وقبل العقد الودية، والوصل العصبي العضلي الجسدي؛ بينما الألياف بعد العقدة الودية للقلب تفرز النورأدرينالين." },
+            { id: 23, sec: "القسم 5: اصطناع ومستقبلات ACh", accent: "purple",
+              q: "ما هي أماكن التواجد الرئيسية للمستقبلات النيكوتينية العصبية ($N_n$)؟",
+              options: ["أ) أجسام الخلايا بعد العقدية في العقد الذاتية، لب الكظر، وبعض عصبونات CNS", "ب) منطقة الوصل العصبي العضلي الهيكلي فقط", "ج) العضلات الملساء في الأمعاء والمثانة", "د) (أ و ج صحيحان)"],
+              correct: 0,
+              exp: "تتوضع $N_n$ في أجسام الخلايا بعد العقدية بالعقد الذاتية، لب الكظر، وبعض عصبونات CNS؛ بينما $N_m$ هي التي تتوضع في الوصل العصبي العضلي." },
+            { id: 24, sec: "القسم 5: اصطناع ومستقبلات ACh", accent: "purple",
+              q: "ما هي آلية التفعيل الفسيولوجي للمستقبلات النيكوتينية العضلية ($N_m$) عند الوصل العصبي العضلي؟",
+              options: ["أ) تثبيط الأدينيليل سيكلاز وخفض $cAMP$", "ب) ارتباط جزيئين من الأستيل كولين يفتح القناة الشاردية لدخول الصوديوم وإحداث زوال استقطاب", "ج) إفراز أكسيد النتريك $NO$ لإرخاء العضلة", "د) كل ما سبق خطأ"],
+              correct: 1,
+              exp: "عند ارتباط جزيئين من الأستيل كولين بالمستقبل النيكوتيني تفتح القناة وتسمح بمرور الصوديوم ($Na^+$) لداخل الخلية محدثاً زوال استقطاب وتفعيلاً للتقلص العضلي." },
+
+            // القسم السادس (25 - 30)
+            { id: 25, sec: "القسم 6: التأثيرات الجهازية", accent: "rose",
+              q: "يؤدي تنبيه الأستيل كولين للمستقبل الموسكاريني $M_3$ في العضلات الدائرية للعين إلى:",
+              options: ["أ) ارتخاء العضلة وتوسع الحدقة (Mydriasis)", "ب) تقلص العضلة الدائرية وتقبض الحدقة (Miosis)", "ج) جفاف العين ونقص الإفراز الدمعي", "د) كل ما سبق خطأ"],
+              correct: 1,
+              exp: "العضلات الدائرية للعين تحتوي $M_3$ وتخضع لتعصيب نظير ودي؛ تفعيلها بالأستيل كولين يسبب تقلص العضلة وتقبض الحدقة (Miosis)." },
+            { id: 26, sec: "القسم 6: التأثيرات الجهازية", accent: "rose",
+              q: "ما هو التأثير الفسيولوجي الناجم عن ارتباط الأستيل كولين بالمستقبل $M_3$ في العضلات الملساء للقصبات الهوائية؟",
+              options: ["أ) توسع قصبي ونقص المفرزات المخاطية", "ب) تقلص العضلات وحدوث تشنج قصبي وزيادة المفرزات (إحداث أعراض الربو)", "ج) تثبيط مراكز التنفس في الدماغ", "د) كل ما سبق صحيح"],
+              correct: 1,
+              exp: "ارتباط الأستيل كولين بـ $M_3$ في القصبات يؤدي إلى انقباض العضلات الملساء القصبية وزيادة إفراز المخاط، مما يسبب تشنجاً قصبياً يحاكي نوبة الربو." },
+            { id: 27, sec: "القسم 6: التأثيرات الجهازية", accent: "rose",
+              q: "كيف يؤثر الأستيل كولين على العضلة القلبية عبر المستقبل $M_2$؟",
+              options: ["أ) ينشط الأدينيليل سيكلاز فيزيد ضربات القلب", "ب) يثبط إنزيم الأدينيليل سيكلاز فيخفض $cAMP$، مما ينقص معدل ضربات القلب وقوة انقباض العضلة", "ج) يحرر الكالسيوم عبر $IP_3$ فيسبب انقباضاً قلبياً شديداً", "د) كل ما سبق خطأ"],
+              correct: 1,
+              exp: "يرتبط الأستيل كولين بـ $M_2$ القلبي المقترن بـ $G_i$ فيثبط الأدينيليل سيكلاز وينخفض $cAMP$، مما يقلل فتح قنوات الكالسيوم وينقص معدل وقوة ضربات القلب." },
+            { id: 28, sec: "القسم 6: التأثيرات الجهازية", accent: "rose",
+              q: "بالرغم من عدم وجود تعصيب نظير ودي للأوعية الدموية، كيف يُحدث الأستيل كولين المحقون خارجياً ارتخاءً وعائياً وهبوطاً في الضغط؟",
+              options: ["أ) عبر الارتباط بالمستقبل $M_3$ في بطانة الأوعية وتحريض إفراز أكسيد النتريك ($NO$)", "ب) عبر الحصر المباشر لقنوات الصوديوم العضلية", "ج) عبر تنشيط الغدة الكظرية", "د) كل ما سبق خطأ"],
+              correct: 0,
+              exp: "تمتلك الأوعية مستقبلات $M_3$ في البطانة الوعائية دون تعصيب نظير ودي، وتنبيهها بالأستيل كولين الخارجي يحث البطانة على تحرير أكسيد النتريك ($NO$) الذي يسبب الارتخاء الوعائي وانخفاض الضغط." },
+            { id: 29, sec: "القسم 6: التأثيرات الجهازية", accent: "rose",
+              q: "ما هي آلية تأثير الجهاز نظير الودي على جدران الأعضاء الملساء ومصراتها (مثل المعدة والمثانة)؟",
+              options: ["أ) تقلص جدران الأعضاء الملساء مع ارتخاء المصرات لتسهيل التفريغ", "ب) ارتخاء جدران الأعضاء مع تقلص المصرات لحياد التفريغ", "ج) تقلص الجدران والمصرات معاً بنفس الوقت", "د) كل ما سبق خطأ"],
+              correct: 0,
+              exp: "يتصف التأثير نظير الودي بالتآزر والتعاكس: تقلص عضلات الجدار (المعدة/المثانة) يقابله ارتخاء المصرات (البواب/مصرة المثانة) لتسهيل التفريغ والاطراح." },
+            { id: 30, sec: "القسم 6: التأثيرات الجهازية", accent: "rose",
+              q: "يتسبب النيكوتين لدى المدخنين في ارتفاع الضغط الدموي عبر مسارين هما:",
+              options: ["أ) تحفيز $N_n$ الكظري لإفراز الأدرينالين، وتنشيط $N_n$ الدماغي لزيادة إفراز هرمون $ADH$", "ب) حصر المستقبلات الموسكارينية $M_2$ و $M_3$", "ج) تثبيط إفراز الكولين والنورأدرينالين", "د) كل ما سبق خطأ"],
+              correct: 0,
+              exp: "يرفع النيكوتين الضغط عبر: 1. المسار الكظري الوعائي (تحفيز $N_n$ الكظر لإفراز الأدرينالين القابض للأوعية)، 2. المسار العصبي الهرموني (تحفيز $N_n$ بالدماغ لزيادة إفراز الهرمون المضاد لإدرار البول $ADH$)." }
+        ];
+
+        // Accent color mapping for Tailwind classes
+        const accentMap = {
+            purple:  { border: "border-r-4 border-r-violet-500", badge: "bg-violet-100 text-violet-800", icon: "text-violet-600" },
+            cyan:    { border: "border-r-4 border-r-cyan-500",   badge: "bg-cyan-100 text-cyan-800",     icon: "text-cyan-600" },
+            emerald: { border: "border-r-4 border-r-emerald-500",badge: "bg-emerald-100 text-emerald-800",icon: "text-emerald-600" },
+            amber:   { border: "border-r-4 border-r-amber-500",  badge: "bg-amber-100 text-amber-800",   icon: "text-amber-600" },
+            rose:    { border: "border-r-4 border-r-rose-500",   badge: "bg-rose-100 text-rose-800",     icon: "text-rose-600" }
+        };
+
+        let currentFlashcardFilter = "الكل";
+        let currentQuizFilter = "الكل";
+        let userQuizAnswers = {};
+
+        // Render KaTeX safely
+        function renderMathSafe(element) {
+            if (window.renderMathInElement) {
+                try {
+                    renderMathInElement(element, {
+                        delimiters: [
+                            { left: '$$', right: '$$', display: true },
+                            { left: '$', right: '$', display: false }
+                        ],
+                        throwOnError: false
+                    });
+                } catch (e) {}
+            }
+        }
+
+        // Switch between Flashcards and Quiz tabs
+        function switchTab(tabName) {
+            const fcView = document.getElementById('view-flashcards');
+            const qzView = document.getElementById('view-quiz');
+
+            if (tabName === 'flashcards') {
+                fcView.classList.remove('hidden');
+                qzView.classList.add('hidden');
+            } else {
+                qzView.classList.remove('hidden');
+                fcView.classList.add('hidden');
+            }
+
+            // Update all tab buttons (both header and bottom nav)
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                const isTarget = btn.getAttribute('data-tab') === tabName;
+                if (isTarget) {
+                    btn.className = btn.className
+                        .replace(/bg-slate-100|text-slate-600|bg-transparent/g, '')
+                        + ' bg-violet-600 text-white shadow-sm';
+                } else {
+                    btn.className = btn.className
+                        .replace(/bg-violet-600|text-white|shadow-md|shadow-sm|shadow-violet-500\/20/g, '')
+                        + ' bg-slate-100 text-slate-600';
+                }
+            });
+
+            if (window.tgHaptic) window.tgHaptic.impact('light');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // ==========================================
+        // FLASHCARDS LOGIC
+        // ==========================================
+        function initFlashcards() {
+            const categories = ["الكل", ...new Set(flashcardsData.map(f => f.cat))];
+            const filterContainer = document.getElementById('flashcard-filters');
+
+            filterContainer.innerHTML = categories.map(cat => {
+                const active = cat === currentFlashcardFilter;
+                return `
+                    <button onclick="filterFlashcards('${cat.replace(/'/g, "\\'")}')"
+                        class="shrink-0 px-3.5 py-2 rounded-xl font-heading font-bold text-xs transition-all active:scale-95 ${
+                            active
+                                ? 'bg-cyan-600 text-white shadow-sm'
+                                : 'bg-white text-slate-600 border border-slate-200 hover:border-cyan-400'
+                        }">
+                        ${cat}
+                    </button>
+                `;
+            }).join('');
+
+            renderFlashcards();
+        }
+
+        function filterFlashcards(cat) {
+            currentFlashcardFilter = cat;
+            if (window.tgHaptic) window.tgHaptic.impact('light');
+            initFlashcards();
+        }
+
+        function renderFlashcards() {
+            const container = document.getElementById('flashcards-container');
+            const filtered = currentFlashcardFilter === "الكل"
+                ? flashcardsData
+                : flashcardsData.filter(f => f.cat === currentFlashcardFilter);
+
+            document.getElementById('fc-count-badge').textContent = filtered.length;
+
+            container.innerHTML = filtered.map(card => {
+                const theme = accentMap[card.accent] || accentMap.purple;
+                return `
+                    <div onclick="toggleSingleCard(this)" class="flashcard-card open cursor-pointer bg-white rounded-2xl p-4 border border-slate-200 ${theme.border} shadow-sm hover:shadow-md transition-all select-none">
+                        <div class="flex items-center justify-between gap-2 mb-2.5">
+                            <span class="px-2.5 py-0.5 rounded-full text-[11px] font-heading font-bold ${theme.badge}">
+                                بطاقة #${card.id} • ${card.cat}
+                            </span>
+                            <span class="text-slate-400 text-xs flex items-center gap-1">
+                                <span class="text-[11px]">الجواب</span>
+                                <i class="fa-solid fa-chevron-down chevron-icon transition-transform duration-200"></i>
+                            </span>
+                        </div>
+
+                        <div class="font-heading font-bold text-sm sm:text-base text-slate-900 flex items-start gap-2.5 leading-relaxed">
+                            <i class="fa-solid ${card.icon} ${theme.icon} mt-1 shrink-0"></i>
+                            <span>${card.q}</span>
+                        </div>
+
+                        <div class="flashcard-answer mt-3.5 pt-3 border-t border-dashed border-slate-200 space-y-2">
+                            <div class="bg-emerald-50/70 border border-emerald-200/80 rounded-xl p-3">
+                                <div class="font-heading font-bold text-xs text-emerald-800 flex items-center gap-1.5 mb-1">
+                                    <i class="fa-solid fa-circle-check text-emerald-600"></i>
+                                    <span>الإجابة النموذجية</span>
+                                </div>
+                                <div class="text-xs sm:text-sm text-slate-800 leading-relaxed">${card.a}</div>
+                            </div>
+
+                            <div class="bg-amber-50/70 border border-amber-200/80 rounded-xl p-3">
+                                <div class="font-heading font-bold text-xs text-amber-800 flex items-center gap-1.5 mb-1">
+                                    <i class="fa-solid fa-lightbulb text-amber-500"></i>
+                                    <span>التعليل الفارماكولوجي</span>
+                                </div>
+                                <div class="text-xs text-slate-700 leading-relaxed">${card.exp}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            renderMathSafe(container);
+        }
+
+        function toggleSingleCard(cardEl) {
+            cardEl.classList.toggle('open');
+            if (window.tgHaptic) window.tgHaptic.impact('light');
+        }
+
+        function toggleAllFlashcards(openState) {
+            document.querySelectorAll('.flashcard-card').forEach(el => {
+                if (openState) el.classList.add('open');
+                else el.classList.remove('open');
+            });
+            if (window.tgHaptic) window.tgHaptic.impact('medium');
+        }
+
+        // ==========================================
+        // QUIZ LOGIC
+        // ==========================================
+        function initQuiz() {
+            const sections = ["الكل", ...new Set(quizData.map(q => q.sec))];
+            const filterContainer = document.getElementById('quiz-filters');
+
+            filterContainer.innerHTML = sections.map(sec => {
+                const active = sec === currentQuizFilter;
+                return `
+                    <button onclick="filterQuiz('${sec.replace(/'/g, "\\'")}')"
+                        class="shrink-0 px-3.5 py-2 rounded-xl font-heading font-bold text-xs transition-all active:scale-95 ${
+                            active
+                                ? 'bg-violet-600 text-white shadow-sm'
+                                : 'bg-white text-slate-600 border border-slate-200 hover:border-violet-400'
+                        }">
+                        ${sec}
+                    </button>
+                `;
+            }).join('');
+
+            renderQuiz();
+        }
+
+        function filterQuiz(sec) {
+            currentQuizFilter = sec;
+            if (window.tgHaptic) window.tgHaptic.impact('light');
+            initQuiz();
+        }
+
+        function renderQuiz() {
+            const container = document.getElementById('quiz-container');
+            const filtered = currentQuizFilter === "الكل"
+                ? quizData
+                : quizData.filter(q => q.sec === currentQuizFilter);
+
+            container.innerHTML = filtered.map(item => {
+                const theme = accentMap[item.accent] || accentMap.purple;
+                const answeredIdx = userQuizAnswers[item.id];
+                const isAnswered = answeredIdx !== undefined;
+
+                const optionsHTML = item.options.map((opt, idx) => {
+                    let btnStyle = "bg-slate-50 hover:bg-violet-50/70 border-slate-200 text-slate-800";
+                    let iconHTML = `<i class="fa-regular fa-circle text-slate-400 shrink-0"></i>`;
+
+                    if (isAnswered) {
+                        if (idx === item.correct) {
+                            btnStyle = "bg-emerald-50 border-emerald-500 text-emerald-900 font-bold";
+                            iconHTML = `<i class="fa-solid fa-circle-check text-emerald-600 shrink-0"></i>`;
+                        } else if (idx === answeredIdx && answeredIdx !== item.correct) {
+                            btnStyle = "bg-rose-50 border-rose-500 text-rose-900";
+                            iconHTML = `<i class="fa-solid fa-circle-xmark text-rose-600 shrink-0"></i>`;
+                        } else {
+                            btnStyle = "bg-slate-50 border-slate-200 text-slate-400 opacity-75";
+                        }
+                    }
+
+                    return `
+                        <button ${isAnswered ? 'disabled' : ''}
+                            onclick="selectQuizOption(${item.id}, ${idx})"
+                            class="w-full text-right p-3 rounded-xl border text-xs sm:text-sm transition-all flex items-center gap-2.5 active:scale-[0.99] ${btnStyle}">
+                            ${iconHTML}
+                            <span class="leading-relaxed">${opt}</span>
+                        </button>
+                    `;
+                }).join('');
+
+                return `
+                    <div class="bg-white rounded-2xl p-4 border border-slate-200 ${theme.border} shadow-sm">
+                        <div class="flex items-center justify-between gap-2 mb-2.5 flex-wrap">
+                            <span class="px-2.5 py-0.5 rounded-full text-[11px] font-heading font-bold ${theme.badge}">
+                                السؤال ${item.id} من 30 • ${item.sec}
+                            </span>
+                            ${isAnswered
+                                ? (answeredIdx === item.correct
+                                    ? `<span class="px-2.5 py-0.5 rounded-full text-[11px] font-heading font-bold bg-emerald-100 text-emerald-800"><i class="fa-solid fa-check ml-1"></i>إجابة صحيحة</span>`
+                                    : `<span class="px-2.5 py-0.5 rounded-full text-[11px] font-heading font-bold bg-rose-100 text-rose-800"><i class="fa-solid fa-xmark ml-1"></i>إجابة خاطئة</span>`)
+                                : ''}
+                        </div>
+
+                        <div class="font-heading font-bold text-sm sm:text-base text-slate-900 mb-3 leading-relaxed">
+                            ${item.q}
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            ${optionsHTML}
+                        </div>
+
+                        ${isAnswered ? `
+                            <div class="mt-3 bg-emerald-50/80 border border-emerald-200 rounded-xl p-3">
+                                <div class="font-heading font-bold text-xs text-emerald-800 flex items-center gap-1.5 mb-1">
+                                    <i class="fa-solid fa-award text-emerald-600"></i>
+                                    <span>الشرح والتعليل الفارماكولوجي:</span>
+                                </div>
+                                <p class="text-xs text-slate-700 leading-relaxed">${item.exp}</p>
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            }).join('');
+
+            renderMathSafe(container);
+            updateQuizScore();
+        }
+
+        function selectQuizOption(questionId, optionIndex) {
+            userQuizAnswers[questionId] = optionIndex;
+            renderQuiz();
+
+            if (window.tgHaptic) {
+                const q = quizData.find(item => item.id === questionId);
+                if (q && optionIndex === q.correct) {
+                    window.tgHaptic.success();
+                } else {
+                    window.tgHaptic.error();
+                }
+            }
+        }
+
+        function revealAllQuizAnswers() {
+            quizData.forEach(q => {
+                if (userQuizAnswers[q.id] === undefined) {
+                    userQuizAnswers[q.id] = q.correct;
+                }
+            });
+            if (window.tgHaptic) window.tgHaptic.impact('medium');
+            renderQuiz();
+        }
+
+        function resetQuiz() {
+            userQuizAnswers = {};
+            if (window.tgHaptic) window.tgHaptic.impact('medium');
+            renderQuiz();
+        }
+
+        function updateQuizScore() {
+            const answeredIds = Object.keys(userQuizAnswers);
+            const totalAnswered = answeredIds.length;
+            let correctCount = 0;
+
+            answeredIds.forEach(id => {
+                const q = quizData.find(item => item.id === parseInt(id));
+                if (q && userQuizAnswers[id] === q.correct) {
+                    correctCount++;
+                }
+            });
+
+            const percent = totalAnswered > 0 ? Math.round((correctCount / 30) * 100) : 0;
+
+            document.getElementById('quiz-answered').textContent = `${totalAnswered} / 30`;
+            document.getElementById('quiz-correct').textContent = correctCount;
+            document.getElementById('quiz-percent').textContent = `${percent}%`;
+        }
+
+        // ==========================================
+        // TELEGRAM MINI APP & MOBILE INTEGRATION
+        // ==========================================
+        function showToast(message) {
+            const toast = document.getElementById('app-toast');
+            const text = document.getElementById('app-toast-text');
+            text.textContent = message;
+            toast.classList.remove('hidden');
+            setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 2600);
+        }
+
+        function shareOnTelegram() {
+            const answeredIds = Object.keys(userQuizAnswers);
+            let correctCount = 0;
+            answeredIds.forEach(id => {
+                const q = quizData.find(item => item.id === parseInt(id));
+                if (q && userQuizAnswers[id] === q.correct) correctCount++;
+            });
+
+            const shareText = answeredIds.length > 0
+                ? `حصلت على ${correctCount} من 30 في اختبار فارماكولوجيا الجهاز العصبي نظير الودي 💊! راجع الـ 50 فلاش كاردز والاختبار التفاعلي:`
+                : `تطبيق مراجعة فارماكولوجيا نظير الودي (50 بطاقة فلاش كاردز + 30 سؤال كويز تفاعلي مع التعليل) 💊:`;
+
+            const pageUrl = window.location.href;
+            const tgShareUrl = `https://t.me/share/url?url=${encodeURIComponent(pageUrl)}&text=${encodeURIComponent(shareText)}`;
+
+            if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initData) {
+                try {
+                    window.Telegram.WebApp.openTelegramLink(tgShareUrl);
+                    return;
+                } catch (e) {}
+            }
+
+            window.open(tgShareUrl, '_blank');
+        }
+
+        function initTelegramMiniApp() {
+            if (window.Telegram && window.Telegram.WebApp) {
+                const tg = window.Telegram.WebApp;
+                const safeCall = (fn) => { try { return fn(); } catch (e) { return undefined; } };
+
+                safeCall(() => tg.ready());
+                safeCall(() => tg.expand());
+                safeCall(() => tg.setHeaderColor('#FFFFFF'));
+                safeCall(() => tg.setBackgroundColor('#F8FAFC'));
+
+                // Display Telegram user name if opened inside Telegram Mini App
+                if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+                    const user = tg.initDataUnsafe.user;
+                    const badge = document.getElementById('tg-user-badge');
+                    if (badge && user.first_name) {
+                        badge.textContent = `مرحباً ${user.first_name} • تيليجرام ميني آب`;
+                    }
+                }
+
+                window.tgHaptic = {
+                    success: () => safeCall(() => tg.HapticFeedback.notificationOccurred('success')),
+                    error:   () => safeCall(() => tg.HapticFeedback.notificationOccurred('error')),
+                    impact:  (lvl) => safeCall(() => tg.HapticFeedback.impactOccurred(lvl || 'light'))
+                };
+            } else {
+                window.tgHaptic = { success: () => {}, error: () => {}, impact: () => {} };
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            initFlashcards();
+            initQuiz();
+            initTelegramMiniApp();
+            renderMathSafe(document.body);
+        });
+
+        window.addEventListener('load', () => {
+            renderMathSafe(document.body);
+        });
+    </script>
+</body>
+</html>
