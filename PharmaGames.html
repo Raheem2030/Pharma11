@@ -1,0 +1,2260 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>ألعاب واختبارات علم الأدوية التجريبي</title>
+
+  <!-- Telegram Mini App SDK -->
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+  <!-- Google Fonts: Cairo & IBM Plex Sans Arabic -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@700;800&family=IBM+Plex+Sans+Arabic:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <!-- FontAwesome 6 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <!-- KaTeX -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+
+  <style>
+    :root {
+      --bg-main: #F1F5F9;
+      --bg-subtle: #F8FAFC;
+      --card-bg: #FFFFFF;
+      --card-border: rgba(0, 0, 0, 0.08);
+      --border-strong: #CBD5E1;
+      --box-sub: rgba(226, 232, 240, 0.7);
+      --step-bg: #E2E8F0;
+      --text-title: #0F172A;
+      --text-subtitle: #1E293B;
+      --text-body: #334155;
+      --text-muted: #475569;
+      --accent-violet: #8B5CF6;
+      --accent-violet-dark: #5B21B6;
+      --accent-cyan: #06B6D4;
+      --accent-emerald: #10B981;
+      --accent-amber: #F59E0B;
+      --accent-rose: #F43F5E;
+      --card-shadow: 0 10px 25px -5px rgba(139, 92, 246, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      background-color: var(--bg-main);
+      color: var(--text-body);
+      font-family: 'IBM Plex Sans Arabic', 'Segoe UI', Tahoma, sans-serif;
+      font-weight: 400;
+      line-height: 1.65;
+      min-height: 100vh;
+      overflow-x: hidden;
+      touch-action: manipulation;
+    }
+
+    h1, h2, h3, h4, .font-heading {
+      font-family: 'Cairo', 'IBM Plex Sans Arabic', sans-serif;
+      color: var(--text-title);
+      line-height: 1.35;
+    }
+
+    /* Sticky Mobile-Friendly Header */
+    .top-hud {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: rgba(255, 255, 255, 0.96);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border-strong);
+      box-shadow: 0 4px 16px -4px rgba(15, 23, 42, 0.07);
+      padding-top: env(safe-area-inset-top, 0px);
+    }
+
+    .hud-inner {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .brand-icon {
+      width: 38px;
+      height: 38px;
+      flex-shrink: 0;
+      border-radius: 11px;
+      background: rgba(139, 92, 246, 0.12);
+      color: var(--accent-violet);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      border: 1px solid rgba(139, 92, 246, 0.25);
+    }
+
+    .brand-text {
+      min-width: 0;
+    }
+
+    .brand-text h1 {
+      font-size: 0.96rem;
+      font-weight: 800;
+      color: var(--text-title);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .brand-text span {
+      font-size: 0.74rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      display: block;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .hud-stats {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+
+    .stat-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 5px 10px;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      border: 1px solid var(--border-strong);
+      background: var(--bg-subtle);
+      color: var(--text-subtitle);
+    }
+
+    .stat-pill.xp {
+      background: rgba(245, 158, 11, 0.13);
+      border-color: rgba(245, 158, 11, 0.35);
+      color: #B45309;
+    }
+
+    .stat-pill.mistakes {
+      background: rgba(244, 63, 94, 0.1);
+      border-color: rgba(244, 63, 94, 0.32);
+      color: #BE123C;
+      cursor: pointer;
+    }
+
+    /* Horizontal Scrollable Game Selector Strip (Great on Mobile & Telegram) */
+    .game-strip-wrap {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0 12px 10px;
+    }
+
+    .game-strip {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      padding: 2px 2px 4px;
+    }
+
+    .game-strip::-webkit-scrollbar {
+      display: none;
+    }
+
+    .game-pill {
+      scroll-snap-align: start;
+      flex-shrink: 0;
+      background: var(--bg-subtle);
+      border: 1.5px solid var(--border-strong);
+      border-radius: 12px;
+      padding: 8px 13px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-family: 'Cairo', sans-serif;
+      font-weight: 700;
+      font-size: 0.84rem;
+      color: var(--text-subtitle);
+      min-height: 40px;
+      transition: all 0.18s ease;
+    }
+
+    .game-pill:hover {
+      border-color: var(--accent-violet);
+    }
+
+    .game-pill.active {
+      background: var(--accent-violet);
+      color: #FFFFFF;
+      border-color: var(--accent-violet);
+      box-shadow: 0 4px 12px rgba(139, 92, 246, 0.28);
+    }
+
+    /* Main Container */
+    .app-container {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 16px 14px calc(36px + env(safe-area-inset-bottom, 0px));
+    }
+
+    /* Topic Header Card (from to PDF.md) */
+    .topic-header-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-strong);
+      border-radius: 16px;
+      padding: 16px 18px;
+      margin-bottom: 14px;
+      box-shadow: var(--card-shadow);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .topic-en {
+      display: block;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--accent-violet);
+      margin-bottom: 2px;
+    }
+
+    .topic-ar {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--text-title);
+    }
+
+    /* Academic Card (from to PDF.md) */
+    .academic-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 18px;
+      margin-bottom: 16px;
+      box-shadow: var(--card-shadow);
+      border-right: 4px solid var(--accent-violet);
+    }
+
+    .academic-card.border-violet { border-right-color: var(--accent-violet); }
+    .academic-card.border-cyan { border-right-color: var(--accent-cyan); }
+    .academic-card.border-emerald { border-right-color: var(--accent-emerald); }
+    .academic-card.border-amber { border-right-color: var(--accent-amber); }
+    .academic-card.border-rose { border-right-color: var(--accent-rose); }
+
+    .card-title {
+      font-size: 1.06rem;
+      font-weight: 800;
+      color: var(--text-subtitle);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .icon-violet { color: var(--accent-violet); }
+    .icon-cyan { color: var(--accent-cyan); }
+    .icon-emerald { color: var(--accent-emerald); }
+    .icon-amber { color: var(--accent-amber); }
+    .icon-rose { color: var(--accent-rose); }
+
+    .step-box {
+      background: var(--step-bg);
+      border: 1px solid var(--border-strong);
+      border-radius: 12px;
+      padding: 12px 14px;
+      margin-bottom: 10px;
+    }
+
+    .step-box:last-child {
+      margin-bottom: 0;
+    }
+
+    .step-title {
+      font-family: 'Cairo', sans-serif;
+      font-weight: 700;
+      font-size: 0.94rem;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .sub-box {
+      background: var(--box-sub);
+      border: 1px solid var(--border-strong);
+      border-radius: 12px;
+      padding: 14px;
+      margin-bottom: 12px;
+    }
+
+    .formula-box {
+      background: var(--box-sub);
+      border: 1px solid var(--border-strong);
+      border-radius: 12px;
+      padding: 14px;
+      margin: 12px 0;
+      direction: ltr;
+      text-align: center;
+      color: var(--accent-violet-dark);
+      font-weight: 700;
+      font-size: 0.98rem;
+      overflow-x: auto;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    @media (max-width: 680px) {
+      .grid-2 {
+        grid-template-columns: 1fr;
+      }
+      .academic-card {
+        padding: 15px;
+      }
+    }
+
+    .tag-chip {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      margin: 2px;
+    }
+    .tag-violet { background: rgba(139, 92, 246, 0.12); color: var(--accent-violet-dark); }
+    .tag-cyan { background: rgba(6, 182, 212, 0.12); color: #0E7490; }
+    .tag-emerald { background: rgba(16, 185, 129, 0.12); color: #047857; }
+    .tag-amber { background: rgba(245, 158, 11, 0.14); color: #B45309; }
+    .tag-rose { background: rgba(244, 63, 94, 0.12); color: #BE123C; }
+
+    /* Touch-friendly Buttons (min-height 44px on primary controls) */
+    .btn {
+      font-family: 'Cairo', sans-serif;
+      font-weight: 700;
+      font-size: 0.88rem;
+      padding: 10px 16px;
+      min-height: 44px;
+      border-radius: 12px;
+      border: 1px solid transparent;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      transition: all 0.16s ease;
+    }
+
+    .btn:active { transform: scale(0.97); }
+    .btn-primary { background: var(--accent-violet); color: #FFFFFF; }
+    .btn-cyan { background: var(--accent-cyan); color: #FFFFFF; }
+    .btn-emerald { background: var(--accent-emerald); color: #FFFFFF; }
+    .btn-amber { background: var(--accent-amber); color: #FFFFFF; }
+    .btn-rose { background: var(--accent-rose); color: #FFFFFF; }
+    .btn-outline {
+      background: var(--bg-subtle);
+      color: var(--text-subtitle);
+      border-color: var(--border-strong);
+    }
+    .btn-sm {
+      padding: 6px 12px;
+      min-height: 36px;
+      font-size: 0.8rem;
+      border-radius: 9px;
+    }
+
+    /* Options & Feedback */
+    .option-btn {
+      width: 100%;
+      min-height: 48px;
+      text-align: right;
+      background: var(--bg-subtle);
+      border: 1.5px solid var(--border-strong);
+      border-radius: 12px;
+      padding: 12px 14px;
+      margin-bottom: 9px;
+      cursor: pointer;
+      font-family: 'IBM Plex Sans Arabic', sans-serif;
+      font-size: 0.93rem;
+      font-weight: 600;
+      color: var(--text-title);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      transition: all 0.15s;
+    }
+
+    .option-btn.correct {
+      background: rgba(16, 185, 129, 0.12);
+      border-color: var(--accent-emerald);
+      color: #065F46;
+    }
+
+    .option-btn.wrong {
+      background: rgba(244, 63, 94, 0.1);
+      border-color: var(--accent-rose);
+      color: #9F1239;
+    }
+
+    .feedback-panel {
+      margin-top: 12px;
+      padding: 13px 15px;
+      border-radius: 12px;
+      border: 1px solid var(--border-strong);
+      background: var(--bg-subtle);
+      font-size: 0.9rem;
+    }
+    .feedback-panel.success { background: rgba(16, 185, 129, 0.09); border-color: var(--accent-emerald); }
+    .feedback-panel.error { background: rgba(244, 63, 94, 0.08); border-color: var(--accent-rose); }
+    .feedback-panel.info { background: rgba(6, 182, 212, 0.08); border-color: var(--accent-cyan); }
+
+    ul.styled-list {
+      padding-right: 18px;
+      margin-top: 6px;
+    }
+    ul.styled-list li {
+      margin-bottom: 5px;
+    }
+
+    /* 3D Flashcard */
+    .flashcard-scene {
+      perspective: 1100px;
+      max-width: 600px;
+      margin: 12px auto;
+    }
+
+    .flashcard-inner {
+      position: relative;
+      width: 100%;
+      min-height: 220px;
+      transition: transform 0.55s cubic-bezier(0.4, 0.2, 0.2, 1);
+      transform-style: preserve-3d;
+      cursor: pointer;
+    }
+
+    .flashcard-inner.flipped {
+      transform: rotateY(180deg);
+    }
+
+    .flashcard-face {
+      position: absolute;
+      inset: 0;
+      backface-visibility: hidden;
+      background: var(--card-bg);
+      border: 2px solid var(--border-strong);
+      border-radius: 16px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      box-shadow: var(--card-shadow);
+      overflow-y: auto;
+    }
+
+    .flashcard-front { border-top: 6px solid var(--accent-violet); }
+    .flashcard-back { transform: rotateY(180deg); border-top: 6px solid var(--accent-emerald); background: #FAFFFD; }
+
+    /* Drag & Drop + Tap-to-Place */
+    .dnd-pool {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      min-height: 60px;
+      padding: 12px;
+      background: var(--box-sub);
+      border: 1.5px dashed var(--border-strong);
+      border-radius: 12px;
+      margin-bottom: 14px;
+    }
+
+    .dnd-chip {
+      background: var(--card-bg);
+      border: 1.5px solid var(--accent-violet);
+      color: var(--text-title);
+      padding: 8px 12px;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 0.86rem;
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.15s;
+    }
+
+    .dnd-chip.selected {
+      background: var(--accent-violet);
+      color: #FFFFFF;
+      transform: scale(1.02);
+      box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+    }
+
+    .dnd-buckets-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      gap: 10px;
+    }
+
+    .dnd-bucket {
+      background: var(--bg-subtle);
+      border: 2px dashed var(--border-strong);
+      border-radius: 14px;
+      padding: 12px;
+      min-height: 120px;
+      cursor: pointer;
+    }
+
+    .dnd-bucket.drag-over {
+      border-color: var(--accent-violet);
+      background: rgba(139, 92, 246, 0.08);
+    }
+
+    .dnd-bucket-title {
+      font-family: 'Cairo', sans-serif;
+      font-weight: 700;
+      font-size: 0.88rem;
+      margin-bottom: 8px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid var(--border-strong);
+    }
+
+    .dnd-placed-item {
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid var(--accent-emerald);
+      color: #065F46;
+      padding: 5px 9px;
+      border-radius: 8px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      margin-bottom: 5px;
+    }
+
+    /* Step Order */
+    .step-order-item {
+      background: var(--bg-subtle);
+      border: 1.5px solid var(--border-strong);
+      border-radius: 12px;
+      padding: 10px 12px;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .step-order-item.is-correct { border-color: var(--accent-emerald); background: rgba(16, 185, 129, 0.1); }
+    .step-order-item.is-wrong { border-color: var(--accent-rose); background: rgba(244, 63, 94, 0.08); }
+
+    /* Match Pair */
+    .match-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    @media (max-width: 600px) {
+      .match-grid { grid-template-columns: 1fr; }
+    }
+    .match-card {
+      background: var(--bg-subtle);
+      border: 1.5px solid var(--border-strong);
+      border-radius: 11px;
+      padding: 10px 12px;
+      margin-bottom: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.86rem;
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+    }
+    .match-card.selected { border-color: var(--accent-violet); background: rgba(139, 92, 246, 0.12); color: var(--accent-violet-dark); }
+    .match-card.matched { border-color: var(--accent-emerald); background: rgba(16, 185, 129, 0.12); color: #065F46; cursor: default; }
+
+    /* Inputs & Tables */
+    .calc-input {
+      width: 100%;
+      min-height: 44px;
+      padding: 9px 12px;
+      border-radius: 10px;
+      border: 1.5px solid var(--border-strong);
+      background: #FFFFFF;
+      font-family: 'IBM Plex Sans Arabic', sans-serif;
+      font-size: 0.96rem;
+      font-weight: 600;
+      color: var(--text-title);
+      direction: ltr;
+      text-align: center;
+    }
+    .calc-input:focus { outline: none; border-color: var(--accent-violet); }
+
+    input[type="range"].styled-slider {
+      width: 100%;
+      height: 32px;
+      accent-color: var(--accent-violet);
+      cursor: pointer;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      border-radius: 12px;
+      border: 1px solid var(--border-strong);
+    }
+
+    table.academic-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.86rem;
+      background: var(--card-bg);
+    }
+    table.academic-table th {
+      background: var(--step-bg);
+      color: var(--text-title);
+      font-family: 'Cairo', sans-serif;
+      font-weight: 700;
+      padding: 10px;
+      text-align: right;
+      border-bottom: 2px solid var(--border-strong);
+    }
+    table.academic-table td {
+      padding: 9px 10px;
+      border-bottom: 1px solid #E2E8F0;
+    }
+
+    /* Colorimetric Filter Paper */
+    .filter-paper-disc {
+      width: 165px;
+      height: 165px;
+      border-radius: 50%;
+      margin: 0 auto;
+      background: #F8FAFC;
+      border: 3px solid #CBD5E1;
+      box-shadow: inset 0 2px 12px rgba(15, 23, 42, 0.08), 0 6px 16px rgba(15, 23, 42, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .filter-stain {
+      width: 96px;
+      height: 96px;
+      border-radius: 50%;
+      transition: all 0.5s ease;
+      filter: blur(4px);
+    }
+
+    /* SVG Hotspot */
+    .hotspot-node { cursor: pointer; }
+
+    /* Mistake Drawer Overlay */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.55);
+      z-index: 2000;
+      display: none;
+      align-items: flex-end;
+      justify-content: center;
+    }
+    .modal-backdrop.open { display: flex; }
+    .modal-sheet {
+      background: var(--card-bg);
+      width: 100%;
+      max-width: 720px;
+      max-height: 85vh;
+      overflow-y: auto;
+      border-radius: 20px 20px 0 0;
+      padding: 20px 16px 28px;
+      box-shadow: 0 -10px 30px rgba(15, 23, 42, 0.2);
+    }
+
+    /* Toast */
+    .toast-box {
+      position: fixed;
+      bottom: calc(18px + env(safe-area-inset-bottom, 0px));
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 3000;
+      background: var(--text-title);
+      color: #FFFFFF;
+      padding: 10px 18px;
+      border-radius: 999px;
+      font-family: 'Cairo', sans-serif;
+      font-weight: 700;
+      font-size: 0.85rem;
+      box-shadow: 0 10px 25px rgba(15, 23, 42, 0.25);
+      display: none;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+      max-width: 92vw;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .toast-box.show { display: flex; }
+  </style>
+</head>
+<body>
+
+  <!-- TOP MOBILE / TELEGRAM MINI APP HUD -->
+  <header class="top-hud">
+    <div class="hud-inner">
+      <div class="brand-group">
+        <div class="brand-icon"><i class="fa-solid fa-flask-vial"></i></div>
+        <div class="brand-text">
+          <h1>ألعاب علم الأدوية التجريبي</h1>
+          <span id="hud-subtitle">الجلسات 1 • 2 • 3 — د. طلة قنبر</span>
+        </div>
+      </div>
+      <div class="hud-stats">
+        <div class="stat-pill xp"><i class="fa-solid fa-star"></i> <span id="hud-xp">0</span> XP</div>
+        <button class="stat-pill mistakes" onclick="openMistakesModal()">
+          <i class="fa-solid fa-rotate-left"></i> <span id="hud-mistakes">0</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Scrollable 10-Game Selector Bar -->
+    <div class="game-strip-wrap">
+      <div class="game-strip" id="game-strip"></div>
+    </div>
+  </header>
+
+  <main class="app-container">
+    <div id="topic-banner" class="topic-header-card"></div>
+    <div id="game-stage" class="academic-card border-violet"></div>
+  </main>
+
+  <!-- Mistake Review Bottom Sheet -->
+  <div id="mistakes-modal" class="modal-backdrop" onclick="if(event.target===this) closeMistakesModal()">
+    <div class="modal-sheet">
+      <div class="card-title">
+        <span><i class="fa-solid fa-brain icon-rose"></i> بنك المراجعة الذكية للأخطاء</span>
+        <button class="btn btn-outline btn-sm" onclick="closeMistakesModal()"><i class="fa-solid fa-xmark"></i> إغلاق</button>
+      </div>
+      <div id="mistakes-list"></div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast-box"></div>
+
+  <script>
+    // ========= 1. TELEGRAM MINI APP & HAPTIC INTEGRATION =========
+    const tg = (window.Telegram && window.Telegram.WebApp) ? window.Telegram.WebApp : null;
+
+    function initTelegramApp() {
+      if (!tg) return;
+      try {
+        tg.ready();
+        tg.expand();
+        if (tg.setHeaderColor) tg.setHeaderColor('#FFFFFF');
+        if (tg.setBackgroundColor) tg.setBackgroundColor('#F1F5F9');
+        const user = tg.initDataUnsafe && tg.initDataUnsafe.user;
+        if (user && user.first_name) {
+          document.getElementById('hud-subtitle').textContent = `أهلاً ${user.first_name} • الجلسات 1-2-3`;
+        }
+      } catch (e) {}
+    }
+
+    function haptic(type) {
+      if (!tg || !tg.HapticFeedback) return;
+      try {
+        if (type === 'success' || type === 'error' || type === 'warning') {
+          tg.HapticFeedback.notificationOccurred(type);
+        } else {
+          tg.HapticFeedback.impactOccurred('light');
+        }
+      } catch (e) {}
+    }
+
+    // ========= 2. STATE & MISTAKE BANK =========
+    const DEFAULT_STATE = {
+      xp: 0,
+      mistakes: [],
+      flashMastered: []
+    };
+
+    let appState = loadState();
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem('pharma_tma_state_v2');
+        if (raw) return { ...DEFAULT_STATE, ...JSON.parse(raw) };
+      } catch (e) {}
+      return JSON.parse(JSON.stringify(DEFAULT_STATE));
+    }
+
+    function saveState() {
+      try {
+        localStorage.setItem('pharma_tma_state_v2', JSON.stringify(appState));
+      } catch (e) {}
+      updateHUD();
+    }
+
+    function addXP(amount, reason) {
+      appState.xp += amount;
+      saveState();
+      haptic('success');
+      showToast(`+${amount} XP — ${reason}`, 'emerald');
+    }
+
+    function recordMistake(id, topic, question, correction) {
+      haptic('error');
+      if (!appState.mistakes.some(m => m.id === id)) {
+        appState.mistakes.unshift({ id, topic, question, correction });
+        saveState();
+      }
+    }
+
+    function resolveMistake(id) {
+      appState.mistakes = appState.mistakes.filter(m => m.id !== id);
+      addXP(10, 'مراجعة وتصحيح المفهوم');
+      renderMistakesList();
+    }
+
+    function updateHUD() {
+      document.getElementById('hud-xp').textContent = appState.xp;
+      document.getElementById('hud-mistakes').textContent = appState.mistakes.length;
+    }
+
+    let toastTimer = null;
+    function showToast(msg, tone = 'violet') {
+      const t = document.getElementById('toast');
+      const bg = { emerald: '#065F46', amber: '#92400E', rose: '#9F1239', violet: '#0F172A' }[tone] || '#0F172A';
+      t.style.background = bg;
+      t.innerHTML = `<i class="fa-solid fa-sparkles"></i><span>${msg}</span>`;
+      t.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => t.classList.remove('show'), 2500);
+    }
+
+    function openMistakesModal() {
+      haptic('tap');
+      renderMistakesList();
+      document.getElementById('mistakes-modal').classList.add('open');
+    }
+
+    function closeMistakesModal() {
+      document.getElementById('mistakes-modal').classList.remove('open');
+    }
+
+    function renderMistakesList() {
+      const el = document.getElementById('mistakes-list');
+      if (appState.mistakes.length === 0) {
+        el.innerHTML = `
+          <div class="feedback-panel success" style="text-align:center;">
+            <i class="fa-solid fa-circle-check" style="font-size:1.5rem;"></i>
+            <p style="margin-top:6px; font-weight:700;">بنك الأخطاء فارغ! جميع إجاباتك ممتازة حتى الآن.</p>
+          </div>`;
+        return;
+      }
+      el.innerHTML = appState.mistakes.map(m => `
+        <div class="step-box" style="border-right:4px solid var(--accent-rose);">
+          <span class="tag-chip tag-rose">${m.topic}</span>
+          <h4 style="margin:6px 0; font-size:0.95rem;">${m.question}</h4>
+          <p style="color:#065F46; font-weight:600; font-size:0.86rem; margin-bottom:8px;">
+            <i class="fa-solid fa-lightbulb icon-emerald"></i> الصواب: ${m.correction}
+          </p>
+          <button class="btn btn-emerald btn-sm" onclick="resolveMistake('${m.id.replace(/'/g, "\\'")}')">
+            <i class="fa-solid fa-check"></i> تمت المراجعة (+10 XP)
+          </button>
+        </div>
+      `).join('');
+    }
+
+    // ========= 3. COURSE DATASETS (LECTURES 1, 2, 3) =========
+    const GAME_CATALOG = [
+      { code: 'QUIZ', icon: 'fa-circle-question', en: 'MULTIPLE CHOICE QUIZ', title: 'اختبار الخيارات' },
+      { code: 'FLASH', icon: 'fa-clone', en: 'SPACED REPETITION CARDS', title: 'بطاقات الاستذكار' },
+      { code: 'TF', icon: 'fa-check-double', en: 'TRUE / FALSE + CORRECTION', title: 'الصواب والتصحيح' },
+      { code: 'DND-SORT', icon: 'fa-boxes-stacked', en: 'BUCKET CLASSIFICATION', title: 'تصنيف الحاويات' },
+      { code: 'HOTSPOT', icon: 'fa-crosshairs', en: 'ANATOMICAL HOTSPOTS', title: 'الصياد التشريحي' },
+      { code: 'SLIDER-ANG', icon: 'fa-syringe', en: 'NEEDLE ANGLE SIMULATOR', title: 'زوايا الإبر' },
+      { code: 'CALC-BOX', icon: 'fa-calculator', en: 'DOSE & T.I CALCULATOR', title: 'حاسبة الجرعات' },
+      { code: 'STEP-ORDER', icon: 'fa-list-ol', en: 'PROTOCOL SEQUENCING', title: 'ترتيب الخطوات' },
+      { code: 'COLOR-SIM', icon: 'fa-vial', en: 'SALIVA KI COLORIMETRY', title: 'المحاكي اللوني' },
+      { code: 'MATCH-PAIR', icon: 'fa-link', en: 'MATRIX PAIR MATCHING', title: 'شبكة المطابقة' }
+    ];
+
+    const QUIZ_DATA = [
+      {
+        id: 'q1', session: 1,
+        q: 'أي فرع من علم الأدوية يدرس العلاقة بين فعل الأدوية وطبيعة تركيبها الكيميائي وتأثيراتها الفيزيولوجية؟',
+        options: ['حرائك الأدوية (Pharmacokinetics)', 'دينمية / ديناميكية الدواء (Pharmacodynamics)', 'علم السموم (Toxicology)', 'علم الجرعات (Posology)'],
+        correct: 1,
+        reasons: [
+          'الحرائك تدرس الامتصاص والتوزع والتفاعلات الحيوية والإطراح.',
+          'صحيح! دينمية الدواء تدرس التأثيرات الكيميائية الحيوية والفيزيولوجية وآلية العمل والعلاقة مع التركيب الكيميائي.',
+          'علم السموم يختص بالتأثيرات السمية للعقاقير.',
+          'علم الجرعات يدرس كمية المادة الدوائية المعطاة للمريض.'
+        ]
+      },
+      {
+        id: 'q2', session: 1,
+        q: 'ما المادة الفعالة المستخرجة من «بذور نبات الجوز المقيئ»؟',
+        options: ['قلويد الأميتين', 'جليكوسيد انثراسين', 'الستركنين والبروسين والفوميسين والكوليبرين', 'المورفين والكودايين والبابافرين'],
+        correct: 2,
+        reasons: [
+          'الأميتين من جذور نبات عرق الذهب.',
+          'جليكوسيد انثراسين من أوراق السينامكي.',
+          'صحيح! بذور الجوز المقيئ تحوي الستركنين والبروسين والفوميسين والكوليبرين.',
+          'المورفين والكودايين والبابافرين من ثمار الخشخاش.'
+        ]
+      },
+      {
+        id: 'q3', session: 1,
+        q: 'أي من الأدوية التالية تتخرب بالعصارة الهضمية ولا تُعطى فموياً بشكلها الحر؟',
+        options: ['سلفات المغنيزيوم', 'يودور البوتاسيوم', 'الأنسولين والأدرينالين والبنسلين ج', 'بيكربونات الصوديوم'],
+        correct: 2,
+        reasons: [
+          'سلفات المغنيزيوم مسهل حجمي فموي.',
+          'يودور البوتاسيوم مقشع يُعطى فموياً في الحالة المزمنة.',
+          'صحيح! الأنسولين والأدرينالين والبنسلين ج تتخرب بالعصارة الهضمية.',
+          'بيكربونات الصوديوم مضاد حموضة فموي.'
+        ]
+      },
+      {
+        id: 'q4', session: 1,
+        q: 'ما القطر المثالي للجزيئات الدوائية في طريق الاستنشاق؟',
+        options: ['5 - 10 ميكرومتر', '0.5 - 2 ميكرومتر', '10 - 20 ميكرومتر', '0.01 - 0.1 ميكرومتر'],
+        correct: 1,
+        reasons: [
+          'أكبر من المثالي.',
+          'صحيح! القطر المثالي يجب أن يكون 0.5 - 2 ميكرومتر.',
+          'تترسب في المجاري العلوية.',
+          'صغيرة جداً وقد تخرج مع الزفير.'
+        ]
+      },
+      {
+        id: 'q5', session: 1,
+        q: 'ما قياس الإبرة ذات الرأس الكروي والمحقن المستخدمين في التزقيم الفموي (Oral Gavage) للفئران البالغة؟',
+        options: ['محقن 5 مل وإبرة 18G', 'محقن 1 مل وإبرة رأس كروي 22GX1', 'إبرة أنسولين 27G × 1/2 in', 'قسطرة بعمق 2.5 سم'],
+        correct: 1,
+        reasons: [
+          'مقاس كبير جداً على الفأر.',
+          'صحيح! محقن 1 مل بإبرة رأس كروي قياس 22GX1 لتجنب جرح المري.',
+          'تُستخدم هذه الإبرة للحقن تحت الصفاق (IP).',
+          'عمق 2.5 سم يخص القسطرة المهبلية.'
+        ]
+      },
+      {
+        id: 'q6', session: 2,
+        q: 'ما الحد الأقصى المسموح لحجم المادة المحقونة في العضل (IM) عند حيوانات التجربة؟',
+        options: ['2.5 مل', '1.5 مل', '0.5 مل', '0.05 مل'],
+        correct: 2,
+        reasons: [
+          'يسبب أذى عضلياً شديداً.',
+          'يتجاوز السعة المسموحة.',
+          'صحيح! يجب ألا يزيد حجم الحقن العضلي عند حيوانات التجربة عن 0.5 مل.',
+          '0.05 مل هو حجم الحقن في الأدمة (ID).'
+        ]
+      },
+      {
+        id: 'q7', session: 2,
+        q: 'أي دواء مما يلي يسبب حقنه بسرعة وريدياً خطورة أو موتاً؟',
+        options: ['المحلول الملحي الفيزيولوجي البطيء', 'الأمينوفللين', 'يودور البوتاسيوم فموياً', 'صبغة اليود موضعياً'],
+        correct: 1,
+        reasons: [
+          'المحاليل الملحية البطيئة آمنة للتجفاف.',
+          'صحيح! حقن الأمينوفللين بسرعة وريدياً قد يؤدي إلى خطورة أو موت.',
+          'KI ليس للحقن السريع هنا.',
+          'صبغة اليود سطحية على الجلد.'
+        ]
+      },
+      {
+        id: 'q8', session: 2,
+        q: 'بماذا تتميز الأرانب وراثياً وفيزيولوجياً في التجارب الدوائية؟',
+        options: ['انعدام مركز التقيؤ', 'امتلاك أنزيم الأتروبيناز والإباضة بعد 10 ساعات من الجماع عبر L.H', 'تشابه مورثي 85% مع الإنسان', 'عزل ألياف بركينجي القلبية'],
+        correct: 1,
+        reasons: [
+          'انعدام مركز التقيؤ يميز الجرذان والفئران.',
+          'صحيح! تملك الأرانب أنزيم الأتروبيناز وتحدث إباضتها بعد 10 ساعات بتحرر هرمون L.H.',
+          '85% تشابه مورثي خاص بالفئران.',
+          'ألياف بركينجي من قلب الكلاب.'
+        ]
+      },
+      {
+        id: 'q9', session: 2,
+        q: 'كم تبلغ غالباً مدة السماح لتداول الدواء بعد المرحلة الإحصائية قبل إعادة دراسته دورياً؟',
+        options: ['6 أشهر', '3 - 5 سنوات', '12 سنة', 'سنة واحدة'],
+        correct: 1,
+        reasons: [
+          'مدة أقصر من المقرر.',
+          'صحيح! تتراوح غالباً بين 3 - 5 سنوات وتعاد الدراسة دورياً بعدها.',
+          'مدة مفرطة.',
+          'غير مطابق.'
+        ]
+      },
+      {
+        id: 'q10', session: 3,
+        q: 'ما المقصود بالجرعة غير القاتلة (L.D.0)؟',
+        options: ['الجرعة التي تقتل حيواناً واحداً على الأكثر', 'أعلى جرعة سامة لا تقتل أي حيوان', 'الجرعة الفعالة عند 50%', 'أصغر جرعة سامة تقتل كل الحيوانات'],
+        correct: 1,
+        reasons: [
+          'هذه هي الجرعة القاتلة الصغرى M.L.D.',
+          'صحيح! L.D.0 هي أعلى جرعة سامة لا تقتل أي حيوان.',
+          'هذه هي ED.50.',
+          'هذه هي L.D.100.'
+        ]
+      },
+      {
+        id: 'q11', session: 3,
+        q: 'أي الأدوية التالية يمتلك قيمة مؤشر علاجي (T.I) أعلى ومستوى سلامة أكبر؟',
+        options: ['مركبات الديجتالين', 'السلفا والبنسلينات', 'الستركنين', 'مخدر استنشاقي مخرش'],
+        correct: 1,
+        reasons: [
+          'الديجتالين ذو قيمة مؤشر علاجي أقل وهامش أمان أضيق.',
+          'صحيح! السلفا والبنسلينات ذات مؤشر علاجي مرتفع ومستوى سلامة واسع.',
+          'مادة شديدة السمية.',
+          'غير مدرج كمؤشر أمان مرتفع.'
+        ]
+      },
+      {
+        id: 'q12', session: 3,
+        q: 'أي من المتعضيات التالية ليس لليود أي تأثير عليه رغم طيفه الجرثومي الواسع جداً؟',
+        options: ['الفطور والفيروسات', 'الأميبا والجيارديا', 'عصيات السل (T.B)', 'الجراثيم إيجابية وسلبية الغرام'],
+        correct: 2,
+        reasons: [
+          'يشملها طيف اليود.',
+          'يشملها طيف اليود.',
+          'صحيح! ليس لليود أي تأثير على عصيات السل (T.B).',
+          'يشملها طيف اليود.'
+        ]
+      },
+      {
+        id: 'q13', session: 3,
+        q: 'ما نصف العمر البيولوجي لليود المشع 131 وما الأشعة الصادرة عنه؟',
+        options: ['13 يوماً وغاما فقط', '8 أيام وغاما وبيتا (ينطرح >99% خلال 56 يوماً)', '8 أيام وألفا فقط', '56 يوماً وبيتا فقط'],
+        correct: 1,
+        reasons: [
+          'تلك خصائص اليود المشع 123 وفق المحاضرة.',
+          'صحيح! اليود 131 نصف عمره البيولوجي 8 أيام (7×8 = 56 يوماً) وتنطلق منه أشعة غاما وبيتا.',
+          'لا يصدر ألفا.',
+          '56 يوماً هي 7 أزمان لنصف العمر.'
+        ]
+      },
+      {
+        id: 'q14', session: 3,
+        q: 'ما الغاية من الكشف المسبق في لعاب الطالب «قبل» تناول يودور البوتاسيوم؟',
+        options: ['تعقيم جوف الفم', 'إثبات خلو لعاب الطالب من يودور البوتاسيوم قبل التجربة (شاهد)', 'تنشيط الإفراز اللعابي', 'معادلة حمض الكبريت'],
+        correct: 1,
+        reasons: [
+          'ليس للتعقيم.',
+          'صحيح! يُجرى الكشف المسبق كشاهد لإثبات خلو اللعاب من KI قبل التجربة.',
+          'لا علاقة له بالتنشيط.',
+          'ليس للمعادلة.'
+        ]
+      }
+    ];
+
+    const FLASH_DATA = [
+      { id: 'f1', cat: 'الجلسة 1', front: 'تعريف العقار (Drug) حسب الـ FDA', back: 'مادة أو خليطة من مواد مختلفة تستعمل لغرض المعالجة أو الوقاية أو الحد من الآلام التي يعاني منها المريض.' },
+      { id: 'f2', cat: 'الجلسة 1', front: 'ست الحسن وعرق الذهب: الجزء والمادة الفعالة', back: 'ست الحسن (الأوراق): الأتروبين والهيوسين والهيوسيامين.\nعرق الذهب (الجذور): قلويد الأميتين.' },
+      { id: 'f3', cat: 'الجلسة 1', front: 'الأدوية المخربة بالعصارة الهضمية ومواد التغطية', back: 'تتخرب: الأنسولين، الأدرينالين، البنسلين ج.\nمواد التغطية: الكيراتين، السيللوز، أو حمض الفوسفات.' },
+      { id: 'f4', cat: 'الجلسة 1', front: 'المصادر المعدنية الأربعة للأدوية', back: 'سلفات المغنيزيوم (مسهل حجمي) • بيكربونات الصوديوم (مضاد حموضة/إجهاد حراري) • اليود (معقم جروح) • يودور البوتاسيوم (منفث).' },
+      { id: 'f5', cat: 'الجلسة 2', front: 'شروط الحقن في الصفاق (IP)', back: 'الامتصاص = نصف أو ربع الوريدي؛ الناحية اليسرى والجزء السفلي من البطن بإبرة أنسولين 27G × 1/2 in (1.0 ml).' },
+      { id: 'f6', cat: 'الجلسة 2', front: 'الحقن الوريدي عند الفأر والأرنب', back: 'الفأر: 4 أوردة ذيلية، حمام مائي 45-50°س، أبعد ما يمكن عن قاعدة الذيل.\nالأرنب: الوريد الأذني الأنسي بعد إزالة الوبر وضغط القاعدة.' },
+      { id: 'f7', cat: 'الجلسة 2', front: 'التشريح المميز للجرذان والفئران', back: '85% تشابه مورثي (الفئران)، لا مركز تقيؤ، لا لوزات ولا حوصلة إفرازية، معثكلة منتشرة، معدة من جزأين (علوي غير غدي وسفلي غدي).' },
+      { id: 'f8', cat: 'الجلسة 2', front: 'وظائف خنازير غينيا والكلاب والضفادع', back: 'خنازير غينيا: الربو والهيستامين والسل.\nالكلاب: أنبوب هضمي قصير وألياف بركينجي.\nالضفادع: CNS والقلب والاتصالات العصبية العضلية.' },
+      { id: 'f9', cat: 'الجلسة 3', front: 'الفرق بين M.L.D و L.D.0 و L.D.50 و L.D.100', back: 'M.L.D: تقتل حيواناً واحداً على الأكثر.\nL.D.0: أعلى جرعة لا تقتل أي حيوان.\nL.D.50: تقتل 50%.\nL.D.100: أصغر جرعة تقتل كل الحيوانات.' },
+      { id: 'f10', cat: 'الجلسة 3', front: 'مستحضرات اليود وتراكيزها', back: 'صبغة اليود: 40 مغ/مل (جلد) • يود الغليسرين: 15 مغ/مل (فم) • بوفيدون أيودين: 10 مغ/مل (جروح) • أميودارون: 75 ملغ/قرص • أيودوكسي يوريدين: 18 ملغ/قطرة.' },
+      { id: 'f11', cat: 'الجلسة 3', front: 'الحاجة اليومية لليود (بعد البلوغ، الحمل، الإرضاع)', back: 'بعد البلوغ: 150 مغ/يوم\nالحمل (+25): 175 مغ/يوم\nالإرضاع (+25): 200 مغ/يوم.' },
+      { id: 'f12', cat: 'الجلسة 3', front: 'كواشف تجربة الكشف عن يودور البوتاسيوم في اللعاب', back: 'ورقة ترشيح مبللة باللعاب + 1 قطرة حمض الكبريت + 1 قطرة نشاء 1% + 2 قطرة ماء أوكسجيني 3% ← انتظار نصف دقيقة ← لون بنفسجي أو أزرق.' }
+    ];
+
+    const TF_DATA = [
+      {
+        id: 'tf1',
+        statement: 'يمكن إعطاء الأنسولين والأدرينالين والبنسلين ج فموياً دون تغطية لأنها لا تتأثر بالعصارة الهضمية.',
+        isTrue: false,
+        correctionOptions: [
+          'تتخرب بالعصارة الهضمية ولا تعطى فموياً، أو يلزم تغطية الحبوب بالكيراتين أو السيللوز أو حمض الفوسفات.',
+          'تتخرب فقط في المهبل.',
+          'تُعطى بالاستنشاق بقطر 15 ميكرومتر.'
+        ],
+        correctIdx: 0
+      },
+      {
+        id: 'tf2',
+        statement: 'تُدخل القسطرة المطاطية بعمق 2.5 سم في مهبل الفأرة عند التطبيق المهبلي.',
+        isTrue: true,
+        explain: 'صحيح! الإعطاء المهبلي نادر جداً وتُدخل القسطرة بعمق 2.5 سم.'
+      },
+      {
+        id: 'tf3',
+        statement: 'معدل امتصاص الدواء عند الحقن تحت الجلد (SC) أسرع من الحقن الوريدي والعضلي.',
+        isTrue: false,
+        correctionOptions: [
+          'معدل امتصاص الحقن تحت الجلد أقل (أبطأ) من الوريدي والعضلي والبريتواني.',
+          'الحقن تحت الجلد يساوي الوريدي بالسرعة.',
+          'الحقن في الأدمة أسرع من الوريدي.'
+        ],
+        correctIdx: 0
+      },
+      {
+        id: 'tf4',
+        statement: 'عند حقن الفأر في الوريد الذيلي يجب الحقن أبعد ما يمكن عن قاعدة الذيل لإتاحة تكرار الحقن.',
+        isTrue: true,
+        explain: 'صحيح! يتيح ذلك استخدام الأوردة الذيلية عدة مرات إذا لزم الأمر.'
+      },
+      {
+        id: 'tf5',
+        statement: 'يصدر اليود المشع 123 أشعة غاما وبيتا، بينما يصدر اليود المشع 131 أشعة غاما فقط.',
+        isTrue: false,
+        correctionOptions: [
+          'العكس: اليود 131 يصدر غاما وبيتا (نصف عمره 8 أيام)، بينما اليود 123 يصدر غاما فقط (نصف عمره 13 يوماً).',
+          'كلاهما يصدران ألفا فقط.',
+          'اليود 131 لا يُطرح من الجسم.'
+        ],
+        correctIdx: 0
+      },
+      {
+        id: 'tf6',
+        statement: 'يُمنع استعمال يودور البوتاسيوم في حالات التهاب القصبات الحاد ويُقتصر على المزمنة والسعال الجاف.',
+        isTrue: true,
+        explain: 'صحيح! لا يستعمل في الحالات الحادة بسبب تأثيره المخرش.'
+      },
+      {
+        id: 'tf7',
+        statement: 'إذا سحبت دماً أثناء الحقن العضلي (IM) للفأر، يجب متابعة دفع الدواء بسرعة.',
+        isTrue: false,
+        correctionOptions: [
+          'إذا سحبت دماً يجب إيقاف الإعطاء فوراً وتحريك الإبرة أو إعادة الإعطاء من جديد.',
+          'ظهور الدم شرط لنجاح الحقن العضلي.',
+          'تُزاد الجرعة إلى 2 مل.'
+        ],
+        correctIdx: 0
+      }
+    ];
+
+    const DND_ARENAS = [
+      {
+        title: 'الميدان 1: فروع علم الأدوية (الجلسة 1)',
+        buckets: [
+          { id: 'pk', title: 'حرائك الأدوية (PK)', color: 'cyan' },
+          { id: 'pd', title: 'دينمية الدواء (PD)', color: 'violet' },
+          { id: 'tox', title: 'علم السموم', color: 'rose' }
+        ],
+        items: [
+          { id: 'd1', text: 'الامتصاص والتوزع والإطراح', target: 'pk' },
+          { id: 'd2', text: 'التفاعلات الحيوية في الجسم', target: 'pk' },
+          { id: 'd3', text: 'التأثيرات الكيميائية الحيوية والفيزيولوجية', target: 'pd' },
+          { id: 'd4', text: 'آلية العمل والعلاقة مع التركيب الكيميائي', target: 'pd' },
+          { id: 'd5', text: 'التأثيرات السمية للعقاقير العلاجية', target: 'tox' }
+        ]
+      },
+      {
+        title: 'الميدان 2: مصادر الأدوية الستة (الجلسة 1)',
+        buckets: [
+          { id: 'plant', title: 'مصدر نباتي', color: 'emerald' },
+          { id: 'animal', title: 'مصدر حيواني', color: 'amber' },
+          { id: 'mineral', title: 'مصدر معدني', color: 'cyan' },
+          { id: 'micro', title: 'مكروبيولوجي', color: 'rose' },
+          { id: 'synth', title: 'اصطناعي / DNA مأشوب', color: 'violet' }
+        ],
+        items: [
+          { id: 's1', text: 'الأتروبين (ست الحسن) والأميتين (عرق الذهب)', target: 'plant' },
+          { id: 's2', text: 'الستركنين (الجوز المقيئ) والمورفين (الخشخاش)', target: 'plant' },
+          { id: 's3', text: 'الجونادوتروبين وثيروكسين الأغنام', target: 'animal' },
+          { id: 's4', text: 'فيتامين A وD من كبد سمك القد', target: 'animal' },
+          { id: 's5', text: 'سلفات المغنيزيوم وبيكربونات الصوديوم', target: 'mineral' },
+          { id: 's6', text: 'اليود المعقم ويودور البوتاسيوم', target: 'mineral' },
+          { id: 's7', text: 'البنسلين من فطر Penicillium notatum', target: 'micro' },
+          { id: 's8', text: 'مركبات HPLC وGC والأنسولين بالـ DNA المأشوب', target: 'synth' }
+        ]
+      },
+      {
+        title: 'الميدان 3: طيف اليود والتحمل الهضمي (الجلسة 1 و3)',
+        buckets: [
+          { id: 'iod_yes', title: 'يشمله طيف اليود', color: 'emerald' },
+          { id: 'iod_no', title: 'لا يشمله طيف اليود', color: 'rose' },
+          { id: 'oral_bad', title: 'يتخرب هضمياً', color: 'amber' },
+          { id: 'coat', title: 'مواد تغطية واقية', color: 'violet' }
+        ],
+        items: [
+          { id: 'i1', text: 'إيجابية وسلبية الغرام والفطور والفيروسات', target: 'iod_yes' },
+          { id: 'i2', text: 'الطفيليات والأميبا والجيارديا', target: 'iod_yes' },
+          { id: 'i3', text: 'عصيات السل (T.B)', target: 'iod_no' },
+          { id: 'i4', text: 'الأنسولين والأدرينالين والبنسلين ج', target: 'oral_bad' },
+          { id: 'i5', text: 'الكيراتين والسيللوز وحمض الفوسفات', target: 'coat' }
+        ]
+      }
+    ];
+
+    const STEP_PROTOCOLS = [
+      {
+        title: 'البروتوكول 1: المراحل الأربع لدراسة الدواء تجريبياً (الجلسة 2)',
+        steps: [
+          'المرحلة الصيدلانية (الكيمياوية الفيزيائية): تحرير العنصر الفعال ودراسة هيكله ونقاوته وثباته وانحلاله.',
+          'المرحلة التجريبية في الحيوان: خلايا معزولة ثم عضو معزول ثم حيوان حي، ودراسة السمية الحادة والمزمنة على نوعين.',
+          'المرحلة السريرية في الإنسان: التجريب على متطوع سليم ثم مريض بعد ثبات التحمل والفعالية بالحيوان.',
+          'المرحلة الإحصائية: تقييم اللجان الرسمية ومنح رخصة الصرف (3-5 سنوات) مع إعادة الدراسة دورياً.'
+        ]
+      },
+      {
+        title: 'البروتوكول 2: خطوات التزقيم الفموي للفئران (الجلسة 1)',
+        steps: [
+          'تجهيز محقن 1 مل مزود بإبرة ذات رأس كروي قياس 22GX1 لمنع تلف المري.',
+          'مسك الفأر بإحكام من الطية الظهرية خلف الرقبة.',
+          'تكوين خط مستقيم بين الفم والمعدة.',
+          'إدخال الإبرة مباشرة للمعدة ودفع الجرعة بدقة.'
+        ]
+      },
+      {
+        title: 'البروتوكول 3: تجربة كشف يودور البوتاسيوم في اللعاب (الجلسة 3)',
+        steps: [
+          'فحص الشاهد المسبق في لعاب الطالب قبل التجربة لإثبات خلوه من KI.',
+          'شرب كوب يحوي 100 مل ماء مذاب به 0.5 غ يودور البوتاسيوم.',
+          'الكشف بفاصل كل 20 دقيقة لمدة ساعة بترطيب ورقة الترشيح باللعاب.',
+          'إضافة 1 قطرة حمض كبريت + 1 قطرة نشاء 1% + 2 قطرة ماء أوكسجيني 3%.',
+          'الانتظار نصف دقيقة وملاحظة تشكل اللون البنفسجي أو الأزرق.'
+        ]
+      }
+    ];
+
+    const MATCH_BOARDS = [
+      {
+        title: 'النباتات الطبية وأجزاؤها وموادها الفعالة (الجلسة 1)',
+        pairs: [
+          { id: 'm1', left: 'ست الحسن (الأوراق)', right: 'الأتروبين والهيوسين والهيوسيامين' },
+          { id: 'm2', left: 'السينامكي (الأوراق)', right: 'جليكوسيد انثراسين' },
+          { id: 'm3', left: 'اليوكالبتوس (الأوراق)', right: 'زيت اليوكالبتوس الطيار' },
+          { id: 'm4', left: 'الجوز المقيئ (البذور)', right: 'ستركنين وبروسين وفوميسين وكوليبرين' },
+          { id: 'm5', left: 'عرق الذهب (الجذور)', right: 'قلويد الأميتين' },
+          { id: 'm6', left: 'الخشخاش (الثمار)', right: 'المورفين والكودايين والناركوتين والبابافرين' }
+        ]
+      },
+      {
+        title: 'حيوانات التجارب وميزاتها (الجلسة 2)',
+        pairs: [
+          { id: 'a1', left: 'الفئران والجرذان', right: '85% تشابه مورثي، لا مركز تقيؤ، معدة بجزأين' },
+          { id: 'a2', left: 'الأرانب', right: 'أنزيم الأتروبيناز وإباضة بعد 10 ساعات (L.H)' },
+          { id: 'a3', left: 'خنازير غينيا', right: 'الربو والتحسس والهيستامين وحقن جرثومة السل' },
+          { id: 'a4', left: 'الكلاب', right: 'أنبوب هضمي قصير وألياف بركينجي القلبية' },
+          { id: 'a5', left: 'الضفادع', right: 'دراسات CNS والقلب والاتصالات العصبية العضلية' }
+        ]
+      },
+      {
+        title: 'مستحضرات اليود وتراكيزها (الجلسة 3)',
+        pairs: [
+          { id: 'y1', left: 'صبغة اليود (الجلد)', right: '40 مغ / 1 مل' },
+          { id: 'y2', left: 'يود الغليسرين (جوف الفم)', right: '15 مغ / 1 مل' },
+          { id: 'y3', left: 'بوفيدون أيودين (جروح وحروق)', right: '10 مغ / 1 مل' },
+          { id: 'y4', left: 'أميودارون (الصف III)', right: '75 ملغ / القرص' },
+          { id: 'y5', left: 'أيودوكسي يوريدين (العين)', right: '18 ملغ / القطرة' },
+          { id: 'y6', left: 'يود البوتاسيوم (مقشع)', right: '300 ملغ / كل 6 ساعات' }
+        ]
+      }
+    ];
+
+    // ========= 4. NAVIGATION & RENDER CONTROLLER =========
+    let activeGameCode = 'QUIZ';
+
+    function renderGameStrip() {
+      const strip = document.getElementById('game-strip');
+      strip.innerHTML = GAME_CATALOG.map(g => `
+        <button class="game-pill ${activeGameCode === g.code ? 'active' : ''}" onclick="selectGame('${g.code}')">
+          <i class="fa-solid ${g.icon}"></i>
+          <span>${g.title}</span>
+        </button>
+      `).join('');
+    }
+
+    function selectGame(code) {
+      haptic('tap');
+      activeGameCode = code;
+      renderGameStrip();
+      const activePill = document.querySelector('.game-pill.active');
+      if (activePill && activePill.scrollIntoView) {
+        activePill.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+      }
+      renderGameStage();
+    }
+
+    function renderGameStage() {
+      const cat = GAME_CATALOG.find(g => g.code === activeGameCode);
+      document.getElementById('topic-banner').innerHTML = `
+        <div>
+          <span class="topic-en">${cat.code} • ${cat.en}</span>
+          <h2 class="topic-ar">${cat.title}</h2>
+        </div>
+        <span class="tag-chip tag-violet">تطبيق تفاعلي</span>
+      `;
+
+      const stage = document.getElementById('game-stage');
+      switch (activeGameCode) {
+        case 'QUIZ': renderQuizGame(stage); break;
+        case 'FLASH': renderFlashGame(stage); break;
+        case 'TF': renderTFGame(stage); break;
+        case 'DND-SORT': renderDndGame(stage); break;
+        case 'HOTSPOT': renderHotspotGame(stage); break;
+        case 'SLIDER-ANG': renderSliderAngleGame(stage); break;
+        case 'CALC-BOX': renderCalcBoxGame(stage); break;
+        case 'STEP-ORDER': renderStepOrderGame(stage); break;
+        case 'COLOR-SIM': renderColorSimGame(stage); break;
+        case 'MATCH-PAIR': renderMatchPairGame(stage); break;
+      }
+    }
+
+    // ========= GAME 1: QUIZ =========
+    let quizFilter = 'all', quizIdx = 0, quizAnswered = null;
+
+    function getFilteredQuiz() {
+      return quizFilter === 'all' ? QUIZ_DATA : QUIZ_DATA.filter(q => q.session === Number(quizFilter));
+    }
+
+    function renderQuizGame(stage) {
+      const list = getFilteredQuiz();
+      if (quizIdx >= list.length) quizIdx = 0;
+      const item = list[quizIdx];
+
+      stage.className = 'academic-card border-violet';
+      stage.innerHTML = `
+        <div class="card-title">
+          <span><i class="fa-solid fa-circle-question icon-violet"></i> السؤال ${quizIdx + 1} / ${list.length}</span>
+          <div style="display:flex; gap:5px; flex-wrap:wrap;">
+            ${['all','1','2','3'].map(f => `
+              <button class="btn btn-sm ${quizFilter===f?'btn-primary':'btn-outline'}" onclick="setQuizFilter('${f}')">${f==='all'?'الكل':'ج'+f}</button>
+            `).join('')}
+          </div>
+        </div>
+        <div class="sub-box">
+          <span class="tag-chip tag-violet">الجلسة ${item.session}</span>
+          <h3 style="margin-top:6px; font-size:1.05rem;">${item.q}</h3>
+        </div>
+        <div>
+          ${item.options.map((opt, idx) => {
+            let cls = 'option-btn', ic = '<i class="fa-regular fa-circle"></i>';
+            if (quizAnswered !== null) {
+              if (idx === item.correct) { cls += ' correct'; ic = '<i class="fa-solid fa-circle-check"></i>'; }
+              else if (idx === quizAnswered) { cls += ' wrong'; ic = '<i class="fa-solid fa-circle-xmark"></i>'; }
+            }
+            return `<button class="${cls}" ${quizAnswered!==null?'disabled':''} onclick="answerQuiz(${idx})"><span>${opt}</span><span>${ic}</span></button>`;
+          }).join('')}
+        </div>
+        ${quizAnswered !== null ? `
+          <div class="feedback-panel ${quizAnswered===item.correct?'success':'error'}">
+            <strong>${quizAnswered===item.correct?'إجابة صحيحة!':'التعليل العلمي:'}</strong>
+            <ul class="styled-list">${item.options.map((o,i)=>`<li><strong>${o}:</strong> ${item.reasons[i]}</li>`).join('')}</ul>
+          </div>
+        ` : ''}
+        <div style="display:flex; justify-content:space-between; margin-top:14px; gap:8px;">
+          <button class="btn btn-outline" onclick="prevQuiz()"><i class="fa-solid fa-arrow-right"></i> السابق</button>
+          <button class="btn btn-primary" onclick="nextQuiz()">التالي <i class="fa-solid fa-arrow-left"></i></button>
+        </div>
+      `;
+    }
+
+    function setQuizFilter(f) { quizFilter = f; quizIdx = 0; quizAnswered = null; renderGameStage(); }
+    function answerQuiz(idx) {
+      if (quizAnswered !== null) return;
+      quizAnswered = idx;
+      const item = getFilteredQuiz()[quizIdx];
+      if (idx === item.correct) addXP(15, 'إجابة صحيحة');
+      else recordMistake(item.id, `الجلسة ${item.session}`, item.q, `${item.options[item.correct]} — ${item.reasons[item.correct]}`);
+      renderGameStage();
+    }
+    function nextQuiz() { const l = getFilteredQuiz(); quizIdx = (quizIdx + 1) % l.length; quizAnswered = null; renderGameStage(); }
+    function prevQuiz() { const l = getFilteredQuiz(); quizIdx = (quizIdx - 1 + l.length) % l.length; quizAnswered = null; renderGameStage(); }
+
+    // ========= GAME 2: FLASHCARDS =========
+    let flashIdx = 0, flashFlipped = false;
+
+    function renderFlashGame(stage) {
+      const card = FLASH_DATA[flashIdx];
+      const done = appState.flashMastered.includes(card.id);
+      stage.className = 'academic-card border-cyan';
+      stage.innerHTML = `
+        <div class="card-title">
+          <span><i class="fa-solid fa-clone icon-cyan"></i> البطاقة ${flashIdx + 1} / ${FLASH_DATA.length}</span>
+          <span class="tag-chip tag-emerald">مُتقنة: ${appState.flashMastered.length}/${FLASH_DATA.length}</span>
+        </div>
+        <div style="text-align:center; font-size:0.84rem; color:var(--text-muted);">
+          المحور: <strong>${card.cat}</strong> ${done ? '<span class="tag-chip tag-emerald">مُتقنة ✓</span>' : ''}
+        </div>
+        <div class="flashcard-scene" onclick="toggleFlashFlip()">
+          <div class="flashcard-inner ${flashFlipped?'flipped':''}">
+            <div class="flashcard-face flashcard-front">
+              <span class="tag-chip tag-violet" style="margin-bottom:10px;">اضغط للقلب</span>
+              <h3 style="font-size:1.12rem;">${card.front}</h3>
+            </div>
+            <div class="flashcard-face flashcard-back">
+              <span class="tag-chip tag-emerald" style="margin-bottom:10px;">الإجابة العلمية</span>
+              <p style="font-size:0.96rem; font-weight:600; white-space:pre-line;">${card.back}</p>
+            </div>
+          </div>
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:12px;">
+          <button class="btn btn-rose" onclick="markFlashReview()"><i class="fa-solid fa-rotate-left"></i> أعد مراجعتها</button>
+          <button class="btn btn-emerald" onclick="markFlashMastered()"><i class="fa-solid fa-check"></i> أعرفها (+10 XP)</button>
+          <button class="btn btn-outline" onclick="prevFlash()"><i class="fa-solid fa-arrow-right"></i> السابقة</button>
+          <button class="btn btn-primary" onclick="nextFlash()">التالية <i class="fa-solid fa-arrow-left"></i></button>
+        </div>
+      `;
+    }
+    function toggleFlashFlip() { haptic('tap'); flashFlipped = !flashFlipped; renderGameStage(); }
+    function nextFlash() { flashIdx = (flashIdx + 1) % FLASH_DATA.length; flashFlipped = false; renderGameStage(); }
+    function prevFlash() { flashIdx = (flashIdx - 1 + FLASH_DATA.length) % FLASH_DATA.length; flashFlipped = false; renderGameStage(); }
+    function markFlashMastered() {
+      const c = FLASH_DATA[flashIdx];
+      if (!appState.flashMastered.includes(c.id)) {
+        appState.flashMastered.push(c.id);
+        addXP(10, 'إتقان بطاقة');
+      }
+      nextFlash();
+    }
+    function markFlashReview() {
+      const c = FLASH_DATA[flashIdx];
+      appState.flashMastered = appState.flashMastered.filter(x => x !== c.id);
+      recordMistake(c.id, c.cat, c.front, c.back);
+      showToast('أُضيفت لبنك المراجعة', 'amber');
+      nextFlash();
+    }
+
+    // ========= GAME 3: TRUE / FALSE + MANDATORY CORRECTION =========
+    let tfIdx = 0, tfStep = 'initial', tfUserChoice = null, tfCorrectionChoice = null;
+
+    function renderTFGame(stage) {
+      const item = TF_DATA[tfIdx];
+      stage.className = 'academic-card border-amber';
+      stage.innerHTML = `
+        <div class="card-title">
+          <span><i class="fa-solid fa-check-double icon-amber"></i> الصواب والخطأ</span>
+          <span class="tag-chip tag-amber">${tfIdx + 1} / ${TF_DATA.length}</span>
+        </div>
+        <div class="sub-box">
+          <h3 style="font-size:1.05rem;">«${item.statement}»</h3>
+        </div>
+        <div class="grid-2">
+          <button class="option-btn ${tfStep!=='initial'&&item.isTrue?'correct':(tfUserChoice===true&&!item.isTrue?'wrong':'')}" ${tfStep!=='initial'?'disabled':''} onclick="answerTF(true)">
+            <span><i class="fa-solid fa-circle-check icon-emerald"></i> صواب</span>
+          </button>
+          <button class="option-btn ${tfStep!=='initial'&&!item.isTrue?'correct':(tfUserChoice===false&&item.isTrue?'wrong':'')}" ${tfStep!=='initial'?'disabled':''} onclick="answerTF(false)">
+            <span><i class="fa-solid fa-circle-xmark icon-rose"></i> خطأ</span>
+          </button>
+        </div>
+        ${tfStep === 'needsCorrection' ? `
+          <div class="feedback-panel info">
+            <strong>تصحيح إلزامي — العبارة خاطئة، اختر الصواب العلمي:</strong>
+            <div style="margin-top:8px;">
+              ${item.correctionOptions.map((c, i) => `
+                <button class="option-btn" onclick="submitTFCorrection(${i})"><span>${c}</span><i class="fa-solid fa-arrow-left"></i></button>
+              `).join('')}
+            </div>
+          </div>
+        ` : ''}
+        ${tfStep === 'done' ? `
+          <div class="feedback-panel ${((tfUserChoice===item.isTrue)&&(item.isTrue||tfCorrectionChoice===item.correctIdx))?'success':'error'}">
+            ${item.isTrue ? `<strong>${tfUserChoice?'أحسنت!':'العبارة صحيحة:'}</strong> ${item.explain}` : `<strong>التصحيح:</strong> ${item.correctionOptions[item.correctIdx]}`}
+          </div>
+        ` : ''}
+        <div style="display:flex; justify-content:space-between; margin-top:14px;">
+          <button class="btn btn-outline" onclick="prevTF()"><i class="fa-solid fa-arrow-right"></i> السابق</button>
+          <button class="btn btn-primary" onclick="nextTF()">التالي <i class="fa-solid fa-arrow-left"></i></button>
+        </div>
+      `;
+    }
+    function answerTF(choice) {
+      const item = TF_DATA[tfIdx];
+      tfUserChoice = choice;
+      if (item.isTrue) {
+        tfStep = 'done';
+        if (choice) addXP(15, 'تقييم صواب دقيق');
+        else recordMistake(item.id, 'الصواب والخطأ', item.statement, item.explain);
+      } else {
+        if (choice) recordMistake(item.id, 'الصواب والخطأ', item.statement, item.correctionOptions[item.correctIdx]);
+        tfStep = 'needsCorrection';
+      }
+      renderGameStage();
+    }
+    function submitTFCorrection(i) {
+      const item = TF_DATA[tfIdx];
+      tfCorrectionChoice = i;
+      tfStep = 'done';
+      if (tfUserChoice === false && i === item.correctIdx) addXP(20, 'كشف الخطأ وتصحيحه');
+      else recordMistake(item.id, 'الصواب والتصحيح', item.statement, item.correctionOptions[item.correctIdx]);
+      renderGameStage();
+    }
+    function nextTF() { tfIdx = (tfIdx + 1) % TF_DATA.length; tfStep = 'initial'; tfUserChoice = null; tfCorrectionChoice = null; renderGameStage(); }
+    function prevTF() { tfIdx = (tfIdx - 1 + TF_DATA.length) % TF_DATA.length; tfStep = 'initial'; tfUserChoice = null; tfCorrectionChoice = null; renderGameStage(); }
+
+    // ========= GAME 4: DND-SORT (TAP & DRAG FRIENDLY) =========
+    let dndArenaIndex = 0, dndPlacements = {}, dndSelectedChip = null;
+
+    function renderDndGame(stage) {
+      const arena = DND_ARENAS[dndArenaIndex];
+      const unplaced = arena.items.filter(it => !dndPlacements[it.id]);
+
+      stage.className = 'academic-card border-emerald';
+      stage.innerHTML = `
+        <div class="card-title">
+          <span><i class="fa-solid fa-boxes-stacked icon-emerald"></i> ${arena.title}</span>
+          <div style="display:flex; gap:5px;">
+            ${DND_ARENAS.map((_, i) => `<button class="btn btn-sm ${i===dndArenaIndex?'btn-primary':'btn-outline'}" onclick="switchDndArena(${i})">ميدان ${i+1}</button>`).join('')}
+          </div>
+        </div>
+        <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:10px;">اضغط على البطاقة لتحديدها ثم اضغط على الحاوية المناسبة (أو اسحبها):</p>
+        <div class="dnd-pool">
+          ${unplaced.length ? unplaced.map(it => `
+            <div class="dnd-chip ${dndSelectedChip===it.id?'selected':''}"
+              draggable="true" ondragstart="dndDragStart(event,'${it.id}')" onclick="dndSelectChip('${it.id}')">${it.text}</div>
+          `).join('') : '<span style="color:var(--accent-emerald); font-weight:700;"><i class="fa-solid fa-circle-check"></i> اكتمل تصنيف الميدان بنجاح!</span>'}
+        </div>
+        <div class="dnd-buckets-grid">
+          ${arena.buckets.map(b => {
+            const placed = arena.items.filter(it => dndPlacements[it.id] === b.id);
+            return `
+              <div class="dnd-bucket" ondragover="event.preventDefault();this.classList.add('drag-over')" ondragleave="this.classList.remove('drag-over')" ondrop="dndDrop(event,'${b.id}')" onclick="dndBucketClick('${b.id}')">
+                <div class="dnd-bucket-title"><span class="tag-chip tag-${b.color}">${b.title}</span></div>
+                ${placed.map(p => `<div class="dnd-placed-item"><i class="fa-solid fa-check"></i> ${p.text}</div>`).join('')}
+                ${placed.length===0?'<div style="font-size:0.78rem;color:var(--text-muted);">اضغط هنا للإفلات...</div>':''}
+              </div>`;
+          }).join('')}
+        </div>
+        <div style="margin-top:12px;">
+          <button class="btn btn-outline btn-sm" onclick="resetDndArena()"><i class="fa-solid fa-rotate"></i> إعادة الميدان</button>
+        </div>
+      `;
+    }
+    function switchDndArena(i) { dndArenaIndex = i; dndPlacements = {}; dndSelectedChip = null; renderGameStage(); }
+    function resetDndArena() { dndPlacements = {}; dndSelectedChip = null; renderGameStage(); }
+    function dndSelectChip(id) { haptic('tap'); dndSelectedChip = (dndSelectedChip === id ? null : id); renderGameStage(); }
+    function dndDragStart(e, id) { dndSelectedChip = id; e.dataTransfer.setData('text/plain', id); }
+    function dndDrop(e, bucketId) { e.preventDefault(); const id = e.dataTransfer.getData('text/plain') || dndSelectedChip; if (id) attemptDndPlace(id, bucketId); }
+    function dndBucketClick(bucketId) { if (dndSelectedChip) attemptDndPlace(dndSelectedChip, bucketId); }
+    function attemptDndPlace(itemId, bucketId) {
+      const arena = DND_ARENAS[dndArenaIndex];
+      const item = arena.items.find(x => x.id === itemId);
+      if (!item) return;
+      if (item.target === bucketId) {
+        dndPlacements[itemId] = bucketId;
+        dndSelectedChip = null;
+        const left = arena.items.filter(it => !dndPlacements[it.id]).length;
+        if (left === 0) addXP(30, 'إتمام ميدان التصنيف');
+        else { appState.xp += 5; saveState(); haptic('success'); showToast('+5 XP صحيح', 'emerald'); }
+      } else {
+        const right = arena.buckets.find(b => b.id === item.target).title;
+        recordMistake('dnd_' + item.id, arena.title, item.text, right);
+        showToast(`تلميح: تنتمي إلى ${right}`, 'rose');
+      }
+      renderGameStage();
+    }
+
+    // ========= GAME 5: HOTSPOT (ANATOMICAL TARGETS) =========
+    let hotspotAnimal = 'mouse', hotspotMissionIdx = 0, hotspotFeedback = null;
+
+    const HOTSPOT_SCENES = {
+      mouse: {
+        title: 'الفأر الأبيض (Mouse)',
+        missions: [
+          { prompt: 'المهمة 1: انقر على الموضع الأمثل للحقن الوريدي المتكرر في ذيل الفأر.', targetId: 'tail_tip', okMsg: 'صحيح! يُحقن الوريد الذيلي أبعد ما يمكن عن قاعدة الذيل لإتاحة تكرار الحقن (يوجد 4 أوردة ذيلية، وتُوسع بحمام مائي 45-50°س).' },
+          { prompt: 'المهمة 2: انقر على موضع الحقن في الصفاق / البريتوان (IP) بإبرة 27G × 1/2 in.', targetId: 'ip_left', okMsg: 'أصبت! في الناحية اليسرى والجزء السفلي من البطن (امتصاصه نصف أو ربع الوريدي).' },
+          { prompt: 'المهمة 3: انقر على موضع الحقن العضلي الآمن (IM) بحد أقصى 0.5 مل.', targetId: 'im_thigh', okMsg: 'ممتاز! عضلة الفخذ بعيدة عن عظم الفخذ والعصب الوركي مع السحب الارتجاعي قبل الحقن.' },
+          { prompt: 'المهمة 4: أين تحقن تحت الجلد (SC) عند غياب مساعد لمسك الفأر؟', targetId: 'sc_neck', okMsg: 'صحيح! في الطية الجلدية خلف الرأس مع التأكد من حرية الإبرة بين الجلد والعضلات.' }
+        ],
+        spots: {
+          tail_tip: { x: 465, y: 158, label: 'طرف الوريد الذيلي', danger: false },
+          tail_base: { x: 355, y: 152, label: 'قاعدة الذيل', danger: true, warn: 'الحقن عند قاعدة الذيل يمنع الحقن المتكرر لاحقاً!' },
+          ip_left: { x: 235, y: 175, label: 'الناحية اليسرى السفلية للبطن (IP)', danger: false },
+          im_thigh: { x: 300, y: 178, label: 'عضلة الفخذ الآمنة (IM)', danger: false },
+          sciatic: { x: 326, y: 160, label: 'العصب والعظم الوركي', danger: true, warn: 'خطر! ابتعد عن عظم الفخذ والعصب الوركي!' },
+          sc_neck: { x: 150, y: 105, label: 'الطية خلف الرأس (SC)', danger: false }
+        }
+      },
+      rabbit: {
+        title: 'الأرنب البالغ (Rabbit)',
+        missions: [
+          { prompt: 'المهمة 1: انقر على الوريد المعتمد للحقن الوريدي عند الأرانب (مع إزالة الوبر وفرك الأذن).', targetId: 'ear_vein', okMsg: 'صحيح! الوريد الأذني الأنسي على الحافة، مع سحب المحقن قليلاً للتأكد من ظهور قطرات الدم.' },
+          { prompt: 'المهمة 2: انقر على موضع إدخال القسطرة المطاطية المزلقة للمعدة.', targetId: 'rabbit_mouth', okMsg: 'صحيح! عبر الفتحة الخشبية أو البلاستيكية خلف الأسنان الأمامية.' }
+        ],
+        spots: {
+          ear_vein: { x: 185, y: 60, label: 'الوريد الأذني الأنسي', danger: false },
+          ear_artery: { x: 205, y: 92, label: 'الشريان المركزي', danger: true, warn: 'خطر! هذا الشريان المركزي — استخدم الوريد الأذني الأنسي على الحافة!' },
+          rabbit_mouth: { x: 105, y: 175, label: 'الفم خلف القواطع', danger: false }
+        }
+      }
+    };
+
+    function renderHotspotGame(stage) {
+      const scene = HOTSPOT_SCENES[hotspotAnimal];
+      if (hotspotMissionIdx >= scene.missions.length) hotspotMissionIdx = 0;
+      const m = scene.missions[hotspotMissionIdx];
+
+      stage.className = 'academic-card border-cyan';
+      stage.innerHTML = `
+        <div class="card-title">
+          <span><i class="fa-solid fa-crosshairs icon-cyan"></i> ${scene.title}</span>
+          <div style="display:flex; gap:6px;">
+            <button class="btn btn-sm ${hotspotAnimal==='mouse'?'btn-primary':'btn-outline'}" onclick="switchHotspot('mouse')">الفأر (4)</button>
+            <button class="btn btn-sm ${hotspotAnimal==='rabbit'?'btn-primary':'btn-outline'}" onclick="switchHotspot('rabbit')">الأرنب (2)</button>
+          </div>
+        </div>
+        <div class="sub-box">
+          <h3 style="font-size:1rem;">${m.prompt}</h3>
+        </div>
+        <div style="background:#FFFFFF; border:1px solid #CBD5E1; border-radius:14px; padding:8px; text-align:center;">
+          ${hotspotAnimal==='mouse' ? renderMouseSVG() : renderRabbitSVG()}
+        </div>
+        ${hotspotFeedback ? `
+          <div class="feedback-panel ${hotspotFeedback.ok?'success':'error'}">
+            <strong>${hotspotFeedback.ok?'تصويب دقيق!':'موضع غير مناسب:'}</strong> ${hotspotFeedback.msg}
+          </div>
+        ` : ''}
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:12px;">
+          <span style="font-size:0.84rem; font-weight:600; color:var(--text-muted);">المهمة ${hotspotMissionIdx+1} / ${scene.missions.length}</span>
+          <button class="btn btn-primary btn-sm" onclick="nextHotspot()">المهمة التالية <i class="fa-solid fa-arrow-left"></i></button>
+        </div>
+      `;
+    }
+
+    function renderMouseSVG() {
+      const spots = HOTSPOT_SCENES.mouse.spots;
+      return `
+        <svg viewBox="0 0 540 250" style="width:100%; height:auto;">
+          <path d="M 340 155 Q 420 148 505 162" fill="none" stroke="#FDA4AF" stroke-width="11" stroke-linecap="round"/>
+          <path d="M 345 155 Q 420 148 500 162" fill="none" stroke="#3B82F6" stroke-width="2" stroke-dasharray="5,3"/>
+          <ellipse cx="235" cy="145" rx="115" ry="52" fill="#E2E8F0" stroke="#64748B" stroke-width="2.5"/>
+          <ellipse cx="110" cy="138" rx="45" ry="30" fill="#E2E8F0" stroke="#64748B" stroke-width="2.5"/>
+          <ellipse cx="132" cy="108" rx="14" ry="18" fill="#FECDD3" stroke="#64748B" stroke-width="2"/>
+          <circle cx="92" cy="132" r="4" fill="#F43F5E"/>
+          <ellipse cx="305" cy="178" rx="28" ry="20" fill="#CBD5E1" stroke="#475569" stroke-width="2"/>
+          <line x1="315" y1="158" x2="332" y2="178" stroke="#F43F5E" stroke-width="2.5" stroke-dasharray="3,2"/>
+          <ellipse cx="235" cy="175" rx="34" ry="18" fill="rgba(6, 182, 212, 0.14)" stroke="#06B6D4" stroke-dasharray="4,3"/>
+          <text x="110" y="218" font-family="Cairo" font-size="11" fill="#475569" text-anchor="middle">الرأس والعنق</text>
+          <text x="235" y="218" font-family="Cairo" font-size="11" fill="#475569" text-anchor="middle">أسفل يسار البطن</text>
+          <text x="310" y="218" font-family="Cairo" font-size="11" fill="#475569" text-anchor="middle">الفخذ</text>
+          <text x="440" y="135" font-family="Cairo" font-size="11" fill="#475569" text-anchor="middle">الأوردة الذيلية</text>
+          ${Object.entries(spots).map(([id, sp]) => `
+            <g class="hotspot-node" onclick="clickHotspot('${id}')">
+              <circle cx="${sp.x}" cy="${sp.y}" r="20" fill="transparent"/>
+              <circle cx="${sp.x}" cy="${sp.y}" r="13" fill="rgba(139, 92, 246, 0.25)" stroke="#8B5CF6" stroke-width="2.5"/>
+              <circle cx="${sp.x}" cy="${sp.y}" r="5.5" fill="#8B5CF6"/>
+            </g>
+          `).join('')}
+        </svg>`;
+    }
+
+    function renderRabbitSVG() {
+      const spots = HOTSPOT_SCENES.rabbit.spots;
+      return `
+        <svg viewBox="0 0 500 250" style="width:100%; height:auto;">
+          <ellipse cx="290" cy="168" rx="110" ry="62" fill="#F1F5F9" stroke="#64748B" stroke-width="2.5"/>
+          <circle cx="408" cy="165" r="18" fill="#FFFFFF" stroke="#64748B" stroke-width="2"/>
+          <ellipse cx="145" cy="148" rx="52" ry="38" fill="#F1F5F9" stroke="#64748B" stroke-width="2.5"/>
+          <ellipse cx="195" cy="80" rx="26" ry="58" transform="rotate(14 195 80)" fill="#FFE4E6" stroke="#64748B" stroke-width="2.5"/>
+          <path d="M 192 125 L 208 42" stroke="#F43F5E" stroke-width="3"/>
+          <path d="M 178 122 Q 175 78 192 38" stroke="#2563EB" stroke-width="3"/>
+          <circle cx="122" cy="138" r="5" fill="#0F172A"/>
+          <text x="148" y="34" font-family="Cairo" font-size="11" fill="#2563EB" font-weight="700">الوريد الأذني الأنسي</text>
+          <text x="280" y="92" font-family="Cairo" font-size="11" fill="#F43F5E" font-weight="700">الشريان المركزي</text>
+          <text x="85" y="205" font-family="Cairo" font-size="11" fill="#475569">الفتحة الخشبية</text>
+          ${Object.entries(spots).map(([id, sp]) => `
+            <g class="hotspot-node" onclick="clickHotspot('${id}')">
+              <circle cx="${sp.x}" cy="${sp.y}" r="20" fill="transparent"/>
+              <circle cx="${sp.x}" cy="${sp.y}" r="13" fill="rgba(6, 182, 212, 0.25)" stroke="#06B6D4" stroke-width="2.5"/>
+              <circle cx="${sp.x}" cy="${sp.y}" r="5.5" fill="#06B6D4"/>
+            </g>
+          `).join('')}
+        </svg>`;
+    }
+
+    function switchHotspot(a) { hotspotAnimal = a; hotspotMissionIdx = 0; hotspotFeedback = null; renderGameStage(); }
+    function nextHotspot() { const s = HOTSPOT_SCENES[hotspotAnimal]; hotspotMissionIdx = (hotspotMissionIdx + 1) % s.missions.length; hotspotFeedback = null; renderGameStage(); }
+    function clickHotspot(id) {
+      const s = HOTSPOT_SCENES[hotspotAnimal];
+      const m = s.missions[hotspotMissionIdx];
+      const sp = s.spots[id];
+      if (id === m.targetId) {
+        hotspotFeedback = { ok: true, msg: m.okMsg };
+        addXP(20, 'إصابة النقطة التشريحية');
+      } else {
+        hotspotFeedback = { ok: false, msg: sp.warn || `هذا الموضع (${sp.label}) يخص مهمة أخرى.` };
+        recordMistake('hs_' + m.targetId, s.title, m.prompt, m.okMsg);
+      }
+      renderGameStage();
+    }
+
+    // ========= GAME 6: NEEDLE ANGLE SIMULATOR =========
+    const ANGLE_MISSIONS = [
+      { id: 'ID', name: 'في الأدمة (ID - 0.05 مل)', minAng: 10, maxAng: 18, targetLayer: 'dermis', needAspirate: false, note: 'تحت الطبقة السطحية للبشرة بزاوية 10°-15° وبحجم قليل (~0.05 مل) لاختبارات الحساسية واللقاحات.' },
+      { id: 'IV', name: 'في الوريد (IV)', minAng: 15, maxAng: 28, targetLayer: 'vein', needAspirate: true, note: 'زاوية 15°-25° لدخول الوريد مع التأكد بالسحب الارتجاعي من ظهور قطرات الدم.' },
+      { id: 'SC', name: 'تحت الجلد (SC)', minAng: 40, maxAng: 50, targetLayer: 'subcut', needAspirate: false, note: 'بزاوية 45° في طية جلدية مرفوعة بين الجلد والعضلات للمواد غير المهيجة.' },
+      { id: 'IM', name: 'في العضل (IM - حد أقصى 0.5 مل)', minAng: 82, maxAng: 90, targetLayer: 'muscle', needAspirate: true, note: 'زاوية عمودية 90° بعيداً عن العظم والعصب الوركي مع إلزامية السحب الارتجاعي للتأكد من عدم وجود دم.' },
+      { id: 'IP', name: 'في الصفاق / البريتوان (IP)', minAng: 40, maxAng: 50, targetLayer: 'peritoneum', needAspirate: false, note: 'بزاوية 45° في الناحية اليسرى السفلية من البطن بإبرة أنسولين 27G × 1/2 in.' }
+    ];
+    let angMissionIdx = 0, currentAngle = 45, currentLayer = 'subcut', aspiratedChecked = false, angResult = null;
+
+    function renderSliderAngleGame(stage) {
+      const m = ANGLE_MISSIONS[angMissionIdx];
+      const layerY = { dermis: 74, vein: 102, subcut: 128, muscle: 175, peritoneum: 222 }[currentLayer];
+      const rad = (currentAngle * Math.PI) / 180;
+      const tipX = 170, tipY = layerY;
+      const nx = tipX - 42 * Math.cos(rad), ny = tipY - 42 * Math.sin(rad);
+      const bx = tipX - 92 * Math.cos(rad), by = tipY - 92 * Math.sin(rad);
+      const px = tipX - 110 * Math.cos(rad), py = tipY - 110 * Math.sin(rad);
+
+      stage.className = 'academic-card border-rose';
+      stage.innerHTML = `
+        <div class="card-title">
+          <span><i class="fa-solid fa-syringe icon-rose"></i> ${m.name}</span>
+          <div style="display:flex; gap:5px; flex-wrap:wrap;">
+            ${ANGLE_MISSIONS.map((am, i) => `<button class="btn btn-sm ${i===angMissionIdx?'btn-primary':'btn-outline'}" onclick="selectAngleMission(${i})">${am.id}</button>`).join('')}
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div style="background:#FFFFFF; border:1px solid #CBD5E1; border-radius:14px; padding:8px;">
+            <svg viewBox="0 -65 420 325" style="width:100%; height:auto;">
+              <rect x="20" y="35" width="380" height="22" fill="#FDE68A" stroke="#D97706"/>
+              <text x="390" y="50" text-anchor="end" font-family="Cairo" font-size="11" font-weight="700" fill="#92400E">البشرة</text>
+              <rect x="20" y="57" width="380" height="35" fill="#FECDD3" stroke="#E11D48"/>
+              <text x="390" y="79" text-anchor="end" font-family="Cairo" font-size="11" font-weight="700" fill="#9F1239">الأدمة</text>
+              <rect x="20" y="92" width="380" height="58" fill="#FEF08A" stroke="#CA8A04"/>
+              <text x="390" y="130" text-anchor="end" font-family="Cairo" font-size="11" font-weight="700" fill="#854D0E">تحت الجلد</text>
+              <ellipse cx="170" cy="102" rx="34" ry="8" fill="#3B82F6" stroke="#1D4ED8" stroke-width="1.5"/>
+              <text x="128" y="106" text-anchor="end" font-family="Cairo" font-size="10" font-weight="700" fill="#1E40AF">وريد</text>
+              <rect x="20" y="150" width="380" height="52" fill="#FCA5A5" stroke="#DC2626"/>
+              <text x="390" y="180" text-anchor="end" font-family="Cairo" font-size="11" font-weight="700" fill="#7F1D1D">العضلة</text>
+              <rect x="20" y="202" width="380" height="45" fill="#E0E7FF" stroke="#4F46E5"/>
+              <text x="390" y="229" text-anchor="end" font-family="Cairo" font-size="11" font-weight="700" fill="#312E81">الصفاق (IP)</text>
+
+              <line x1="${tipX}" y1="${tipY}" x2="${nx}" y2="${ny}" stroke="#334155" stroke-width="2.5" stroke-linecap="round"/>
+              <circle cx="${tipX}" cy="${tipY}" r="4.5" fill="${angResult && angResult.ok ? '#10B981' : '#8B5CF6'}"/>
+              <line x1="${nx}" y1="${ny}" x2="${bx}" y2="${by}" stroke="#06B6D4" stroke-width="12" opacity="0.78"/>
+              <line x1="${nx}" y1="${ny}" x2="${bx}" y2="${by}" stroke="#0F172A" stroke-width="1.5"/>
+              <line x1="${bx}" y1="${by}" x2="${px}" y2="${py}" stroke="#475569" stroke-width="4" stroke-linecap="round"/>
+              <rect x="${tipX + 12}" y="${tipY - 24}" width="44" height="20" rx="6" fill="#0F172A"/>
+              <text x="${tipX + 34}" y="${tipY - 10}" text-anchor="middle" font-family="IBM Plex Sans Arabic" font-size="11" font-weight="700" fill="#FFFFFF">${currentAngle}°</text>
+            </svg>
+          </div>
+
+          <div>
+            <div class="step-box">
+              <div class="step-title">1. زاوية الإبرة: <span style="color:var(--accent-rose);">${currentAngle}°</span></div>
+              <input type="range" min="5" max="90" value="${currentAngle}" class="styled-slider" oninput="updateNeedleAngle(this.value)">
+            </div>
+            <div class="step-box">
+              <div class="step-title">2. الطبقة المستهدفة:</div>
+              <div style="display:flex; flex-wrap:wrap; gap:6px;">
+                ${[
+                  { id: 'dermis', label: 'الأدمة' },
+                  { id: 'vein', label: 'الوريد' },
+                  { id: 'subcut', label: 'تحت الجلد' },
+                  { id: 'muscle', label: 'العضلة' },
+                  { id: 'peritoneum', label: 'الصفاق' }
+                ].map(l => `<button class="btn btn-sm ${currentLayer===l.id?'btn-cyan':'btn-outline'}" onclick="selectTargetLayer('${l.id}')">${l.label}</button>`).join('')}
+              </div>
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+              <button class="btn btn-amber" onclick="runAspirationTest()"><i class="fa-solid fa-vial-circle-check"></i> السحب الارتجاعي</button>
+              <button class="btn btn-emerald" onclick="executeInjection()"><i class="fa-solid fa-syringe"></i> نفّذ الحقن</button>
+            </div>
+            ${aspiratedChecked ? `
+              <div class="feedback-panel ${currentLayer==='vein'?'info':'success'}">
+                ${currentLayer==='vein'
+                  ? 'ظهور قطرات دم (مطلوب في IV، ويوجب إيقاف الحقن وتغيير الموضع في IM!).'
+                  : 'سحب نظيف خالٍ من الدم — آمن للحقن العضلي.'}
+              </div>
+            ` : ''}
+          </div>
+        </div>
+        ${angResult ? `<div class="feedback-panel ${angResult.ok?'success':'error'}"><strong>${angResult.ok?'حقن سليم!':'تنبيه:'}</strong> ${angResult.msg}</div>` : ''}
+      `;
+    }
+    function selectAngleMission(i) { angMissionIdx = i; aspiratedChecked = false; angResult = null; renderGameStage(); }
+    function updateNeedleAngle(v) { currentAngle = Number(v); angResult = null; renderGameStage(); }
+    function selectTargetLayer(l) { currentLayer = l; aspiratedChecked = false; angResult = null; renderGameStage(); }
+    function runAspirationTest() { haptic('tap'); aspiratedChecked = true; renderGameStage(); }
+    function executeInjection() {
+      const m = ANGLE_MISSIONS[angMissionIdx];
+      if (m.needAspirate && !aspiratedChecked) {
+        angResult = { ok: false, msg: `يجب إجراء اختبار السحب الارتجاعي أولاً في ${m.name}.` };
+        renderGameStage();
+        return;
+      }
+      if (currentAngle >= m.minAng && currentAngle <= m.maxAng && currentLayer === m.targetLayer) {
+        angResult = { ok: true, msg: m.note };
+        addXP(25, `إتمام محاكاة ${m.id}`);
+      } else {
+        angResult = { ok: false, msg: `الزاوية المناسبة (${m.minAng}°-${m.maxAng}°) والطبقة الصحيحة مطلوبة. ${m.note}` };
+        recordMistake('ang_' + m.id, 'محاكي زوايا الإبر', m.name, m.note);
+      }
+      renderGameStage();
+    }
+
+    // ========= GAME 7: CALC-BOX (DOSE + T.I) =========
+    let calcTab = 'dose';
+    let doseProblem = { subject: 'طفل (مسألة المحاضرة 2 و3)', rawWeight: 20, unit: 'kg', dosePerKg: 5, percent: 2 };
+    let doseChecked = null, showDoseSolution = false;
+    let tiProblem = { drugA: { name: 'دواء A', ed50: 10, ld50: 800 }, drugB: { name: 'دواء B', ed50: 2, ld50: 6 }, safer: 'A' };
+    let tiFeedback = null;
+
+    function generateNewDoseProblem() {
+      const pool = [
+        { subject: 'طفل', weights: [12, 15, 20, 25, 30], unit: 'kg', doses: [4, 5, 8, 10], percents: [1, 2, 4, 5] },
+        { subject: 'أرنب تجربة', weights: [2, 2.5, 3], unit: 'kg', doses: [10, 20, 40], percents: [1, 2, 5] },
+        { subject: 'جرذ مخبري', weights: [250, 300, 400, 500], unit: 'g', doses: [10, 20, 25], percents: [0.5, 1, 2] },
+        { subject: 'فأر أبيض', weights: [20, 25, 30], unit: 'g', doses: [20, 40, 50], percents: [0.2, 0.5, 1] }
+      ];
+      const p = pool[Math.floor(Math.random() * pool.length)];
+      doseProblem = {
+        subject: p.subject,
+        rawWeight: p.weights[Math.floor(Math.random() * p.weights.length)],
+        unit: p.unit,
+        dosePerKg: p.doses[Math.floor(Math.random() * p.doses.length)],
+        percent: p.percents[Math.floor(Math.random() * p.percents.length)]
+      };
+      doseChecked = null; showDoseSolution = false;
+      renderGameStage();
+    }
+
+    function generateNewTIProblem() {
+      const edA = [5, 10, 20][Math.floor(Math.random() * 3)];
+      const mA = [30, 50, 80][Math.floor(Math.random() * 3)];
+      const edB = [2, 4, 5][Math.floor(Math.random() * 3)];
+      const mB = [2, 3, 4][Math.floor(Math.random() * 3)];
+      const swap = Math.random() > 0.5;
+      tiProblem = swap
+        ? { drugA: { name: 'دواء A', ed50: edB, ld50: edB * mB }, drugB: { name: 'دواء B', ed50: edA, ld50: edA * mA }, safer: 'B' }
+        : { drugA: { name: 'دواء A', ed50: edA, ld50: edA * mA }, drugB: { name: 'دواء B', ed50: edB, ld50: edB * mB }, safer: 'A' };
+      tiFeedback = null;
+      renderGameStage();
+    }
+
+    function renderCalcBoxGame(stage) {
+      const wKg = doseProblem.unit === 'kg' ? doseProblem.rawWeight : doseProblem.rawWeight / 1000;
+      const conc100 = doseProblem.percent * 1000;
+      const totalMg = +(wKg * doseProblem.dosePerKg).toFixed(4);
+      const vol = +((totalMg * 100) / conc100).toFixed(4);
+
+      stage.className = 'academic-card border-violet';
+      stage.innerHTML = `
+        <div class="card-title">
+          <span><i class="fa-solid fa-calculator icon-violet"></i> الحسابات الصيدلانية</span>
+          <div style="display:flex; gap:6px;">
+            <button class="btn btn-sm ${calcTab==='dose'?'btn-primary':'btn-outline'}" onclick="calcTab='dose';renderGameStage()">حساب الجرعة</button>
+            <button class="btn btn-sm ${calcTab==='ti'?'btn-primary':'btn-outline'}" onclick="calcTab='ti';renderGameStage()">المؤشر العلاجي T.I</button>
+          </div>
+        </div>
+
+        ${calcTab === 'dose' ? `
+          <div class="sub-box">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+              <span class="tag-chip tag-violet">${doseProblem.subject}</span>
+              <button class="btn btn-cyan btn-sm" onclick="generateNewDoseProblem()"><i class="fa-solid fa-shuffle"></i> مسألة جديدة</button>
+            </div>
+            <p style="margin-top:8px; font-weight:700;">
+              الوزن: ${doseProblem.rawWeight} ${doseProblem.unit==='kg'?'كغ':'غ'} | الجرعة: ${doseProblem.dosePerKg} ملغ/كغ | التركيز: ${doseProblem.percent}%
+            </p>
+          </div>
+          <div class="grid-2">
+            <div class="step-box"><label style="font-weight:700;font-size:0.86rem;">1. الوزن بالكغ (kg):</label><input type="number" step="any" id="inp-wkg" class="calc-input" placeholder="مثال: 20"></div>
+            <div class="step-box"><label style="font-weight:700;font-size:0.86rem;">2. الملغ في 100 سم³:</label><input type="number" step="any" id="inp-mg100" class="calc-input" placeholder="2% = 2000"></div>
+            <div class="step-box"><label style="font-weight:700;font-size:0.86rem;">3. الجرعة الكلية (mg):</label><input type="number" step="any" id="inp-totalmg" class="calc-input" placeholder="الوزن × الجرعة"></div>
+            <div class="step-box"><label style="font-weight:700;font-size:0.86rem;">4. الحجم المطلوب (cm³):</label><input type="number" step="any" id="inp-vol" class="calc-input" placeholder="سم³ / مل"></div>
+          </div>
+          <div style="display:flex; flex-wrap:wrap; gap:8px;">
+            <button class="btn btn-emerald" onclick="verifyDoseInputs(${wKg},${conc100},${totalMg},${vol})"><i class="fa-solid fa-check"></i> تحقق</button>
+            <button class="btn btn-outline" onclick="showDoseSolution=!showDoseSolution;renderGameStage()"><i class="fa-solid fa-eye"></i> الحل</button>
+          </div>
+          ${doseChecked ? `
+            <div class="feedback-panel ${doseChecked.allOk?'success':'error'}">
+              <ul class="styled-list">
+                <li>الوزن: ${doseChecked.s1?'✓':`✗ (${wKg} kg)`}</li>
+                <li>التركيز: ${doseChecked.s2?'✓':`✗ (${conc100} mg/100cm³)`}</li>
+                <li>الجرعة الكلية: ${doseChecked.s3?'✓':`✗ (${totalMg} mg)`}</li>
+                <li>الحجم: ${doseChecked.s4?'✓':`✗ (${vol} cm³)`}</li>
+              </ul>
+            </div>` : ''}
+          ${showDoseSolution ? `<div class="formula-box">Dose = ${wKg} × ${doseProblem.dosePerKg} = ${totalMg} mg | Volume = (${totalMg} × 100) / ${conc100} = ${vol} cm³</div>` : ''}
+        ` : `
+          <div class="sub-box" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+            <span class="tag-chip tag-violet">T.I = L.D.50 / E.D.50</span>
+            <button class="btn btn-cyan btn-sm" onclick="generateNewTIProblem()"><i class="fa-solid fa-shuffle"></i> مثال جديد</button>
+          </div>
+          <div class="grid-2">
+            <div class="step-box">
+              <strong>${tiProblem.drugA.name}</strong> (ED50=${tiProblem.drugA.ed50}, LD50=${tiProblem.drugA.ld50})
+              <input type="number" step="any" id="inp-tia" class="calc-input" style="margin-top:6px;" placeholder="T.I للدواء A">
+            </div>
+            <div class="step-box">
+              <strong>${tiProblem.drugB.name}</strong> (ED50=${tiProblem.drugB.ed50}, LD50=${tiProblem.drugB.ld50})
+              <input type="number" step="any" id="inp-tib" class="calc-input" style="margin-top:6px;" placeholder="T.I للدواء B">
+            </div>
+          </div>
+          <div class="grid-2">
+            <button class="btn btn-emerald" onclick="verifyTIInputs('A')">الدواء A أكثر أماناً</button>
+            <button class="btn btn-amber" onclick="verifyTIInputs('B')">الدواء B أكثر أماناً</button>
+          </div>
+          ${tiFeedback ? `<div class="feedback-panel ${tiFeedback.ok?'success':'error'}"><strong>${tiFeedback.title}</strong> ${tiFeedback.msg}</div>` : ''}
+        `}
+      `;
+    }
+
+    function approxEq(a, b) { return !isNaN(a) && Math.abs(a - b) <= Math.max(0.02, b * 0.02); }
+    function verifyDoseInputs(wKg, conc100, totalMg, vol) {
+      const s1 = approxEq(parseFloat(document.getElementById('inp-wkg').value), wKg);
+      const s2 = approxEq(parseFloat(document.getElementById('inp-mg100').value), conc100);
+      const s3 = approxEq(parseFloat(document.getElementById('inp-totalmg').value), totalMg);
+      const s4 = approxEq(parseFloat(document.getElementById('inp-vol').value), vol);
+      const allOk = s1 && s2 && s3 && s4;
+      doseChecked = { s1, s2, s3, s4, allOk };
+      if (allOk) addXP(25, 'حل مسألة الجرعة');
+      else recordMistake('calc_' + doseProblem.rawWeight, 'حساب الجرعات', `${doseProblem.subject}: ${doseProblem.rawWeight}${doseProblem.unit}, ${doseProblem.dosePerKg}mg/kg, ${doseProblem.percent}%`, `الحجم = ${vol} cm³`);
+      renderGameStage();
+    }
+    function verifyTIInputs(picked) {
+      const a = parseFloat(document.getElementById('inp-tia').value);
+      const b = parseFloat(document.getElementById('inp-tib').value);
+      const rA = tiProblem.drugA.ld50 / tiProblem.drugA.ed50;
+      const rB = tiProblem.drugB.ld50 / tiProblem.drugB.ed50;
+      const ok = approxEq(a, rA) && approxEq(b, rB) && picked === tiProblem.safer;
+      if (ok) {
+        tiFeedback = { ok: true, title: 'صحيح!', msg: `T.I(A)=${rA} و T.I(B)=${rB}. الأعلى مؤشراً أكثر أماناً (كالسلفا والبنسلينات مقارنة بالديجتالين).` };
+        addXP(20, 'تحليل المؤشر العلاجي');
+      } else {
+        tiFeedback = { ok: false, title: 'راجع القيم:', msg: `T.I(A)=${rA}، T.I(B)=${rB}، الأكثر أماناً هو ${tiProblem.safer}.` };
+        recordMistake('ti_calc', 'المؤشر العلاجي', 'T.I = LD50 / ED50', 'القيمة الأعلى تعني أماناً أوسع (سلفا وبنسلينات) والأقل أماناً أضيق (ديجتالين).');
+      }
+      renderGameStage();
+    }
+
+    // ========= GAME 8: STEP-ORDER =========
+    let stepProtoIndex = 0, currentStepOrder = [], stepCheckedState = null;
+
+    function initStepOrder(idx) {
+      stepProtoIndex = idx;
+      const raw = STEP_PROTOCOLS[idx].steps.map((t, i) => ({ origIdx: i, text: t }));
+      currentStepOrder = [...raw].sort(() => Math.random() - 0.5);
+      if (currentStepOrder.every((s, i) => s.origIdx === i) && currentStepOrder.length > 1) {
+        [currentStepOrder[0], currentStepOrder[1]] = [currentStepOrder[1], currentStepOrder[0]];
+      }
+      stepCheckedState = null;
+    }
+
+    function renderStepOrderGame(stage) {
+      if (currentStepOrder.length === 0) initStepOrder(stepProtoIndex);
+      const proto = STEP_PROTOCOLS[stepProtoIndex];
+
+      stage.className = 'academic-card border-cyan';
+      stage.innerHTML = `
+        <div class="card-title">
+          <span><i class="fa-solid fa-list-ol icon-cyan"></i> ${proto.title}</span>
+          <div style="display:flex; gap:5px;">
+            ${STEP_PROTOCOLS.map((_, i) => `<button class="btn btn-sm ${i===stepProtoIndex?'btn-primary':'btn-outline'}" onclick="switchStepProto(${i})">${i+1}</button>`).join('')}
+          </div>
+        </div>
+        <div>
+          ${currentStepOrder.map((st, idx) => {
+            const cls = stepCheckedState ? (st.origIdx === idx ? 'is-correct' : 'is-wrong') : '';
+            return `
+              <div class="step-order-item ${cls}">
+                <div style="display:flex; align-items:center; gap:8px;">
+                  <span class="tag-chip tag-violet">${idx + 1}</span>
+                  <span style="font-size:0.88rem; font-weight:600;">${st.text}</span>
+                </div>
+                <div style="display:flex; gap:4px; flex-shrink:0;">
+                  <button class="btn btn-outline btn-sm" ${idx===0?'disabled':''} onclick="moveStep(${idx},-1)"><i class="fa-solid fa-arrow-up"></i></button>
+                  <button class="btn btn-outline btn-sm" ${idx===currentStepOrder.length-1?'disabled':''} onclick="moveStep(${idx},1)"><i class="fa-solid fa-arrow-down"></i></button>
+                </div>
+              </div>`;
+          }).join('')}
+        </div>
+        <div style="display:flex; gap:8px; margin-top:12px;">
+          <button class="btn btn-emerald" onclick="verifyStepOrder()"><i class="fa-solid fa-check"></i> تحقق من الترتيب</button>
+          <button class="btn btn-outline" onclick="switchStepProto(${stepProtoIndex})"><i class="fa-solid fa-shuffle"></i> خلط</button>
+        </div>
+        ${stepCheckedState ? `<div class="feedback-panel ${stepCheckedState.allOk?'success':'error'}"><strong>${stepCheckedState.allOk?'تسلسل مخبري دقيق 100%!':'راجع البطاقات الحمراء وأعد ترتيبها.'}</strong></div>` : ''}
+      `;
+    }
+    function switchStepProto(i) { initStepOrder(i); renderGameStage(); }
+    function moveStep(idx, d) {
+      const t = idx + d;
+      if (t < 0 || t >= currentStepOrder.length) return;
+      [currentStepOrder[idx], currentStepOrder[t]] = [currentStepOrder[t], currentStepOrder[idx]];
+      stepCheckedState = null; haptic('tap'); renderGameStage();
+    }
+    function verifyStepOrder() {
+      const allOk = currentStepOrder.every((st, i) => st.origIdx === i);
+      stepCheckedState = { allOk };
+      if (allOk) addXP(25, 'ترتيب البروتوكول');
+      else recordMistake('step_' + stepProtoIndex, STEP_PROTOCOLS[stepProtoIndex].title, 'تسلسل الخطوات', STEP_PROTOCOLS[stepProtoIndex].steps.join(' ← '));
+      renderGameStage();
+    }
+
+    // ========= GAME 9: COLOR-SIM (KI IN SALIVA LAB) =========
+    let colorLab = {
+      blankDone: false, solutionDrunk: false,
+      dropsAcid: 0, dropsStarch: 0, dropsH2O2: 0,
+      waited30s: false, activeTime: 0,
+      tableAnswers: { 0: '', 20: '', 40: '', 60: '' },
+      tableChecked: null, labMsg: null
+    };
+
+    function renderColorSimGame(stage) {
+      const t = colorLab.activeTime;
+      let stainStyle = 'background: transparent; opacity: 0;';
+      let colorLabel = 'شاهد سلبي قبل الإعطاء (لا يوجد لون)';
+      if (colorLab.waited30s) {
+        if (t === 0) {
+          stainStyle = 'background: radial-gradient(circle, rgba(241,245,249,0.9), transparent); opacity: 0.3;';
+          colorLabel = 'عديم اللون (لعاب خالٍ من يودور البوتاسيوم ✓)';
+        } else if (t === 20) {
+          stainStyle = 'background: radial-gradient(circle, #818CF8 15%, #A78BFA 55%, transparent 80%); opacity: 0.58;';
+          colorLabel = 'لون بنفسجي / أزرق خفيف (بداية الإطراح اللعابي)';
+        } else if (t === 40) {
+          stainStyle = 'background: radial-gradient(circle, #4F46E5 20%, #7C3AED 60%, transparent 85%); opacity: 0.84;';
+          colorLabel = 'لون أزرق بنفسجي واضح وقوي';
+        } else if (t === 60) {
+          stainStyle = 'background: radial-gradient(circle, #312E81 25%, #5B21B6 65%, transparent 90%); opacity: 0.98;';
+          colorLabel = 'لون بنفسجي أزرق داكن وكثيف';
+        }
+      }
+
+      stage.className = 'academic-card border-emerald';
+      stage.innerHTML = `
+        <div class="card-title">
+          <span><i class="fa-solid fa-vial icon-emerald"></i> مختبر كشف KI في اللعاب</span>
+          <button class="btn btn-outline btn-sm" onclick="resetColorSim()"><i class="fa-solid fa-rotate"></i> إعادة</button>
+        </div>
+
+        <div class="grid-2">
+          <div>
+            <div class="step-box">
+              <div class="step-title" style="color:var(--accent-rose);">1. الشاهد والشرب</div>
+              <div style="display:flex; flex-wrap:wrap; gap:6px;">
+                <button class="btn btn-sm ${colorLab.blankDone?'btn-emerald':'btn-primary'}" onclick="runBlankControl()">فحص الشاهد ${colorLab.blankDone?'✓':''}</button>
+                <button class="btn btn-sm ${colorLab.solutionDrunk?'btn-emerald':'btn-cyan'}" onclick="drinkKISolution()">شرب 100مل + 0.5غ KI ${colorLab.solutionDrunk?'✓':''}</button>
+              </div>
+            </div>
+            <div class="step-box">
+              <div class="step-title" style="color:var(--accent-violet-dark);">2. قطرات ورقة الترشيح</div>
+              <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:6px;">1 حمض الكبريت + 1 نشاء 1% + 2 ماء أوكسجيني 3%</p>
+              <div style="display:flex; flex-wrap:wrap; gap:5px; margin-bottom:8px;">
+                <button class="btn btn-sm btn-outline" onclick="addReagent('acid')">+ كبريت (${colorLab.dropsAcid})</button>
+                <button class="btn btn-sm btn-outline" onclick="addReagent('starch')">+ نشاء 1% (${colorLab.dropsStarch})</button>
+                <button class="btn btn-sm btn-outline" onclick="addReagent('h2o2')">+ H2O2 3% (${colorLab.dropsH2O2})</button>
+              </div>
+              <button class="btn btn-primary btn-sm" style="width:100%;" onclick="waitReaction30s()">انتظر نصف دقيقة (30 ث)</button>
+            </div>
+            <div class="step-box">
+              <div class="step-title" style="color:var(--accent-amber);">3. الزمن: ${t===0?'قبل الإعطاء':t+' دقيقة'}</div>
+              <input type="range" min="0" max="60" step="20" value="${t}" class="styled-slider" oninput="setSimTime(this.value)">
+              <div style="display:flex; justify-content:space-between; font-size:0.78rem; font-weight:700;">
+                <span>قبل (0)</span><span>20 د</span><span>40 د</span><span>60 د</span>
+              </div>
+            </div>
+          </div>
+
+          <div style="text-align:center;">
+            <div class="sub-box">
+              <div class="filter-paper-disc"><div class="filter-stain" style="${stainStyle}"></div></div>
+              <p style="margin-top:10px; font-weight:700; font-size:0.86rem;">
+                ${colorLab.waited30s ? colorLabel : 'أضف الكواشف وانتظر نصف دقيقة...'}
+              </p>
+            </div>
+            <div class="sub-box" style="margin-bottom:0;">
+              <svg viewBox="0 0 320 105" style="width:100%; height:auto;">
+                <rect x="0" y="0" width="320" height="105" rx="10" fill="#FFFFFF" stroke="#CBD5E1"/>
+                <line x1="35" y1="82" x2="295" y2="82" stroke="#94A3B8" stroke-width="1.5"/>
+                <polyline fill="none" stroke="#6D28D9" stroke-width="3" points="45,78 125,56 205,34 285,18"/>
+                ${[{t:0,x:45,y:78},{t:20,x:125,y:56},{t:40,x:205,y:34},{t:60,x:285,y:18}].map(pt=>`
+                  <circle cx="${pt.x}" cy="${pt.y}" r="${t===pt.t?7:4.5}" fill="${t===pt.t?'#F59E0B':'#8B5CF6'}" stroke="#FFFFFF" stroke-width="1.5"/>
+                  <text x="${pt.x}" y="97" text-anchor="middle" font-family="IBM Plex Sans Arabic" font-size="10" fill="#475569">${pt.t}د</text>
+                `).join('')}
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        ${colorLab.labMsg ? `<div class="feedback-panel ${colorLab.labMsg.type}"><strong>${colorLab.labMsg.text}</strong></div>` : ''}
+
+        <div class="sub-box" style="margin-top:12px; margin-bottom:0;">
+          <strong style="display:block; margin-bottom:8px; font-size:0.9rem;">سجّل جدول نتائج التجربة وتحقق منه:</strong>
+          <div class="table-wrap">
+            <table class="academic-table">
+              <thead><tr><th>الوقت</th><th>النتيجة في اللعاب</th></tr></thead>
+              <tbody>
+                ${[0,20,40,60].map(tp => `
+                  <tr>
+                    <td><strong>${tp===0?'قبل الإعطاء':tp+' دقيقة'}</strong></td>
+                    <td>
+                      <select class="calc-input" style="direction:rtl; text-align:right; font-size:0.84rem;" onchange="colorLab.tableAnswers[${tp}]=this.value">
+                        <option value="">-- اختر --</option>
+                        <option value="neg" ${colorLab.tableAnswers[tp]==='neg'?'selected':''}>سلبي (عديم اللون)</option>
+                        <option value="pos_light" ${colorLab.tableAnswers[tp]==='pos_light'?'selected':''}>إيجابي (بنفسجي/أزرق خفيف)</option>
+                        <option value="pos_med" ${colorLab.tableAnswers[tp]==='pos_med'?'selected':''}>إيجابي (أزرق بنفسجي واضح)</option>
+                        <option value="pos_deep" ${colorLab.tableAnswers[tp]==='pos_deep'?'selected':''}>إيجابي (بنفسجي داكن كثيف)</option>
+                      </select>
+                    </td>
+                  </tr>`).join('')}
+              </tbody>
+            </table>
+          </div>
+          <button class="btn btn-emerald btn-sm" style="margin-top:10px; width:100%;" onclick="verifyColorLabTable()">تحقق من الجدول (+35 XP)</button>
+          ${colorLab.tableChecked ? `<div class="feedback-panel ${colorLab.tableChecked.ok?'success':'error'}">${colorLab.tableChecked.msg}</div>` : ''}
+        </div>
+      `;
+    }
+
+    function resetColorSim() {
+      colorLab = { blankDone: false, solutionDrunk: false, dropsAcid: 0, dropsStarch: 0, dropsH2O2: 0, waited30s: false, activeTime: 0, tableAnswers: {0:'',20:'',40:'',60:''}, tableChecked: null, labMsg: null };
+      renderGameStage();
+    }
+    function runBlankControl() {
+      colorLab.blankDone = true; colorLab.activeTime = 0;
+      colorLab.labMsg = { type: 'success', text: 'تم فحص الشاهد قبل الإعطاء وإثبات خلو اللعاب من KI.' };
+      haptic('success'); renderGameStage();
+    }
+    function drinkKISolution() {
+      if (!colorLab.blankDone) {
+        colorLab.labMsg = { type: 'error', text: 'تحذير: افحص الشاهد أولاً قبل شرب 100 مل + 0.5 غ KI!' };
+        haptic('error'); renderGameStage(); return;
+      }
+      colorLab.solutionDrunk = true; colorLab.activeTime = 20;
+      colorLab.labMsg = { type: 'info', text: 'تم الشرب! أضف الآن 1 كبريت + 1 نشاء 1% + 2 ماء أوكسجيني 3%.' };
+      renderGameStage();
+    }
+    function addReagent(k) {
+      haptic('tap');
+      if (k==='acid') colorLab.dropsAcid++;
+      if (k==='starch') colorLab.dropsStarch++;
+      if (k==='h2o2') colorLab.dropsH2O2++;
+      colorLab.waited30s = false;
+      renderGameStage();
+    }
+    function waitReaction30s() {
+      if (colorLab.dropsAcid!==1 || colorLab.dropsStarch!==1 || colorLab.dropsH2O2!==2) {
+        colorLab.labMsg = { type: 'error', text: `خطأ بالقطرات! المطلوب (1 كبريت، 1 نشاء، 2 ماء أوكسجيني). أُعيد تصفير القطرات.` };
+        colorLab.dropsAcid = 0; colorLab.dropsStarch = 0; colorLab.dropsH2O2 = 0;
+        haptic('error'); renderGameStage(); return;
+      }
+      colorLab.waited30s = true;
+      colorLab.labMsg = { type: 'success', text: colorLab.solutionDrunk ? 'تشكل اللون البنفسجي/الأزرق! حرّك شريط الزمن للمراقبة.' : 'الشاهد سلبي تماماً كما هو مطلوب.' };
+      haptic('success'); renderGameStage();
+    }
+    function setSimTime(v) {
+      const n = Number(v);
+      if (n > 0 && !colorLab.solutionDrunk) {
+        colorLab.labMsg = { type: 'error', text: 'اشرب محلول KI أولاً قبل قياس الأزمنة التالية!' };
+        renderGameStage(); return;
+      }
+      colorLab.activeTime = n; renderGameStage();
+    }
+    function verifyColorLabTable() {
+      const a = colorLab.tableAnswers;
+      if (a[0]==='neg' && a[20]==='pos_light' && a[40]==='pos_med' && a[60]==='pos_deep') {
+        colorLab.tableChecked = { ok: true, msg: 'نتائج مخبرية ممتازة وصحيحة!' };
+        addXP(35, 'إتمام مختبر كشف KI في اللعاب');
+      } else {
+        colorLab.tableChecked = { ok: false, msg: 'تذكر: الشاهد سلبي، ثم يتصاعد اللون البنفسجي/الأزرق تدريجياً عند 20 و40 و60 دقيقة.' };
+        recordMistake('color_table', 'تجربة اللعاب', 'نتائج الكشف عبر الزمن', 'قبل الإعطاء: سلبي | 20، 40، 60 دقيقة: يظهر ويزداد اللون البنفسجي أو الأزرق.');
+      }
+      renderGameStage();
+    }
+
+    // ========= GAME 10: MATCH-PAIR =========
+    let matchBoardIndex = 0, matchShuffledRight = [], matchSelectedLeft = null, matchMatchedIds = [];
+
+    function initMatchBoard(idx) {
+      matchBoardIndex = idx;
+      matchShuffledRight = [...MATCH_BOARDS[idx].pairs].sort(() => Math.random() - 0.5);
+      matchSelectedLeft = null;
+      matchMatchedIds = [];
+    }
+
+    function renderMatchPairGame(stage) {
+      if (matchShuffledRight.length === 0) initMatchBoard(matchBoardIndex);
+      const board = MATCH_BOARDS[matchBoardIndex];
+
+      stage.className = 'academic-card border-amber';
+      stage.innerHTML = `
+        <div class="card-title">
+          <span><i class="fa-solid fa-link icon-amber"></i> ${board.title}</span>
+          <div style="display:flex; gap:5px;">
+            ${MATCH_BOARDS.map((_, i) => `<button class="btn btn-sm ${i===matchBoardIndex?'btn-primary':'btn-outline'}" onclick="initMatchBoard(${i});renderGameStage()">لوحة ${i+1}</button>`).join('')}
+          </div>
+        </div>
+        <div class="match-grid">
+          <div>
+            ${board.pairs.map(p => {
+              const m = matchMatchedIds.includes(p.id), s = matchSelectedLeft === p.id;
+              return `<div class="match-card ${m?'matched':(s?'selected':'')}" onclick="${m?'':`selectLeftMatch('${p.id}')`}"><span>${p.left}</span>${m?'<i class="fa-solid fa-check icon-emerald"></i>':''}</div>`;
+            }).join('')}
+          </div>
+          <div>
+            ${matchShuffledRight.map(p => {
+              const m = matchMatchedIds.includes(p.id);
+              return `<div class="match-card ${m?'matched':''}" onclick="${m?'':`selectRightMatch('${p.id}')`}"><span>${p.right}</span>${m?'<i class="fa-solid fa-link icon-emerald"></i>':''}</div>`;
+            }).join('')}
+          </div>
+        </div>
+        <div style="margin-top:10px;">
+          <button class="btn btn-outline btn-sm" onclick="initMatchBoard(${matchBoardIndex});renderGameStage()"><i class="fa-solid fa-rotate"></i> إعادة خلط</button>
+        </div>
+      `;
+    }
+
+    function selectLeftMatch(id) { haptic('tap'); matchSelectedLeft = (matchSelectedLeft === id ? null : id); renderGameStage(); }
+    function selectRightMatch(rightId) {
+      if (!matchSelectedLeft) { showToast('اختر عنصراً من اليمين أولاً', 'amber'); return; }
+      const board = MATCH_BOARDS[matchBoardIndex];
+      if (matchSelectedLeft === rightId) {
+        matchMatchedIds.push(rightId);
+        matchSelectedLeft = null;
+        if (matchMatchedIds.length === board.pairs.length) addXP(25, 'إتمام لوحة المطابقة');
+        else { appState.xp += 5; saveState(); haptic('success'); showToast('+5 XP متطابق', 'emerald'); }
+      } else {
+        const lObj = board.pairs.find(p => p.id === matchSelectedLeft);
+        recordMistake('m_' + lObj.id, board.title, lObj.left, lObj.right);
+        matchSelectedLeft = null;
+        showToast('غير مطابق — حاول مجدداً', 'rose');
+      }
+      renderGameStage();
+    }
+
+    // ========= INITIALIZATION =========
+    document.addEventListener('DOMContentLoaded', () => {
+      initTelegramApp();
+      updateHUD();
+      renderGameStrip();
+      renderGameStage();
+    });
+  </script>
+</body>
+</html>
