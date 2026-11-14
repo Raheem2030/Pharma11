@@ -1,0 +1,2136 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
+  <meta name="color-scheme" content="light" />
+  <title>منظومة الألعاب والاختبارات التفاعلية | الجلسة الرابعة</title>
+
+  <!-- Telegram Mini App SDK -->
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+  <!-- Google Fonts: Cairo (700, 800) & IBM Plex Sans Arabic (400, 600) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@700;800&family=IBM+Plex+Sans+Arabic:wght@400;600&display=swap" rel="stylesheet" />
+
+  <!-- FontAwesome 6 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+  <style>
+    :root {
+      color-scheme: light;
+      --bg-page: #F1F5F9;
+      --bg-page-alt: #F8FAFC;
+      --bg-card: #FFFFFF;
+      --bg-sub: rgba(226, 232, 240, 0.7);
+      --border-soft: #CBD5E1;
+      --shadow-card: 0 10px 25px -5px rgba(139, 92, 246, 0.12);
+
+      --text-heading: #0F172A;
+      --text-subheading: #1E293B;
+      --text-body: #334155;
+      --text-muted: #475569;
+
+      --violet: #8B5CF6;
+      --cyan: #06B6D4;
+      --emerald: #10B981;
+      --amber: #F59E0B;
+      --rose: #F43F5E;
+
+      --violet-soft: rgba(139, 92, 246, 0.1);
+      --cyan-soft: rgba(6, 182, 212, 0.1);
+      --emerald-soft: rgba(16, 185, 129, 0.1);
+      --amber-soft: rgba(245, 158, 11, 0.1);
+      --rose-soft: rgba(244, 63, 94, 0.1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: 90px;
+    }
+
+    body {
+      font-family: 'IBM Plex Sans Arabic', sans-serif;
+      background: linear-gradient(180deg, var(--bg-page) 0%, var(--bg-page-alt) 100%);
+      color: var(--text-body);
+      line-height: 1.75;
+      min-height: 100vh;
+      min-height: var(--tg-viewport-stable-height, 100dvh);
+      overflow-x: clip;
+    }
+
+    h1, h2, h3, h4 {
+      font-family: 'Cairo', sans-serif;
+      color: var(--text-heading);
+      line-height: 1.45;
+    }
+
+    button, select {
+      touch-action: manipulation;
+    }
+
+    /* Sticky Top HUD */
+    .top-nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border-soft);
+      padding: max(10px, env(safe-area-inset-top)) max(18px, env(safe-area-inset-right)) 10px max(18px, env(safe-area-inset-left));
+      box-shadow: 0 4px 16px rgba(15, 23, 42, 0.05);
+    }
+
+    .top-nav-inner {
+      max-width: 1180px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .nav-pill {
+      text-decoration: none;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      background: var(--bg-page);
+      padding: 6px 12px;
+      border-radius: 999px;
+      border: 1px solid var(--border-soft);
+      transition: 0.2s;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .nav-pill:hover, .nav-pill:active {
+      background: var(--violet-soft);
+      color: var(--violet);
+      border-color: var(--violet);
+    }
+
+    .hud-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .score-hud {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--bg-page);
+      border: 1px solid var(--border-soft);
+      border-radius: 999px;
+      padding: 5px 14px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .progress-bar-wrap {
+      width: 90px;
+      height: 8px;
+      background: #E2E8F0;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--violet), var(--emerald));
+      transition: width 0.35s ease;
+    }
+
+    .tg-user-pill {
+      display: none;
+      align-items: center;
+      gap: 6px;
+      background: var(--cyan-soft);
+      color: #0E7490;
+      border: 1px solid rgba(6, 182, 212, 0.3);
+      border-radius: 999px;
+      padding: 4px 12px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    /* Main Container */
+    .container {
+      max-width: 1140px;
+      margin: 0 auto;
+      padding: 24px max(16px, env(safe-area-inset-right)) calc(84px + env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+    }
+
+    /* Header */
+    .lecture-header { margin-bottom: 30px; }
+
+    .chapter-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--violet-soft);
+      color: var(--violet);
+      font-family: 'Cairo', sans-serif;
+      font-weight: 700;
+      font-size: 0.88rem;
+      padding: 6px 18px;
+      border-radius: 999px;
+      margin-bottom: 12px;
+      border: 1px solid rgba(139, 92, 246, 0.2);
+    }
+
+    .lecture-title {
+      font-size: clamp(1.45rem, 3.2vw, 2.35rem);
+      font-weight: 800;
+      color: var(--text-heading);
+      margin-bottom: 14px;
+    }
+
+    .objectives-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border-soft);
+      border-right: 6px solid var(--violet);
+      border-radius: 16px;
+      padding: 20px 22px;
+      box-shadow: var(--shadow-card);
+    }
+
+    .objectives-box h3 {
+      font-size: 1.1rem;
+      color: var(--violet);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .objectives-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .obj-item {
+      background: var(--bg-sub);
+      border: 1px solid var(--border-soft);
+      border-radius: 10px;
+      padding: 9px 12px;
+      font-size: 0.88rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 600;
+    }
+
+    /* Topic Header Card */
+    .topic-section { margin-top: 34px; }
+
+    .topic-header-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-soft);
+      border-radius: 16px;
+      padding: 16px 20px;
+      margin-bottom: 16px;
+      box-shadow: var(--shadow-card);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .topic-en {
+      display: block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--violet);
+      margin-bottom: 2px;
+    }
+
+    .topic-title {
+      font-size: clamp(1.12rem, 2.5vw, 1.32rem);
+      font-weight: 800;
+    }
+
+    .topic-tag {
+      background: var(--bg-page);
+      border: 1px solid var(--border-soft);
+      padding: 5px 12px;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    /* Academic Card / Game Container */
+    .academic-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-soft);
+      border-radius: 16px;
+      padding: 22px;
+      margin-bottom: 18px;
+      box-shadow: var(--shadow-card);
+    }
+
+    .accent-violet { border-right: 4px solid var(--violet); }
+    .accent-cyan { border-right: 4px solid var(--cyan); }
+    .accent-emerald { border-right: 4px solid var(--emerald); }
+    .accent-amber { border-right: 4px solid var(--amber); }
+    .accent-rose { border-right: 4px solid var(--rose); }
+
+    .icon-violet { color: var(--violet); }
+    .icon-cyan { color: var(--cyan); }
+    .icon-emerald { color: var(--emerald); }
+    .icon-amber { color: var(--amber); }
+    .icon-rose { color: var(--rose); }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 18px;
+    }
+
+    @media (max-width: 840px) { .grid-2 { grid-template-columns: 1fr; } }
+
+    .step-box {
+      background: var(--bg-sub);
+      border: 1px solid var(--border-soft);
+      border-radius: 12px;
+      padding: 13px 16px;
+      margin-bottom: 10px;
+      font-size: 0.91rem;
+    }
+    .step-box:last-child { margin-bottom: 0; }
+
+    .step-title {
+      font-family: 'Cairo', sans-serif;
+      font-weight: 700;
+      font-size: 0.95rem;
+      margin-bottom: 5px;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .hl-term { color: #B45309; font-weight: 700; }
+    .hl-sub { color: #0369A1; font-weight: 600; }
+    .hl-num { color: #047857; font-weight: 700; }
+
+    /* Game Tabs */
+    .game-hub-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+      padding-bottom: 12px;
+      margin-bottom: 14px;
+      border-bottom: 1px solid var(--border-soft);
+    }
+
+    .game-hub-title {
+      font-family: 'Cairo', sans-serif;
+      font-weight: 800;
+      font-size: 1.08rem;
+      color: var(--text-heading);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .game-tabs {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .game-tab-btn {
+      border: 1px solid var(--border-soft);
+      background: var(--bg-page);
+      color: var(--text-muted);
+      padding: 8px 13px;
+      border-radius: 10px;
+      font-family: 'IBM Plex Sans Arabic', sans-serif;
+      font-size: 0.84rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: 0.2s;
+      min-height: 40px;
+    }
+
+    .game-tab-btn.active {
+      background: var(--amber);
+      color: #fff;
+      border-color: var(--amber);
+    }
+
+    .game-tab-btn.cyan-tab.active { background: var(--cyan); border-color: var(--cyan); }
+    .game-tab-btn.violet-tab.active { background: var(--violet); border-color: var(--violet); }
+    .game-tab-btn.emerald-tab.active { background: var(--emerald); border-color: var(--emerald); }
+    .game-tab-btn.rose-tab.active { background: var(--rose); border-color: var(--rose); }
+
+    .game-panel { display: none; }
+    .game-panel.active { display: block; animation: fadeIn 0.2s ease; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Buttons */
+    .btn {
+      border: none;
+      border-radius: 10px;
+      padding: 9px 16px;
+      min-height: 40px;
+      font-family: 'IBM Plex Sans Arabic', sans-serif;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      transition: 0.2s;
+    }
+
+    .btn:active { transform: scale(0.98); }
+
+    .btn-violet { background: var(--violet); color: #fff; }
+    .btn-emerald { background: var(--emerald); color: #fff; }
+    .btn-cyan { background: var(--cyan); color: #fff; }
+    .btn-amber { background: var(--amber); color: #fff; }
+    .btn-rose { background: var(--rose); color: #fff; }
+    .btn-outline { background: #fff; border: 1px solid var(--border-soft); color: var(--text-body); }
+    .btn-outline:hover { background: var(--bg-page); }
+
+    /* Flashcards (iOS / WebView Safe) */
+    .flashcard-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 14px;
+    }
+
+    .flashcard {
+      -webkit-perspective: 1000px;
+      perspective: 1000px;
+      height: 185px;
+      cursor: pointer;
+    }
+
+    .flashcard-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transition: transform 0.5s;
+      -webkit-transform-style: preserve-3d;
+      transform-style: preserve-3d;
+    }
+
+    .flashcard.flipped .flashcard-inner {
+      -webkit-transform: rotateY(180deg);
+      transform: rotateY(180deg);
+    }
+
+    .flashcard-face {
+      position: absolute;
+      inset: 0;
+      -webkit-backface-visibility: hidden;
+      backface-visibility: hidden;
+      border-radius: 14px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      border: 1px solid var(--border-soft);
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
+      overflow-y: auto;
+    }
+
+    .flashcard-front {
+      background: #fff;
+      border-top: 4px solid var(--violet);
+      -webkit-transform: rotateY(0deg);
+      transform: rotateY(0deg);
+    }
+
+    .flashcard-back {
+      background: #F5F3FF;
+      border-top: 4px solid var(--emerald);
+      -webkit-transform: rotateY(180deg);
+      transform: rotateY(180deg);
+      font-size: 0.88rem;
+    }
+
+    .flashcard-hint { font-size: 0.74rem; color: var(--text-muted); margin-top: 8px; }
+
+    /* Drag & Drop / Tap-to-Sort */
+    .dnd-pool {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding: 12px;
+      background: var(--bg-page);
+      border: 1px solid var(--border-soft);
+      border-radius: 12px;
+      margin-bottom: 14px;
+      min-height: 54px;
+    }
+
+    .dnd-chip {
+      background: #fff;
+      border: 2px solid var(--violet);
+      color: var(--text-heading);
+      padding: 8px 13px;
+      border-radius: 9px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      user-select: none;
+      -webkit-user-select: none;
+      transition: 0.15s;
+    }
+
+    .dnd-chip.selected {
+      background: var(--violet);
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(139, 92, 246, 0.25);
+    }
+
+    .dnd-buckets {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 10px;
+    }
+
+    .dnd-bucket {
+      background: #fff;
+      border: 2px dashed var(--border-soft);
+      border-radius: 12px;
+      padding: 12px;
+      min-height: 115px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .dnd-bucket.drag-over,
+    .dnd-bucket.tap-ready {
+      border-color: var(--cyan);
+      background: var(--cyan-soft);
+    }
+
+    .dnd-bucket-title {
+      font-family: 'Cairo', sans-serif;
+      font-weight: 700;
+      font-size: 0.9rem;
+      color: #0E7490;
+      text-align: center;
+      border-bottom: 1px solid var(--border-soft);
+      padding-bottom: 5px;
+      margin-bottom: 8px;
+    }
+
+    .dnd-dropped-items { display: flex; flex-direction: column; gap: 6px; }
+
+    .placed-badge {
+      padding: 6px 10px;
+      border-radius: 8px;
+      font-size: 0.82rem;
+      font-weight: 600;
+    }
+
+    .placed-badge.correct { background: var(--emerald-soft); color: #065F46; border: 1px solid var(--emerald); }
+    .placed-badge.wrong { background: var(--rose-soft); color: #9F1239; border: 1px solid var(--rose); }
+
+    /* Quiz & Feedback */
+    .quiz-card {
+      background: var(--bg-page-alt);
+      border: 1px solid var(--border-soft);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 12px;
+    }
+
+    .quiz-q {
+      font-family: 'Cairo', sans-serif;
+      font-weight: 700;
+      font-size: 0.98rem;
+      color: var(--text-heading);
+      margin-bottom: 10px;
+    }
+
+    .quiz-options { display: flex; flex-direction: column; gap: 8px; }
+
+    .quiz-opt {
+      text-align: right;
+      background: #fff;
+      border: 1px solid var(--border-soft);
+      padding: 11px 14px;
+      min-height: 44px;
+      border-radius: 9px;
+      font-family: 'IBM Plex Sans Arabic', sans-serif;
+      font-size: 0.88rem;
+      cursor: pointer;
+      color: var(--text-body);
+      transition: 0.15s;
+    }
+
+    .quiz-opt:hover { border-color: var(--violet); background: var(--violet-soft); }
+    .quiz-opt.correct { background: var(--emerald-soft); border-color: var(--emerald); color: #065F46; font-weight: 700; }
+    .quiz-opt.wrong { background: var(--rose-soft); border-color: var(--rose); color: #9F1239; }
+
+    .feedback-box {
+      margin-top: 10px;
+      padding: 10px 14px;
+      border-radius: 9px;
+      font-size: 0.86rem;
+      display: none;
+    }
+
+    .feedback-box.show { display: block; }
+    .feedback-box.ok { background: var(--emerald-soft); color: #065F46; border-right: 4px solid var(--emerald); }
+    .feedback-box.err { background: var(--rose-soft); color: #9F1239; border-right: 4px solid var(--rose); }
+
+    /* Sequence Lists */
+    .seq-list { display: flex; flex-direction: column; gap: 7px; }
+
+    .seq-item {
+      background: #fff;
+      border: 1px solid var(--border-soft);
+      border-radius: 10px;
+      padding: 10px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      font-size: 0.88rem;
+    }
+
+    .seq-controls { display: flex; gap: 6px; flex-shrink: 0; }
+
+    .seq-btn {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      border: 1px solid var(--border-soft);
+      background: var(--bg-page);
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      color: var(--text-heading);
+    }
+
+    .seq-btn:hover, .seq-btn:active { background: var(--violet-soft); color: var(--violet); }
+
+    /* Exception Imposter Cards */
+    .imposter-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .imposter-card {
+      background: #fff;
+      border: 2px solid var(--border-soft);
+      border-radius: 12px;
+      padding: 14px 10px;
+      min-height: 54px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.9rem;
+      transition: 0.2s;
+    }
+
+    .imposter-card:hover { border-color: var(--rose); }
+    .imposter-card.found-exception { background: var(--emerald-soft); border-color: var(--emerald); color: #065F46; }
+    .imposter-card.not-exception { background: var(--rose-soft); border-color: var(--rose); color: #9F1239; }
+
+    /* Organ Interactive Map */
+    .organ-map-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.15fr;
+      gap: 16px;
+    }
+
+    @media (max-width: 760px) { .organ-map-grid { grid-template-columns: 1fr; } }
+
+    .organ-buttons {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+    }
+
+    .organ-btn {
+      background: #fff;
+      border: 2px solid var(--border-soft);
+      border-radius: 11px;
+      padding: 12px 10px;
+      min-height: 48px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'Cairo', sans-serif;
+      font-weight: 700;
+      font-size: 0.88rem;
+      color: var(--text-heading);
+      transition: 0.2s;
+    }
+
+    .organ-btn.active, .organ-btn:hover {
+      border-color: var(--cyan);
+      background: var(--cyan-soft);
+      color: #0E7490;
+    }
+
+    .organ-detail-panel {
+      background: var(--bg-page-alt);
+      border: 1px solid var(--border-soft);
+      border-right: 4px solid var(--cyan);
+      border-radius: 12px;
+      padding: 18px;
+    }
+
+    /* Kymograph Simulator */
+    .kymo-stage {
+      background: #0F172A;
+      border-radius: 14px;
+      padding: 14px;
+      color: #F8FAFC;
+      margin-bottom: 14px;
+    }
+
+    .kymo-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .kymo-readout {
+      font-family: 'Cairo', sans-serif;
+      font-size: 0.9rem;
+      color: #34D399;
+      background: rgba(16, 185, 129, 0.15);
+      padding: 5px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(16, 185, 129, 0.35);
+    }
+
+    canvas#kymoWaveCanvas {
+      width: 100%;
+      height: 150px;
+      background: #020617;
+      border-radius: 8px;
+      display: block;
+    }
+
+    /* Matrix Select Rows */
+    .matrix-row {
+      display: grid;
+      grid-template-columns: 1fr 1.2fr 1.2fr;
+      gap: 10px;
+      align-items: center;
+      background: var(--bg-page-alt);
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border-soft);
+      margin-bottom: 8px;
+    }
+    @media (max-width: 700px) { .matrix-row { grid-template-columns: 1fr; } }
+
+    select.matrix-select {
+      font-family: 'IBM Plex Sans Arabic', sans-serif;
+      padding: 8px 10px;
+      min-height: 40px;
+      max-width: 100%;
+      border-radius: 8px;
+      border: 1px solid var(--border-soft);
+      background: #fff;
+      color: var(--text-heading);
+      font-size: 0.86rem;
+    }
+
+    /* Toast */
+    .toast-msg {
+      position: fixed;
+      bottom: calc(20px + env(safe-area-inset-bottom));
+      left: 20px;
+      background: #0F172A;
+      color: #fff;
+      padding: 10px 18px;
+      border-radius: 12px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.22);
+      z-index: 999;
+      display: none;
+      align-items: center;
+      gap: 8px;
+      max-width: calc(100vw - 32px);
+    }
+    .toast-msg.show { display: flex; animation: fadeIn 0.2s ease; }
+
+    /* Summary Modal */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.55);
+      backdrop-filter: blur(4px);
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .modal-backdrop.open { display: flex; }
+
+    .modal-card {
+      background: #fff;
+      border-radius: 18px;
+      max-width: 440px;
+      width: 100%;
+      padding: 22px;
+      border: 1px solid var(--border-soft);
+      box-shadow: 0 20px 45px rgba(15, 23, 42, 0.25);
+      text-align: center;
+    }
+
+    /* Mobile & Small Screen Optimizations */
+    @media (max-width: 768px) {
+      html { scroll-padding-top: 112px; }
+
+      .top-nav {
+        padding: max(8px, env(safe-area-inset-top)) 12px 8px;
+      }
+
+      .top-nav-inner {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+      }
+
+      .nav-links {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        padding-bottom: 2px;
+      }
+      .nav-links::-webkit-scrollbar { display: none; }
+
+      .hud-group {
+        justify-content: space-between;
+        width: 100%;
+      }
+
+      .score-hud {
+        padding: 4px 10px;
+        font-size: 0.8rem;
+        gap: 7px;
+      }
+
+      .progress-bar-wrap { width: 58px; }
+
+      .academic-card { padding: 16px 14px; }
+      .objectives-box { padding: 16px; }
+      .flashcard { height: 195px; }
+
+      .toast-msg {
+        left: 50%;
+        transform: translateX(-50%);
+        width: max-content;
+      }
+    }
+
+    @media (max-width: 420px) {
+      .organ-buttons { grid-template-columns: 1fr; }
+      .quiz-options[style*="flex-direction:row"] { flex-direction: column !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Sticky Navigation & Score HUD -->
+  <nav class="top-nav">
+    <div class="top-nav-inner">
+      <div class="nav-links">
+        <a href="#topic1" class="nav-pill">1. المستقبلات و G</a>
+        <a href="#topic2" class="nav-pill">2. التعصيب المستقل</a>
+        <a href="#topic3" class="nav-pill">3. الأستيل كولين</a>
+        <a href="#topic4" class="nav-pill">4. الأعضاء الجهازية</a>
+        <a href="#topic5" class="nav-pill">5. الكيموغراف والضفدع</a>
+      </div>
+
+      <div class="hud-group">
+        <div class="score-hud">
+          <span style="color:var(--violet); font-family:'Cairo',sans-serif;"><i class="fa-solid fa-trophy"></i> <span id="totalScore">0</span> نقطة</span>
+          <span style="color:var(--border-soft)">|</span>
+          <span style="color:var(--emerald);"><i class="fa-solid fa-circle-check"></i> <span id="completedCount">0</span> / 17</span>
+          <div class="progress-bar-wrap" title="نسبة الإنجاز">
+            <div class="progress-bar-fill" id="progressFill"></div>
+          </div>
+        </div>
+        <span id="tgUserPill" class="tg-user-pill"><i class="fa-brands fa-telegram"></i> <span id="tgUserName"></span></span>
+        <div style="display:flex; gap:6px;">
+          <button class="btn btn-violet" style="padding:5px 11px; min-height:34px; font-size:0.78rem;" onclick="openSummaryModal()"><i class="fa-solid fa-award"></i> ملخص</button>
+          <button class="btn btn-outline" style="padding:5px 11px; min-height:34px; font-size:0.78rem;" onclick="confirmResetProgress()"><i class="fa-solid fa-rotate-right"></i> إعادة البدء</button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container">
+
+    <!-- Header -->
+    <header class="lecture-header">
+      <span class="chapter-badge">
+        <i class="fa-solid fa-gamepad"></i>
+        الجلسة الرابعة | منصة الألعاب والاختبارات التفاعلية – فارمكولوجي ١ العملي
+      </span>
+      <h1 class="lecture-title">الألعاب والتقييم التفاعلي: تأثير الأستيل كولين على الأعضاء الجهازية</h1>
+
+      <div class="objectives-box">
+        <h3><i class="fa-solid fa-bullseye"></i> الوصف والأهداف التدريبية للمنصة</h3>
+        <p>
+          مجموعة متكاملة من الألعاب التعليمية والاختبارات المخبرية والسريرية التفاعلية المصممة لاختبار فهمك وتطبيقك العملي لجميع محاور الجلسة الرابعة. أكمل الأنشطة الـ <span class="hl-num">17</span> الموزعة على <span class="hl-num">5</span> محاور لتجميع النقاط الكاملة.
+        </p>
+        <div class="objectives-grid">
+          <div class="obj-item"><i class="fa-solid fa-boxes-packing icon-violet"></i> تصنيف الأهداف ومسارات Gs/Gi/Gq</div>
+          <div class="obj-item"><i class="fa-solid fa-user-secret icon-rose"></i> تحدي كشف استثناءات التعصيب</div>
+          <div class="obj-item"><i class="fa-solid fa-child-reaching icon-cyan"></i> خريطة الأعضاء والتناقض المزدوج</div>
+          <div class="obj-item"><i class="fa-solid fa-wave-square icon-emerald"></i> محاكي الكيموغراف والجرعة العظمى</div>
+        </div>
+      </div>
+    </header>
+
+    <!-- ===================================================== -->
+    <!-- TOPIC 1: Pharmacological Targets & Receptors -->
+    <!-- ===================================================== -->
+    <section id="topic1" class="topic-section">
+      <div class="topic-header-card">
+        <div>
+          <span class="topic-en">Pharmacological Targets & G-Protein Coupled Receptors</span>
+          <h2 class="topic-title">1.0 ألعاب الأهداف الدوائية والمستقبلات</h2>
+        </div>
+        <span class="topic-tag"><i class="fa-solid fa-puzzle-piece icon-violet"></i> 5 أنشطة تقييمية</span>
+      </div>
+
+      <div class="academic-card accent-violet">
+        <div class="game-hub-header">
+          <div class="game-hub-title"><i class="fa-solid fa-flask icon-violet"></i> تحديات الأهداف والمستقبلات وبروتينات G</div>
+          <span class="topic-tag">سحب وإفلات • ترتيب • مسارات • مصفوفة • بطاقات</span>
+        </div>
+
+        <div class="game-tabs">
+          <button class="game-tab-btn violet-tab active" onclick="switchTab(this, 't1-g1')"><i class="fa-solid fa-boxes-packing"></i> تصنيف الأهداف الدوائية</button>
+          <button class="game-tab-btn violet-tab" onclick="switchTab(this, 't1-g2')"><i class="fa-solid fa-gauge-high"></i> سرعة المستقبلات + MCQ</button>
+          <button class="game-tab-btn violet-tab" onclick="switchTab(this, 't1-g3')"><i class="fa-solid fa-diagram-next"></i> محاكي مسارات Gs / Gi / Gq</button>
+          <button class="game-tab-btn violet-tab" onclick="switchTab(this, 't1-g4')"><i class="fa-solid fa-table-cells"></i> التوصيل الشبكي + بطاقات وصح/خطأ</button>
+        </div>
+
+        <!-- T1 G1: Drag & Drop Targets -->
+        <div id="t1-g1" class="game-panel active">
+          <p style="margin-bottom:10px; font-size:0.88rem;">اسحب كل بطاقة (أو انقر عليها ثم انقر على الحاوية المطابقة) لتصنيف الأهداف الدوائية الأربعة:</p>
+          <div class="dnd-pool" id="t1-pool">
+            <div class="dnd-chip" draggable="true" data-target="receptors" data-id="c1">المستقبل النيكوتيني (nAChR)</div>
+            <div class="dnd-chip" draggable="true" data-target="transporters" data-id="c2">ناقل الكولين الغشائي (CHT)</div>
+            <div class="dnd-chip" draggable="true" data-target="enzymes" data-id="c3">إنزيم الأدينيليل سيكلاز</div>
+            <div class="dnd-chip" draggable="true" data-target="channels" data-id="c4">قنوات شوارد الصوديوم (Na+)</div>
+            <div class="dnd-chip" draggable="true" data-target="enzymes" data-id="c5">إنزيم الفوسفوليباز C</div>
+            <div class="dnd-chip" draggable="true" data-target="receptors" data-id="c6">المستقبل الموسكاريني (M2)</div>
+          </div>
+          <div class="dnd-buckets">
+            <div class="dnd-bucket" data-bucket="receptors"><div class="dnd-bucket-title">المستقبلات (Receptors)</div><div class="dnd-dropped-items"></div></div>
+            <div class="dnd-bucket" data-bucket="channels"><div class="dnd-bucket-title">القنوات الأيونية (Ion Channels)</div><div class="dnd-dropped-items"></div></div>
+            <div class="dnd-bucket" data-bucket="enzymes"><div class="dnd-bucket-title">الإنزيمات (Enzymes)</div><div class="dnd-dropped-items"></div></div>
+            <div class="dnd-bucket" data-bucket="transporters"><div class="dnd-bucket-title">النواقل الجزيئية (Transporters)</div><div class="dnd-dropped-items"></div></div>
+          </div>
+          <button class="btn btn-outline" style="margin-top:12px;" onclick="resetBucketGame('t1-g1')"><i class="fa-solid fa-rotate-right"></i> إعادة اللعب</button>
+        </div>
+
+        <!-- T1 G2: Speed Ranking + MCQ -->
+        <div id="t1-g2" class="game-panel">
+          <div class="grid-2">
+            <div>
+              <h4 style="margin-bottom:8px; font-size:0.95rem;"><i class="fa-solid fa-stopwatch icon-emerald"></i> رتّب عائلات المستقبلات من الأسرع استجابة (1) إلى الأبطأ (4):</h4>
+              <div class="seq-list" id="speed-seq-list">
+                <div class="seq-item" data-order="3"><span>المستقبلات المرتبطة بالإنزيمات (Enzyme-linked)</span><div class="seq-controls"><button class="seq-btn" onclick="moveItem(this,-1)" aria-label="أعلى"><i class="fa-solid fa-arrow-up"></i></button><button class="seq-btn" onclick="moveItem(this,1)" aria-label="أسفل"><i class="fa-solid fa-arrow-down"></i></button></div></div>
+                <div class="seq-item" data-order="1"><span>القنوات الأيونية ذات البوابة اللجائندية (Ligand-gated)</span><div class="seq-controls"><button class="seq-btn" onclick="moveItem(this,-1)" aria-label="أعلى"><i class="fa-solid fa-arrow-up"></i></button><button class="seq-btn" onclick="moveItem(this,1)" aria-label="أسفل"><i class="fa-solid fa-arrow-down"></i></button></div></div>
+                <div class="seq-item" data-order="4"><span>المستقبلات داخل الخلوية (Intracellular)</span><div class="seq-controls"><button class="seq-btn" onclick="moveItem(this,-1)" aria-label="أعلى"><i class="fa-solid fa-arrow-up"></i></button><button class="seq-btn" onclick="moveItem(this,1)" aria-label="أسفل"><i class="fa-solid fa-arrow-down"></i></button></div></div>
+                <div class="seq-item" data-order="2"><span>المستقبلات المقترنة بالبروتين G (GPCR)</span><div class="seq-controls"><button class="seq-btn" onclick="moveItem(this,-1)" aria-label="أعلى"><i class="fa-solid fa-arrow-up"></i></button><button class="seq-btn" onclick="moveItem(this,1)" aria-label="أسفل"><i class="fa-solid fa-arrow-down"></i></button></div></div>
+              </div>
+              <button class="btn btn-emerald" style="margin-top:10px;" onclick="checkSequence('speed-seq-list','speed-fb','speed-rank')"><i class="fa-solid fa-check"></i> تحقق من الترتيب</button>
+              <div id="speed-fb" class="feedback-box"></div>
+            </div>
+
+            <div class="quiz-card">
+              <div class="quiz-q">ما السبب الكامن وراء تفوق القنوات الأيونية ذات البوابة اللجائندية في سرعة الاستجابة؟</div>
+              <div class="quiz-options">
+                <button class="quiz-opt" onclick="answerMCQ(this,false,'q1-fb','q1','تتوضع على غشاء الخلية وليس داخل النواة.')">أ) وجودها داخل النواة.</button>
+                <button class="quiz-opt" onclick="answerMCQ(this,true,'q1-fb','q1','صحيح! لا تحتاج لمراسيل ثانوية وتفتح القناة مباشرة لتدفق الأيونات.')">ب) عدم حاجتها لمراسيل ثانوية (Second messengers) وحدوث تبدل شاردي فوري.</button>
+                <button class="quiz-opt" onclick="answerMCQ(this,false,'q1-fb','q1','البروتين Gi يتبع لعائلة GPCR.')">ج) اقترانها بالبروتين Gi.</button>
+                <button class="quiz-opt" onclick="answerMCQ(this,false,'q1-fb','q1','الأدينيليل سيكلاز يتبع لمستقبلات GPCR.')">د) ارتباطها الوثيق بإنزيم الأدينيليل سيكلاز.</button>
+              </div>
+              <div id="q1-fb" class="feedback-box"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- T1 G3: Pathway Builder -->
+        <div id="t1-g3" class="game-panel">
+          <p style="margin-bottom:10px; font-size:0.88rem;">اختر المسار المطلوب ثم اضغط على البطاقات بالترتيب المنطقي لبناء شلال الإشارة الخلوية (أكمل المسارات الثلاثة):</p>
+          <div style="display:flex; gap:8px; margin-bottom:12px; flex-wrap:wrap;">
+            <button class="btn btn-emerald" onclick="loadPathway('Gs')">مسار Gs (المنبه)</button>
+            <button class="btn btn-rose" onclick="loadPathway('Gi')">مسار Gi (المثبط)</button>
+            <button class="btn btn-violet" onclick="loadPathway('Gq')">مسار Gq</button>
+          </div>
+          <div id="pathway-builder-box" class="step-box"></div>
+        </div>
+
+        <!-- T1 G4: Matrix Matching + Flashcards + T/F -->
+        <div id="t1-g4" class="game-panel">
+          <h4 style="margin-bottom:8px; font-size:0.95rem;"><i class="fa-solid fa-link icon-cyan"></i> التوصيل الشبكي لبروتينات G:</h4>
+          <div class="matrix-row">
+            <strong>1. البروتين المنبه (Gs)</strong>
+            <select id="mat-gs-enz" class="matrix-select">
+              <option value="">-- اختر الإنزيم المستهدف --</option>
+              <option value="ac_act">تفعيل Adenylyl Cyclase</option>
+              <option value="ac_inh">تثبيط Adenylyl Cyclase</option>
+              <option value="plc">تفعيل Phospholipase C</option>
+            </select>
+            <select id="mat-gs-msg" class="matrix-select">
+              <option value="">-- اختر المرسال / النتيجة --</option>
+              <option value="camp_up">زيادة cAMP ← تسارع النبض (β)</option>
+              <option value="camp_down">نقص cAMP ← تباطؤ النبض (M2)</option>
+              <option value="ip3_dag">إنتاج IP3 و DAG ← تحرر Ca++</option>
+            </select>
+          </div>
+          <div class="matrix-row">
+            <strong>2. البروتين المثبط (Gi)</strong>
+            <select id="mat-gi-enz" class="matrix-select">
+              <option value="">-- اختر الإنزيم المستهدف --</option>
+              <option value="ac_act">تفعيل Adenylyl Cyclase</option>
+              <option value="ac_inh">تثبيط Adenylyl Cyclase</option>
+              <option value="plc">تفعيل Phospholipase C</option>
+            </select>
+            <select id="mat-gi-msg" class="matrix-select">
+              <option value="">-- اختر المرسال / النتيجة --</option>
+              <option value="camp_up">زيادة cAMP ← تسارع النبض (β)</option>
+              <option value="camp_down">نقص cAMP ← تباطؤ النبض (M2)</option>
+              <option value="ip3_dag">إنتاج IP3 و DAG ← تحرر Ca++</option>
+            </select>
+          </div>
+          <div class="matrix-row">
+            <strong>3. البروتين (Gq)</strong>
+            <select id="mat-gq-enz" class="matrix-select">
+              <option value="">-- اختر الإنزيم المستهدف --</option>
+              <option value="ac_act">تفعيل Adenylyl Cyclase</option>
+              <option value="ac_inh">تثبيط Adenylyl Cyclase</option>
+              <option value="plc">تفعيل Phospholipase C</option>
+            </select>
+            <select id="mat-gq-msg" class="matrix-select">
+              <option value="">-- اختر المرسال / النتيجة --</option>
+              <option value="camp_up">زيادة cAMP ← تسارع النبض (β)</option>
+              <option value="camp_down">نقص cAMP ← تباطؤ النبض (M2)</option>
+              <option value="ip3_dag">إنتاج IP3 و DAG ← تحرر Ca++</option>
+            </select>
+          </div>
+          <button class="btn btn-cyan" style="margin-bottom:14px;" onclick="checkGMatrix()"><i class="fa-solid fa-check-double"></i> فحص التوصيل الشبكي</button>
+          <div id="gmatrix-fb" class="feedback-box" style="margin-bottom:14px;"></div>
+
+          <div class="flashcard-grid" style="margin-bottom:14px;">
+            <div class="flashcard" onclick="flipCard(this)">
+              <div class="flashcard-inner">
+                <div class="flashcard-face flashcard-front">
+                  <strong style="color:var(--violet);">تعريف الهدف الدوائي (Pharmacological Target)</strong>
+                  <span class="flashcard-hint"><i class="fa-solid fa-hand-pointer"></i> انقر لقلب البطاقة</span>
+                </div>
+                <div class="flashcard-face flashcard-back">الكيان الكيميائي الذي يرتبط به الدواء أولاً داخل الجسم لإحداث تأثيره الدوائي.</div>
+              </div>
+            </div>
+            <div class="flashcard" onclick="flipCard(this)">
+              <div class="flashcard-inner">
+                <div class="flashcard-face flashcard-front">
+                  <strong style="color:var(--violet);">ما هو المرسال الثانوي لمستقبلات M2؟</strong>
+                  <span class="flashcard-hint"><i class="fa-solid fa-hand-pointer"></i> انقر لقلب البطاقة</span>
+                </div>
+                <div class="flashcard-face flashcard-back">نقص الـ cAMP (بتثبيط الأدينيليل سيكلاز عبر البروتين Gi).</div>
+              </div>
+            </div>
+            <div class="flashcard" onclick="flipCard(this)">
+              <div class="flashcard-inner">
+                <div class="flashcard-face flashcard-front">
+                  <strong style="color:var(--violet);">ما المرسالان الثانويان لمستقبلات M1 و M3؟</strong>
+                  <span class="flashcard-hint"><i class="fa-solid fa-hand-pointer"></i> انقر لقلب البطاقة</span>
+                </div>
+                <div class="flashcard-face flashcard-back">IP3 (المحرر للكالسيوم من الشبكة الهيولية) و DAG (المفعل لـ PKC) عبر Gq.</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="quiz-card">
+            <div class="quiz-q">صح أم خطأ: «تقتصر الأهداف الدوائية داخل الجسم البشري على المستقبلات والإنزيمات فقط»</div>
+            <div class="quiz-options" style="flex-direction:row; gap:10px;">
+              <button class="quiz-opt" style="flex:1; text-align:center;" onclick="answerMCQ(this,false,'tf1-fb','tf1','خطأ! الأهداف الدوائية أربعة: المستقبلات، القنوات الأيونية، الإنزيمات، والنواقل الجزيئية.')">صح</button>
+              <button class="quiz-opt" style="flex:1; text-align:center;" onclick="answerMCQ(this,true,'tf1-fb','tf1','إجابة صحيحة! التصحيح: تشمل 4 أهداف رئيسية (المستقبلات، القنوات الأيونية، الإنزيمات، والنواقل الجزيئية).')">خطأ (مع التصحيح)</button>
+            </div>
+            <div id="tf1-fb" class="feedback-box"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================================================== -->
+    <!-- TOPIC 2: Nervous System & Autonomic Exceptions -->
+    <!-- ===================================================== -->
+    <section id="topic2" class="topic-section">
+      <div class="topic-header-card">
+        <div>
+          <span class="topic-en">Autonomic Nervous System & Innervation Exceptions</span>
+          <h2 class="topic-title">2.0 ألعاب تنظيم الجملة العصبية واستثناءات التعصيب</h2>
+        </div>
+        <span class="topic-tag"><i class="fa-solid fa-user-secret icon-rose"></i> 3 أنشطة تقييمية</span>
+      </div>
+
+      <div class="academic-card accent-rose">
+        <div class="game-hub-header">
+          <div class="game-hub-title"><i class="fa-solid fa-magnifying-glass-chart icon-rose"></i> كشف الدخلاء وتحدي التعصيب المستقل</div>
+          <span class="topic-tag">كشف الاستثناءات • MCQ وصح/خطأ • بطاقات تشريحية</span>
+        </div>
+
+        <div class="game-tabs">
+          <button class="game-tab-btn rose-tab active" onclick="switchTab(this, 't2-g1')"><i class="fa-solid fa-user-secret"></i> تحدي كشف الاستثناءات الثلاثة</button>
+          <button class="game-tab-btn rose-tab" onclick="switchTab(this, 't2-g2')"><i class="fa-solid fa-circle-question"></i> اختبار MCQ وصح/خطأ</button>
+          <button class="game-tab-btn rose-tab" onclick="switchTab(this, 't2-g3')"><i class="fa-solid fa-clone"></i> بطاقات المقارنة التشريحية</button>
+        </div>
+
+        <div id="t2-g1" class="game-panel active">
+          <p style="margin-bottom:10px; font-size:0.9rem;">اكتشف <strong>البطاقات الثلاث الشاذة</strong> عن قاعدة التعصيب المزدوج (ودي + نظير ودي):</p>
+          <div class="imposter-grid">
+            <div class="imposter-card" onclick="checkImposter(this,false,'عضلة القلب تملك تعصيباً مزدوجاً (ودياً ونظير ودي).')">عضلة القلب</div>
+            <div class="imposter-card" onclick="checkImposter(this,true,'استثناء 1: غدة الكظر معصبة ودياً فقط، لكن الناقل فيها أستيل كولين.')">غدة الكظر</div>
+            <div class="imposter-card" onclick="checkImposter(this,false,'العضلة الدائرية للقزحية تملك تعصيباً نظير ودي.')">عضلات القزحية</div>
+            <div class="imposter-card" onclick="checkImposter(this,true,'استثناء 2: الأوعية الدموية معصبة ودياً فقط (بدون تعصيب نظير ودي).')">الأوعية الدموية</div>
+            <div class="imposter-card" onclick="checkImposter(this,false,'المثانة البولية تخضع للتعصيب الودي ونظير الودي.')">المثانة البولية</div>
+            <div class="imposter-card" onclick="checkImposter(this,true,'استثناء 3: الغدد العرقية في الكف والجبهة معصبة ودياً لكن الناقل أستيل كولين.')">الغدد العرقية (الكف والجبهة)</div>
+          </div>
+          <div id="imposter-fb" class="feedback-box"></div>
+        </div>
+
+        <div id="t2-g2" class="game-panel">
+          <div class="grid-2">
+            <div class="quiz-card">
+              <div class="quiz-q">أي الأعضاء التالية تخضع لتعصيب عصبي ودي حصراً ومع ذلك يتم التنبيه في نهاياتها بواسطة الأستيل كولين؟</div>
+              <div class="quiz-options">
+                <button class="quiz-opt" onclick="answerMCQ(this,false,'q2-fb','q2','عضلة القلب تعصيبها مزدوج.')">أ) عضلة القلب.</button>
+                <button class="quiz-opt" onclick="answerMCQ(this,true,'q2-fb','q2','ممتاز! الغدد العرقية في الجبهة والكف ولب الكظر أمثلة لهذا الاستثناء الذهبي.')">ب) الغدد العرقية في الجبهة والكف / لب الكظر.</button>
+                <button class="quiz-opt" onclick="answerMCQ(this,false,'q2-fb','q2','القزحية تملك تعصيباً نظير ودي.')">ج) العضلات الدائرية للقزحية.</button>
+                <button class="quiz-opt" onclick="answerMCQ(this,false,'q2-fb','q2','المثانة تملك تعصيباً مزدوجاً.')">د) جدار المثانة البولية.</button>
+              </div>
+              <div id="q2-fb" class="feedback-box"></div>
+            </div>
+
+            <div class="quiz-card">
+              <div class="quiz-q">صح أم خطأ: «تنشأ ألياف الجهاز العصبي نظير الودي من المنطقتين الصدرية والقطنية»</div>
+              <div class="quiz-options" style="flex-direction:row; gap:10px;">
+                <button class="quiz-opt" style="flex:1; text-align:center;" onclick="answerMCQ(this,false,'tf2-fb','tf2','خطأ! تنشأ ألياف نظير الودي من جذع الدماغ والقطعتين العجزيتين S2-S3.')">صح</button>
+                <button class="quiz-opt" style="flex:1; text-align:center;" onclick="answerMCQ(this,true,'tf2-fb','tf2','إجابة صحيحة! التصحيح: تنشأ من نوى الأعصاب القحفية في جذع الدماغ والقطعتين العجزيتين الثانية والثالثة.')">خطأ (مع التصحيح)</button>
+              </div>
+              <div id="tf2-fb" class="feedback-box"></div>
+            </div>
+          </div>
+        </div>
+
+        <div id="t2-g3" class="game-panel">
+          <div class="flashcard-grid">
+            <div class="flashcard" onclick="flipCard(this)">
+              <div class="flashcard-inner">
+                <div class="flashcard-face flashcard-front">
+                  <strong style="color:var(--violet);">قارن بين طول الألياف قبل وبعد العقدة في الجهاز نظير الودي</strong>
+                  <span class="flashcard-hint"><i class="fa-solid fa-hand-pointer"></i> انقر لقلب البطاقة</span>
+                </div>
+                <div class="flashcard-face flashcard-back">الألياف قبل العقدة <strong>طويلة</strong> (تنشأ من جذع الدماغ وS2-S3)، بينما الألياف بعد العقدة <strong>قصيرة</strong>.</div>
+              </div>
+            </div>
+            <div class="flashcard" onclick="flipCard(this)">
+              <div class="flashcard-inner">
+                <div class="flashcard-face flashcard-front">
+                  <strong style="color:var(--violet);">أين تتوضع أجسام العصبونات قبل وبعد العقدية؟</strong>
+                  <span class="flashcard-hint"><i class="fa-solid fa-hand-pointer"></i> انقر لقلب البطاقة</span>
+                </div>
+                <div class="flashcard-face flashcard-back">قبل العقدية: ضمن الجهاز العصبي المركزي (CNS).<br />بعد العقدية: في العقد العصبية وتنتهي في الأعضاء الهدف.</div>
+              </div>
+            </div>
+            <div class="flashcard" onclick="flipCard(this)">
+              <div class="flashcard-inner">
+                <div class="flashcard-face flashcard-front">
+                  <strong style="color:var(--violet);">ما الناقل العصبي في غدة الكظر والغدد العرقية بالكف والجبهة؟</strong>
+                  <span class="flashcard-hint"><i class="fa-solid fa-hand-pointer"></i> انقر لقلب البطاقة</span>
+                </div>
+                <div class="flashcard-face flashcard-back">الأستيل كولين (رغم أن التعصيب ودي فقط!).</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================================================== -->
+    <!-- TOPIC 3: Acetylcholine & Cholinergic Receptors -->
+    <!-- ===================================================== -->
+    <section id="topic3" class="topic-section">
+      <div class="topic-header-card">
+        <div>
+          <span class="topic-en">Acetylcholine Biosynthesis & Cholinergic Receptors</span>
+          <h2 class="topic-title">3.0 ألعاب اصطناع الأستيل كولين والمستقبلات M و N</h2>
+        </div>
+        <span class="topic-tag"><i class="fa-solid fa-atom icon-cyan"></i> 3 أنشطة تقييمية</span>
+      </div>
+
+      <div class="academic-card accent-cyan">
+        <div class="game-hub-header">
+          <div class="game-hub-title"><i class="fa-solid fa-vials icon-cyan"></i> تحديات الكيمياء الحيوية وتصنيف المستقبلات الكولينرجية</div>
+          <span class="topic-tag">تسلسل حيوي • فرز M/N • مواقع تشريحية وبطاقات</span>
+        </div>
+
+        <div class="game-tabs">
+          <button class="game-tab-btn cyan-tab active" onclick="switchTab(this, 't3-g1')"><i class="fa-solid fa-arrow-down-1-9"></i> تسلسل اصطناع ACh</button>
+          <button class="game-tab-btn cyan-tab" onclick="switchTab(this, 't3-g2')"><i class="fa-solid fa-code-compare"></i> فرز الموسكارينية (M) مقابل النيكوتينية (N)</button>
+          <button class="game-tab-btn cyan-tab" onclick="switchTab(this, 't3-g3')"><i class="fa-solid fa-location-dot"></i> مواقع Nn / Nm + بطاقات وصح/خطأ</button>
+        </div>
+
+        <div id="t3-g1" class="game-panel active">
+          <p style="margin-bottom:8px; font-size:0.88rem;">رتّب خطوات اصطناع الأستيل كولين بالتسلسل الحيوي الصحيح:</p>
+          <div class="seq-list" id="ach-seq-list">
+            <div class="seq-item" data-order="3"><span>اتحاد الكولين مع Acetyl-CoA لإنتاج الأستيل كولين في العصارة الخلوية</span><div class="seq-controls"><button class="seq-btn" onclick="moveItem(this,-1)" aria-label="أعلى"><i class="fa-solid fa-arrow-up"></i></button><button class="seq-btn" onclick="moveItem(this,1)" aria-label="أسفل"><i class="fa-solid fa-arrow-down"></i></button></div></div>
+            <div class="seq-item" data-order="1"><span>إنتاج Acetyl-CoA في المتقدرات من الغلوكوز</span><div class="seq-controls"><button class="seq-btn" onclick="moveItem(this,-1)" aria-label="أعلى"><i class="fa-solid fa-arrow-up"></i></button><button class="seq-btn" onclick="moveItem(this,1)" aria-label="أسفل"><i class="fa-solid fa-arrow-down"></i></button></div></div>
+            <div class="seq-item" data-order="2"><span>إدخال الكولين من السائل خارج الخلوي بواسطة ناقل CHT</span><div class="seq-controls"><button class="seq-btn" onclick="moveItem(this,-1)" aria-label="أعلى"><i class="fa-solid fa-arrow-up"></i></button><button class="seq-btn" onclick="moveItem(this,1)" aria-label="أسفل"><i class="fa-solid fa-arrow-down"></i></button></div></div>
+          </div>
+          <button class="btn btn-emerald" style="margin-top:10px;" onclick="checkSequence('ach-seq-list','ach-fb','ach-seq')"><i class="fa-solid fa-check"></i> تحقق من التسلسل</button>
+          <div id="ach-fb" class="feedback-box"></div>
+        </div>
+
+        <div id="t3-g2" class="game-panel">
+          <p style="margin-bottom:8px; font-size:0.88rem;">اسحب (أو انقر) لتصنيف كل صفة نحو المستقبل الكولينرجي الصحيح:</p>
+          <div class="dnd-pool" id="t3-pool">
+            <div class="dnd-chip" draggable="true" data-target="musc" data-id="m1">مقترنة بالبروتين G (GPCR)</div>
+            <div class="dnd-chip" draggable="true" data-target="nico" data-id="m2">قنوات أيونية تدخل الصوديوم Na+</div>
+            <div class="dnd-chip" draggable="true" data-target="nico" data-id="m3">تتطلب ارتباط جزيئين من ACh للفتح</div>
+            <div class="dnd-chip" draggable="true" data-target="nico" data-id="m4">في العقد الذاتية (Nn) والوصل العضلي (Nm)</div>
+            <div class="dnd-chip" draggable="true" data-target="musc" data-id="m5">في عضلة القلب، الأمعاء، والعين</div>
+          </div>
+          <div class="dnd-buckets">
+            <div class="dnd-bucket" data-bucket="musc"><div class="dnd-bucket-title">المستقبلات الموسكارينية (M)</div><div class="dnd-dropped-items"></div></div>
+            <div class="dnd-bucket" data-bucket="nico"><div class="dnd-bucket-title">المستقبلات النيكوتينية (N)</div><div class="dnd-dropped-items"></div></div>
+          </div>
+          <button class="btn btn-outline" style="margin-top:10px;" onclick="resetBucketGame('t3-g2')"><i class="fa-solid fa-rotate-right"></i> إعادة</button>
+        </div>
+
+        <div id="t3-g3" class="game-panel">
+          <div class="grid-2" style="margin-bottom:12px;">
+            <div class="quiz-card">
+              <div class="quiz-q">تحدي النقاط الساخنة (Hotspot): أين يتوضع المستقبل النيكوتيني العصبي (Nn)؟</div>
+              <div class="quiz-options">
+                <button class="quiz-opt" onclick="answerMCQ(this,false,'nn-fb','nn','الوصل العصبي العضلي يحتوي على المستقبل العضلي Nm.')">أ) الصفيحة المحركة العضلية (الوصل العضلي).</button>
+                <button class="quiz-opt" onclick="answerMCQ(this,true,'nn-fb','nn','صحيح! يتوضع Nn في العقد الذاتية ولب الكظر وبعض عصبونات الدماغ.')">ب) العقد الذاتية ولب الكظر وبعض عصبونات الجهاز العصبي المركزي.</button>
+                <button class="quiz-opt" onclick="answerMCQ(this,false,'nn-fb','nn','الخلايا الجدارية المعدية تحتوي على M1.')">ج) الخلايا الجدارية المعدية.</button>
+              </div>
+              <div id="nn-fb" class="feedback-box"></div>
+            </div>
+
+            <div class="quiz-card">
+              <div class="quiz-q">صح أم خطأ: «تعتبر خطوة إنتاج Acetyl-CoA في المتقدرات هي الخطوة المحددة لسرعة اصطناع ACh»</div>
+              <div class="quiz-options" style="flex-direction:row; gap:10px;">
+                <button class="quiz-opt" style="flex:1; text-align:center;" onclick="answerMCQ(this,false,'tf3-fb','tf3','خطأ! نقل الكولين عبر CHT هو الخطوة المحددة للسرعة.')">صح</button>
+                <button class="quiz-opt" style="flex:1; text-align:center;" onclick="answerMCQ(this,true,'tf3-fb','tf3','أحسنت! نقل الكولين بواسطة CHT هو الخطوة المحددة للسرعة وتُثبط بـ Hemicholiniums.')">خطأ (مع التصحيح)</button>
+              </div>
+              <div id="tf3-fb" class="feedback-box"></div>
+            </div>
+          </div>
+
+          <div class="flashcard-grid">
+            <div class="flashcard" onclick="flipCard(this)">
+              <div class="flashcard-inner">
+                <div class="flashcard-face flashcard-front">
+                  <strong style="color:var(--violet);">ما الخطوة المحددة لسرعة اصطناع ACh وما مثبطها النوعي؟</strong>
+                  <span class="flashcard-hint"><i class="fa-solid fa-hand-pointer"></i> انقر لقلب البطاقة</span>
+                </div>
+                <div class="flashcard-face flashcard-back">نقل الكولين عبر ناقل الكولين الغشائي (CHT)، ويُثبط نوعياً بمركبات الهيميكولينيوم (Hemicholiniums).</div>
+              </div>
+            </div>
+            <div class="flashcard" onclick="flipCard(this)">
+              <div class="flashcard-inner">
+                <div class="flashcard-face flashcard-front">
+                  <strong style="color:var(--violet);">أين يتوضع المستقبل النيكوتيني العضلي (Nm)؟</strong>
+                  <span class="flashcard-hint"><i class="fa-solid fa-hand-pointer"></i> انقر لقلب البطاقة</span>
+                </div>
+                <div class="flashcard-face flashcard-back">في منطقة الوصل العصبي الحركي (العضلي) للصفيحة المحركة العضلية.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================================================== -->
+    <!-- TOPIC 4: Systemic Organ Effects & Clinical Cases -->
+    <!-- ===================================================== -->
+    <section id="topic4" class="topic-section">
+      <div class="topic-header-card">
+        <div>
+          <span class="topic-en">Systemic Organ Effects & Clinical Case Puzzles</span>
+          <h2 class="topic-title">4.0 ألعاب الأعضاء الجهازية ولغز حالة المدخنين</h2>
+        </div>
+        <span class="topic-tag"><i class="fa-solid fa-heart-pulse icon-amber"></i> 4 أنشطة تقييمية</span>
+      </div>
+
+      <div class="academic-card accent-amber">
+        <div class="game-hub-header">
+          <div class="game-hub-title"><i class="fa-solid fa-stethoscope icon-amber"></i> خريطة الأعضاء والتناقض المزدوج والحالة السريرية</div>
+          <span class="topic-tag">خريطة تفاعلية • التناقض المزدوج • حالة المدخنين</span>
+        </div>
+
+        <div class="game-tabs">
+          <button class="game-tab-btn active" onclick="switchTab(this, 't4-g1')"><i class="fa-solid fa-child-reaching"></i> خريطة الأعضاء التفاعلية</button>
+          <button class="game-tab-btn" onclick="switchTab(this, 't4-g2')"><i class="fa-solid fa-arrows-left-right"></i> لعبة التناقض المزدوج + MCQ</button>
+          <button class="game-tab-btn" onclick="switchTab(this, 't4-g3')"><i class="fa-solid fa-smoking"></i> لغز حالة المدخنين (Nicotine Paradox)</button>
+        </div>
+
+        <div id="t4-g1" class="game-panel active">
+          <p style="margin-bottom:10px; font-size:0.88rem;">انقر على الأعضاء الستة لاستكشاف المستقبل الموسكاريني وآلية التأثير والاستجابة النهائية (تُمنح النقاط بعد استكشاف جميع الأعضاء):</p>
+          <div class="organ-map-grid">
+            <div class="organ-buttons">
+              <button class="organ-btn active" onclick="showOrgan('eye', this)"><i class="fa-solid fa-eye icon-cyan"></i> العين</button>
+              <button class="organ-btn" onclick="showOrgan('heart', this)"><i class="fa-solid fa-heart-pulse icon-rose"></i> القلب</button>
+              <button class="organ-btn" onclick="showOrgan('lungs', this)"><i class="fa-solid fa-lungs icon-violet"></i> القصبات</button>
+              <button class="organ-btn" onclick="showOrgan('vessels', this)"><i class="fa-solid fa-droplet icon-amber"></i> الأوعية الدموية</button>
+              <button class="organ-btn" onclick="showOrgan('gut', this)"><i class="fa-solid fa-bacteria icon-emerald"></i> الأمعاء</button>
+              <button class="organ-btn" onclick="showOrgan('bladder', this)"><i class="fa-solid fa-faucet-drip icon-cyan"></i> المثانة البولية</button>
+            </div>
+            <div class="organ-detail-panel" id="organ-detail-panel"></div>
+          </div>
+        </div>
+
+        <div id="t4-g2" class="game-panel">
+          <div class="grid-2">
+            <div>
+              <h4 style="margin-bottom:8px; font-size:0.95rem;"><i class="fa-solid fa-code-compare icon-violet"></i> حدد الحركات المتضادة تحت تأثير الأستيل كولين:</h4>
+              <div class="step-box">
+                <div style="margin-bottom:6px;"><strong>المعدة والمصرة البوابية:</strong></div>
+                جدار المعدة:
+                <select id="dual-stomach" class="matrix-select"><option value="">-- اختر --</option><option value="contract">تقلص / انقباض</option><option value="relax">ارتخاء</option></select>
+                | فتحة البواب:
+                <select id="dual-pylorus" class="matrix-select"><option value="">-- اختر --</option><option value="contract">تقلص</option><option value="relax">ارتخاء</option></select>
+              </div>
+              <div class="step-box">
+                <div style="margin-bottom:6px;"><strong>المثانة ومصرتها:</strong></div>
+                جدار المثانة:
+                <select id="dual-bladder" class="matrix-select"><option value="">-- اختر --</option><option value="contract">تقلص</option><option value="relax">ارتخاء</option></select>
+                | مصرة المثانة:
+                <select id="dual-sphincter" class="matrix-select"><option value="">-- اختر --</option><option value="contract">تقلص</option><option value="relax">ارتخاء</option></select>
+              </div>
+              <div class="step-box">
+                <div style="margin-bottom:6px;"><strong>حدقة العين:</strong></div>
+                العضلة الدائرية:
+                <select id="dual-muscle" class="matrix-select"><option value="">-- اختر --</option><option value="contract">تقلص</option><option value="relax">ارتخاء</option></select>
+                | قطر الحدقة:
+                <select id="dual-pupil" class="matrix-select"><option value="">-- اختر --</option><option value="miosis">تقبض (Miosis)</option><option value="mydriasis">توسع</option></select>
+              </div>
+              <button class="btn btn-violet" style="margin-top:8px;" onclick="checkDualResponse()"><i class="fa-solid fa-check"></i> فحص الإجابات</button>
+              <div id="dual-fb" class="feedback-box"></div>
+            </div>
+
+            <div class="quiz-card">
+              <div class="quiz-q">بالرغم من خلو الأوعية الدموية من أي تعصيب نظير ودي، لماذا يؤدي حقن الأستيل كولين وريدياً إلى انخفاض ضغط الدم؟</div>
+              <div class="quiz-options">
+                <button class="quiz-opt" onclick="answerMCQ(this,false,'q4-fb','q4','القنوات النيكوتينية تسبب زوال استقطاب وليست سبب الارتخاء البطاني.')">أ) بسبب تأثيره المباشر على قنوات الصوديوم النيكوتينية.</button>
+                <button class="quiz-opt" onclick="answerMCQ(this,true,'q4-fb','q4','ممتاز! يرتبط بمستقبلات M3 البطانية محرراً أكسيد النتريك (NO) المرخي للأوعية.')">ب) بسبب ارتباطه بمستقبلات M3 البطانية وتحرير أكسيد النتريك (NO) المرخي للأوعية.</button>
+                <button class="quiz-opt" onclick="answerMCQ(this,false,'q4-fb','q4','الأدرينالين يرفع الضغط ولا يخفضه.')">ج) بسبب تحفيز إفراز الأدرينالين من لب الكظر.</button>
+                <button class="quiz-opt" onclick="answerMCQ(this,false,'q4-fb','q4','المستقبل البطاني المسؤول هو M3.')">د) بسبب تثبيط مستقبلات M1 في جدار الأوعية.</button>
+              </div>
+              <div id="q4-fb" class="feedback-box"></div>
+            </div>
+          </div>
+        </div>
+
+        <div id="t4-g3" class="game-panel">
+          <p style="margin-bottom:10px; font-size:0.9rem;"><strong>السيناريو السريري:</strong> مريض مدخن يعاني من ارتفاع ضغط الدم الشرياني. تتبّع وأكمل مسارَي النيكوتين المؤديَين لرفع الضغط:</p>
+          <div class="grid-2">
+            <div class="step-box">
+              <div class="step-title icon-amber">المسار الأول (الكظري):</div>
+              ينشط النيكوتين المستقبلات:
+              <select id="nic-r1" class="matrix-select" style="width:100%; margin:6px 0;">
+                <option value="">-- اختر المستقبل --</option>
+                <option value="nAChR">nAChR n في الغدة الكظرية</option>
+                <option value="M2">M2 في عضلة القلب</option>
+              </select>
+              مما يحفز إفراز هرمون:
+              <select id="nic-h1" class="matrix-select" style="width:100%; margin-top:6px;">
+                <option value="">-- اختر المادة --</option>
+                <option value="adr">الأدرينالين (يرفع الضغط)</option>
+                <option value="no">أكسيد النتريك (يخفض الضغط)</option>
+              </select>
+            </div>
+            <div class="step-box">
+              <div class="step-title icon-amber">المسار الثاني (الدماغي):</div>
+              يرتبط النيكوتين بمستقبلاته في:
+              <select id="nic-loc" class="matrix-select" style="width:100%; margin:6px 0;">
+                <option value="">-- اختر الموقع --</option>
+                <option value="brain">الدماغ (خلايا إفراز الهرمونات)</option>
+                <option value="gut">العضلات الملساء للأمعاء</option>
+              </select>
+              مؤدياً لزيادة إفراز الهرمون:
+              <select id="nic-h2" class="matrix-select" style="width:100%; margin-top:6px;">
+                <option value="">-- اختر الهرمون --</option>
+                <option value="adh">المضاد لإدرار البول (ADH)</option>
+                <option value="ins">الأنسولين</option>
+              </select>
+            </div>
+          </div>
+          <button class="btn btn-amber" style="margin-top:12px;" onclick="checkNicotineCase()"><i class="fa-solid fa-stethoscope"></i> تحليل الحالة السريرية</button>
+          <div id="nic-fb" class="feedback-box"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================================================== -->
+    <!-- TOPIC 5: Frog Heart Experiment & Kymograph -->
+    <!-- ===================================================== -->
+    <section id="topic5" class="topic-section">
+      <div class="topic-header-card">
+        <div>
+          <span class="topic-en">Frog Heart Experiment & Student Kymograph Simulator</span>
+          <h2 class="topic-title">5.0 محاكي الكيموغراف وألعاب تجربة قلب الضفدع</h2>
+        </div>
+        <span class="topic-tag"><i class="fa-solid fa-microscope icon-emerald"></i> نشاطان مخبريان + بطاقات</span>
+      </div>
+
+      <div class="academic-card accent-emerald">
+        <div class="game-hub-header">
+          <div class="game-hub-title"><i class="fa-solid fa-wave-square icon-emerald"></i> مختبر المحاكاة المخبري وحساب الجرعة العظمى</div>
+          <span class="topic-tag">محاكي نبض حي • رسم بياني • ترتيب الخطوات الثمانية • بطاقات</span>
+        </div>
+
+        <div class="game-tabs">
+          <button class="game-tab-btn emerald-tab active" onclick="switchTab(this, 't5-g1')"><i class="fa-solid fa-heart-pulse"></i> محاكي الكيموغراف والجرعة العظمى</button>
+          <button class="game-tab-btn emerald-tab" onclick="switchTab(this, 't5-g2')"><i class="fa-solid fa-arrow-down-1-9"></i> ترتيب البروتوكول المخبري (8 خطوات)</button>
+          <button class="game-tab-btn emerald-tab" onclick="switchTab(this, 't5-g3')"><i class="fa-solid fa-clone"></i> بطاقات مخبرية</button>
+        </div>
+
+        <div id="t5-g1" class="game-panel active">
+          <div class="grid-2" style="margin-bottom:14px;">
+            <div class="kymo-stage" style="margin-bottom:0;">
+              <div class="kymo-controls">
+                <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                  <button class="btn btn-emerald" style="padding:6px 10px; min-height:36px; font-size:0.8rem;" onclick="setKymoStage(100,'النظم الطبيعي')">شاهد (100)</button>
+                  <button class="btn btn-cyan" style="padding:6px 10px; min-height:36px; font-size:0.8rem;" onclick="setKymoStage(62,'حقن 0.1 مل')">0.1 مل (62)</button>
+                  <button class="btn btn-amber" style="padding:6px 10px; min-height:36px; font-size:0.8rem;" onclick="setKymoStage(30,'حقن 0.2 مل')">0.2 مل (30)</button>
+                  <button class="btn btn-rose" style="padding:6px 10px; min-height:36px; font-size:0.8rem;" onclick="setKymoStage(30,'حقن 0.4 مل')">0.4 مل (30)</button>
+                  <button class="btn btn-outline" style="padding:6px 10px; min-height:36px; font-size:0.8rem; background:#1E293B; color:#fff; border-color:#475569;" onclick="setKymoStage(100,'غسل رينجر')"><i class="fa-solid fa-droplet"></i> رينجر</button>
+                </div>
+                <div class="kymo-readout" id="kymoReadout">الحالة: النظم الطبيعي | المعدل: 100</div>
+              </div>
+              <canvas id="kymoWaveCanvas" width="700" height="150"></canvas>
+            </div>
+
+            <div class="step-box" style="background:#fff; margin-bottom:0;">
+              <div class="step-title icon-cyan"><i class="fa-solid fa-chart-column"></i> مخطط نتائج الكيموغراف المسجلة:</div>
+              <div style="height:175px; position:relative;">
+                <canvas id="frogChart"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <div class="quiz-card">
+            <div class="quiz-q">التحدي الحسابي المخبري: بناءً على قراءة الكيموغراف والمخطط البياني أعلاه، أي مرحلة تمثل «الجرعة العظمى»؟</div>
+            <div class="quiz-options" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px,1fr)); gap:8px;">
+              <button class="quiz-opt" onclick="answerMCQ(this,false,'kymo-fb','kymo','المرحلة (4) بجرعة 0.1 مل أعطت 62 وهي دون الاستجابة القصوى.')">المرحلة (4): حقن 0.1 مل</button>
+              <button class="quiz-opt" onclick="answerMCQ(this,true,'kymo-fb','kymo','إجابة دقيقة! جرعة 0.2 مل في المرحلة (6) هي الجرعة العظمى لأن مضاعفتها إلى 0.4 مل في المرحلة (8) أعطت نفس الاستجابة (30).')">المرحلة (6): حقن 0.2 مل</button>
+              <button class="quiz-opt" onclick="answerMCQ(this,false,'kymo-fb','kymo','جرعة 0.4 مل أعطت نفس استجابة 0.2 مل (30)، لذا فالجرعة الأقل التي حققت القمة هي العظمى.')">المرحلة (8): حقن 0.4 مل</button>
+            </div>
+            <div id="kymo-fb" class="feedback-box"></div>
+          </div>
+        </div>
+
+        <div id="t5-g2" class="game-panel">
+          <p style="margin-bottom:8px; font-size:0.88rem;">رتّب خطوات التجربة المخبرية الثمانية بالتسلسل الإجرائي الصحيح:</p>
+          <div class="seq-list" id="lab-seq-list">
+            <div class="seq-item" data-order="2"><span>غسل القلب بمحلول رينجر المغذي للحفاظ على حيويته</span><div class="seq-controls"><button class="seq-btn" onclick="moveItem(this,-1)" aria-label="أعلى"><i class="fa-solid fa-arrow-up"></i></button><button class="seq-btn" onclick="moveItem(this,1)" aria-label="أسفل"><i class="fa-solid fa-arrow-down"></i></button></div></div>
+            <div class="seq-item" data-order="1"><span>تنخيع الضفدع، إزالة الجلد، وفتح القفص الصدري لعزل القلب</span><div class="seq-controls"><button class="seq-btn" onclick="moveItem(this,-1)" aria-label="أعلى"><i class="fa-solid fa-arrow-up"></i></button><button class="seq-btn" onclick="moveItem(this,1)" aria-label="أسفل"><i class="fa-solid fa-arrow-down"></i></button></div></div>
+            <div class="seq-item" data-order="4"><span>حقن 0.1 مل من الأستيل كولين وتسجيل الاستجابة (62)</span><div class="seq-controls"><button class="seq-btn" onclick="moveItem(this,-1)" aria-label="أعلى"><i class="fa-solid fa-arrow-up"></i></button><button class="seq-btn" onclick="moveItem(this,1)" aria-label="أسفل"><i class="fa-solid fa-arrow-down"></i></button></div></div>
+            <div class="seq-item" data-order="3"><span>تسجيل النظم القلبي الطبيعي لمدة 30 ثانية (100)</span><div class="seq-controls"><button class="seq-btn" onclick="moveItem(this,-1)" aria-label="أعلى"><i class="fa-solid fa-arrow-up"></i></button><button class="seq-btn" onclick="moveItem(this,1)" aria-label="أسفل"><i class="fa-solid fa-arrow-down"></i></button></div></div>
+            <div class="seq-item" data-order="6"><span>حقن 0.2 مل من الأستيل كولين وتسجيل الاستجابة (30)</span><div class="seq-controls"><button class="seq-btn" onclick="moveItem(this,-1)" aria-label="أعلى"><i class="fa-solid fa-arrow-up"></i></button><button class="seq-btn" onclick="moveItem(this,1)" aria-label="أسفل"><i class="fa-solid fa-arrow-down"></i></button></div></div>
+            <div class="seq-item" data-order="5"><span>غسل القلب برينجر وتسجيل النظم الطبيعي (100)</span><div class="seq-controls"><button class="seq-btn" onclick="moveItem(this,-1)" aria-label="أعلى"><i class="fa-solid fa-arrow-up"></i></button><button class="seq-btn" onclick="moveItem(this,1)" aria-label="أسفل"><i class="fa-solid fa-arrow-down"></i></button></div></div>
+            <div class="seq-item" data-order="8"><span>حقن 0.4 مل من الأستيل كولين وتسجيل الاستجابة (30)</span><div class="seq-controls"><button class="seq-btn" onclick="moveItem(this,-1)" aria-label="أعلى"><i class="fa-solid fa-arrow-up"></i></button><button class="seq-btn" onclick="moveItem(this,1)" aria-label="أسفل"><i class="fa-solid fa-arrow-down"></i></button></div></div>
+            <div class="seq-item" data-order="7"><span>غسل القلب مجدداً برينجر وتسجيل النظم الطبيعي (100)</span><div class="seq-controls"><button class="seq-btn" onclick="moveItem(this,-1)" aria-label="أعلى"><i class="fa-solid fa-arrow-up"></i></button><button class="seq-btn" onclick="moveItem(this,1)" aria-label="أسفل"><i class="fa-solid fa-arrow-down"></i></button></div></div>
+          </div>
+          <button class="btn btn-emerald" style="margin-top:10px;" onclick="checkSequence('lab-seq-list','lab-seq-fb','lab-seq')"><i class="fa-solid fa-check"></i> تحقق من ترتيب البروتوكول</button>
+          <div id="lab-seq-fb" class="feedback-box"></div>
+        </div>
+
+        <div id="t5-g3" class="game-panel">
+          <div class="flashcard-grid">
+            <div class="flashcard" onclick="flipCard(this)">
+              <div class="flashcard-inner">
+                <div class="flashcard-face flashcard-front">
+                  <strong style="color:var(--violet);">ما دور محلول رينجر (Ringer's solution) في تجربة قلب الضفدع؟</strong>
+                  <span class="flashcard-hint"><i class="fa-solid fa-hand-pointer"></i> انقر لقلب البطاقة</span>
+                </div>
+                <div class="flashcard-face flashcard-back">غسل النسيج القلبي بين الجرعات لتخليص المستقبلات من الدواء، وتوفير التغذية الشاردية المناسبة للحفاظ على حيوية واستمرارية نبض القلب.</div>
+              </div>
+            </div>
+            <div class="flashcard" onclick="flipCard(this)">
+              <div class="flashcard-inner">
+                <div class="flashcard-face flashcard-front">
+                  <strong style="color:var(--violet);">ما الجهاز المخبري المستخدم لتسجيل التقلصات القلبية؟</strong>
+                  <span class="flashcard-hint"><i class="fa-solid fa-hand-pointer"></i> انقر لقلب البطاقة</span>
+                </div>
+                <div class="flashcard-face flashcard-back">جهاز الكيموغراف (Student Kymograph) مع مثبت حركة القلب الموصول برافعة التسجيل.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Summary Modal -->
+  <div id="summaryModal" class="modal-backdrop" onclick="if(event.target===this) closeSummaryModal()">
+    <div class="modal-card">
+      <div style="font-size:2.4rem; color:var(--amber); margin-bottom:8px;"><i class="fa-solid fa-trophy"></i></div>
+      <h3 style="margin-bottom:8px;">ملخص إنجازك في الجلسة الرابعة</h3>
+      <p style="font-size:0.9rem; color:var(--text-muted); margin-bottom:14px;">
+        النقاط المجمعة: <strong style="color:var(--violet);" id="modalScore">0</strong> نقطة<br />
+        الأنشطة المنجزة: <strong style="color:var(--emerald);" id="modalCompleted">0 / 17</strong>
+      </p>
+      <div style="display:flex; gap:8px; justify-content:center; flex-wrap:wrap;">
+        <button class="btn btn-emerald" onclick="shareOrCopyResult()"><i class="fa-solid fa-share-nodes"></i> مشاركة / نسخ النتيجة</button>
+        <button class="btn btn-outline" onclick="closeSummaryModal()">إغلاق</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast-msg"><i class="fa-solid fa-star" style="color:var(--amber);"></i> <span id="toastText"></span></div>
+
+  <script>
+    // ======== Telegram Mini App Integration ========
+    const tg = (window.Telegram && window.Telegram.WebApp) ? window.Telegram.WebApp : null;
+    const STORAGE_KEY = 'pharmagames4_progress_v1';
+
+    function initTelegramWebApp() {
+      if (!tg) return;
+      try {
+        tg.ready();
+        tg.expand();
+        if (typeof tg.setHeaderColor === 'function') tg.setHeaderColor('#FFFFFF');
+        if (typeof tg.setBackgroundColor === 'function') tg.setBackgroundColor('#F1F5F9');
+
+        const user = tg.initDataUnsafe && tg.initDataUnsafe.user;
+        if (user && user.first_name) {
+          const pill = document.getElementById('tgUserPill');
+          document.getElementById('tgUserName').textContent = user.first_name;
+          pill.style.display = 'inline-flex';
+        }
+
+        if (tg.MainButton) {
+          tg.MainButton.setText('عرض ملخص النتيجة');
+          tg.MainButton.setParams({ color: '#8B5CF6', text_color: '#FFFFFF' });
+          tg.MainButton.onClick(() => openSummaryModal());
+        }
+      } catch (e) { /* Safe fallback outside Telegram */ }
+    }
+
+    function haptic(type) {
+      if (!tg || !tg.HapticFeedback) return;
+      try {
+        if (type === 'success' || type === 'error' || type === 'warning') {
+          tg.HapticFeedback.notificationOccurred(type);
+        } else if (type === 'select') {
+          tg.HapticFeedback.selectionChanged();
+        } else {
+          tg.HapticFeedback.impactOccurred('light');
+        }
+      } catch (e) {}
+    }
+
+    // ======== Global Score & Progress Persistence ========
+    const TOTAL_ACTIVITIES = 17;
+    let totalScore = 0;
+    const completedSet = new Set();
+
+    function saveProgress() {
+      const payload = JSON.stringify({
+        score: totalScore,
+        completed: Array.from(completedSet)
+      });
+      try { localStorage.setItem(STORAGE_KEY, payload); } catch (e) {}
+      if (tg && tg.CloudStorage && typeof tg.CloudStorage.setItem === 'function') {
+        try { tg.CloudStorage.setItem(STORAGE_KEY, payload); } catch (e) {}
+      }
+    }
+
+    function applyProgressPayload(raw) {
+      if (!raw) return;
+      try {
+        const data = JSON.parse(raw);
+        if (typeof data.score === 'number') totalScore = data.score;
+        if (Array.isArray(data.completed)) {
+          data.completed.forEach(id => completedSet.add(id));
+        }
+        updateHUD();
+      } catch (e) {}
+    }
+
+    function loadProgress() {
+      try {
+        const localRaw = localStorage.getItem(STORAGE_KEY);
+        if (localRaw) applyProgressPayload(localRaw);
+      } catch (e) {}
+
+      if (tg && tg.CloudStorage && typeof tg.CloudStorage.getItem === 'function') {
+        try {
+          tg.CloudStorage.getItem(STORAGE_KEY, (err, cloudRaw) => {
+            if (!err && cloudRaw) {
+              try {
+                const parsed = JSON.parse(cloudRaw);
+                if (parsed && Array.isArray(parsed.completed) && parsed.completed.length > completedSet.size) {
+                  applyProgressPayload(cloudRaw);
+                }
+              } catch (e) {}
+            }
+          });
+        } catch (e) {}
+      }
+    }
+
+    function awardPoints(activityId, pts, msg) {
+      if (!completedSet.has(activityId)) {
+        completedSet.add(activityId);
+        totalScore += pts;
+        updateHUD();
+        saveProgress();
+        haptic('success');
+        showToast(`${msg} (+${pts} نقطة)`);
+      }
+    }
+
+    function updateHUD() {
+      document.getElementById('totalScore').textContent = totalScore;
+      document.getElementById('completedCount').textContent = completedSet.size;
+      const pct = Math.min(100, Math.round((completedSet.size / TOTAL_ACTIVITIES) * 100));
+      document.getElementById('progressFill').style.width = pct + '%';
+
+      if (tg && tg.MainButton) {
+        try {
+          if (completedSet.size > 0) tg.MainButton.show();
+          else tg.MainButton.hide();
+        } catch (e) {}
+      }
+    }
+
+    function showToast(text) {
+      const t = document.getElementById('toast');
+      document.getElementById('toastText').textContent = text;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 2800);
+    }
+
+    function clearAndReload() {
+      try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
+      if (tg && tg.CloudStorage && typeof tg.CloudStorage.removeItem === 'function') {
+        try { tg.CloudStorage.removeItem(STORAGE_KEY, () => location.reload()); return; } catch (e) {}
+      }
+      location.reload();
+    }
+
+    function confirmResetProgress() {
+      haptic('warning');
+      if (tg && typeof tg.showConfirm === 'function') {
+        try {
+          tg.showConfirm('هل تريد تصفير جميع النقاط والبدء من جديد؟', (confirmed) => {
+            if (confirmed) clearAndReload();
+          });
+          return;
+        } catch (e) {}
+      }
+      if (confirm('هل تريد تصفير جميع النقاط والبدء من جديد؟')) {
+        clearAndReload();
+      }
+    }
+
+    function openSummaryModal() {
+      haptic('light');
+      document.getElementById('modalScore').textContent = totalScore;
+      document.getElementById('modalCompleted').textContent = `${completedSet.size} / ${TOTAL_ACTIVITIES}`;
+      document.getElementById('summaryModal').classList.add('open');
+    }
+
+    function closeSummaryModal() {
+      document.getElementById('summaryModal').classList.remove('open');
+    }
+
+    function shareOrCopyResult() {
+      const summaryText = `أتممت ${completedSet.size} من أصل ${TOTAL_ACTIVITIES} نشاطاً في منصة الجلسة الرابعة (تأثير الأستيل كولين) وحصلت على ${totalScore} نقطة!`;
+      if (navigator.share) {
+        navigator.share({ title: 'نتيجة فارمكولوجي ١ العملي', text: summaryText }).catch(() => {});
+      } else if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(summaryText).then(() => {
+          showToast('تم نسخ ملخص النتيجة!');
+        }).catch(() => {});
+      } else {
+        showToast(summaryText);
+      }
+    }
+
+    function switchTab(btn, panelId) {
+      haptic('select');
+      const hub = btn.closest('.academic-card');
+      hub.querySelectorAll('.game-tab-btn').forEach(b => b.classList.remove('active'));
+      hub.querySelectorAll('.game-panel').forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById(panelId).classList.add('active');
+    }
+
+    function flipCard(card) {
+      haptic('select');
+      card.classList.toggle('flipped');
+    }
+
+    // ======== MCQ & True/False ========
+    function answerMCQ(btn, isCorrect, fbId, activityId, explanation) {
+      const card = btn.closest('.quiz-card');
+      card.querySelectorAll('.quiz-opt').forEach(b => b.classList.remove('correct', 'wrong'));
+      const fb = document.getElementById(fbId);
+      fb.className = 'feedback-box show ' + (isCorrect ? 'ok' : 'err');
+      fb.innerHTML = explanation;
+      if (isCorrect) {
+        btn.classList.add('correct');
+        awardPoints(activityId, 10, 'إجابة صحيحة!');
+      } else {
+        btn.classList.add('wrong');
+        haptic('error');
+      }
+    }
+
+    // ======== Drag & Drop + Tap-to-Sort ========
+    let selectedChip = null;
+
+    function highlightBuckets(activePanel) {
+      document.querySelectorAll('.dnd-bucket').forEach(b => b.classList.remove('tap-ready'));
+      if (activePanel && selectedChip) {
+        activePanel.querySelectorAll('.dnd-bucket').forEach(b => b.classList.add('tap-ready'));
+      }
+    }
+
+    function initDnD() {
+      document.querySelectorAll('.dnd-chip').forEach(chip => {
+        chip.addEventListener('dragstart', e => {
+          selectedChip = chip;
+          e.dataTransfer.setData('text/plain', chip.dataset.id);
+        });
+        chip.addEventListener('click', () => {
+          haptic('select');
+          const panel = chip.closest('.game-panel');
+          if (selectedChip === chip) {
+            chip.classList.remove('selected');
+            selectedChip = null;
+            highlightBuckets(null);
+          } else {
+            document.querySelectorAll('.dnd-chip').forEach(c => c.classList.remove('selected'));
+            chip.classList.add('selected');
+            selectedChip = chip;
+            highlightBuckets(panel);
+          }
+        });
+      });
+
+      document.querySelectorAll('.dnd-bucket').forEach(bucket => {
+        bucket.addEventListener('dragover', e => { e.preventDefault(); bucket.classList.add('drag-over'); });
+        bucket.addEventListener('dragleave', () => bucket.classList.remove('drag-over'));
+        bucket.addEventListener('drop', e => {
+          e.preventDefault();
+          bucket.classList.remove('drag-over');
+          if (selectedChip) placeChipInBucket(selectedChip, bucket);
+        });
+        bucket.addEventListener('click', () => {
+          if (selectedChip) placeChipInBucket(selectedChip, bucket);
+        });
+      });
+    }
+
+    function placeChipInBucket(chip, bucket) {
+      const panel = bucket.closest('.game-panel');
+      if (!panel.contains(chip)) return;
+      const isMatch = chip.dataset.target === bucket.dataset.bucket;
+      const badge = document.createElement('div');
+      badge.className = 'placed-badge ' + (isMatch ? 'correct' : 'wrong');
+      badge.innerHTML = `${isMatch ? '✓' : '✗'} ${chip.textContent}`;
+      if (!isMatch) {
+        haptic('error');
+        bucket.querySelector('.dnd-dropped-items').appendChild(badge);
+        setTimeout(() => badge.remove(), 1400);
+        chip.classList.remove('selected');
+        selectedChip = null;
+        highlightBuckets(null);
+        return;
+      }
+      haptic('light');
+      bucket.querySelector('.dnd-dropped-items').appendChild(badge);
+      chip.style.display = 'none';
+      chip.classList.remove('selected');
+      selectedChip = null;
+      highlightBuckets(null);
+
+      const remaining = panel.querySelectorAll('.dnd-chip:not([style*="display: none"])');
+      if (remaining.length === 0) {
+        awardPoints('dnd-' + panel.id, 15, 'أحسنت في التصنيف الكامل!');
+      }
+    }
+
+    function resetBucketGame(panelId) {
+      const panel = document.getElementById(panelId);
+      panel.querySelectorAll('.dnd-dropped-items').forEach(el => el.innerHTML = '');
+      panel.querySelectorAll('.dnd-chip').forEach(c => {
+        c.style.display = '';
+        c.classList.remove('selected');
+      });
+      selectedChip = null;
+      highlightBuckets(null);
+    }
+
+    // ======== Sequence Ordering ========
+    function moveItem(btn, dir) {
+      haptic('select');
+      const item = btn.closest('.seq-item');
+      const list = item.parentElement;
+      if (dir === -1 && item.previousElementSibling) {
+        list.insertBefore(item, item.previousElementSibling);
+      } else if (dir === 1 && item.nextElementSibling) {
+        list.insertBefore(item.nextElementSibling, item);
+      }
+    }
+
+    function checkSequence(listId, fbId, activityId) {
+      const items = [...document.getElementById(listId).children];
+      const isRight = items.every((el, idx) => Number(el.dataset.order) === idx + 1);
+      const fb = document.getElementById(fbId);
+      if (isRight) {
+        fb.className = 'feedback-box show ok';
+        fb.innerHTML = 'ترتيب صحيح 100%! أحسنت.';
+        awardPoints(activityId, 15, 'تم إتقان الترتيب التسلسلي!');
+      } else {
+        haptic('error');
+        fb.className = 'feedback-box show err';
+        fb.innerHTML = 'الترتيب غير مكتمل بعد، أعد فحص الخطوات بالأسهم.';
+      }
+    }
+
+    // ======== Pathway Builder (Gs, Gi, Gq) ========
+    const pathways = {
+      Gs: ['ارتباط اللجين بالمستقبل (مثل مستقبل β)', 'تفعيل البروتين المنبه Gs', 'تفعيل إنزيم Adenylyl Cyclase', 'تحويل ATP إلى cAMP (زيادة cAMP)', 'زيادة دخول Ca++ وتسارع النبض القلبي'],
+      Gi: ['ارتباط الأستيل كولين بمستقبل M2', 'تفعيل البروتين المثبط Gi', 'تثبيط إنزيم Adenylyl Cyclase', 'نقص تحويل ATP إلى cAMP (نقص cAMP)', 'نقص دخول Ca++ وتباطؤ معدل ضربات القلب'],
+      Gq: ['ارتباط الأستيل كولين بمستقبل M1 أو M3', 'تفعيل البروتين Gq', 'تفعيل إنزيم Phospholipase C', 'توليد المرسالين IP3 و DAG', 'تحرير Ca++ من الشبكة الهيولية وتفعيل PKC']
+    };
+    let currentPathType = 'Gs';
+    let pathStepIdx = 0;
+
+    function loadPathway(type) {
+      currentPathType = type;
+      pathStepIdx = 0;
+      const steps = pathways[type];
+      const shuffled = [...steps].sort(() => Math.random() - 0.5);
+      const box = document.getElementById('pathway-builder-box');
+      box.innerHTML = `
+        <div style="margin-bottom:8px;"><strong>المسار المختار: ${type}</strong> — انقر على الخطوات بالترتيب من 1 إلى ${steps.length}:</div>
+        <div id="path-chosen" style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:10px; min-height:36px;"></div>
+        <div id="path-pool" style="display:flex; flex-wrap:wrap; gap:8px;">
+          ${shuffled.map(s => `<button class="dnd-chip" onclick="pickPathStep(this, '${s.replace(/'/g,"\\'")}')">${s}</button>`).join('')}
+        </div>
+        <div id="path-fb" class="feedback-box"></div>
+      `;
+    }
+
+    function pickPathStep(btn, text) {
+      const target = pathways[currentPathType][pathStepIdx];
+      const fb = document.getElementById('path-fb');
+      if (text === target) {
+        haptic('light');
+        btn.disabled = true;
+        btn.style.opacity = '0.35';
+        const pill = document.createElement('span');
+        pill.className = 'placed-badge correct';
+        pill.textContent = `${pathStepIdx + 1}. ${text}`;
+        document.getElementById('path-chosen').appendChild(pill);
+        pathStepIdx++;
+        fb.className = 'feedback-box';
+        if (pathStepIdx === pathways[currentPathType].length) {
+          fb.className = 'feedback-box show ok';
+          fb.textContent = `اكتمل مسار ${currentPathType} بنجاح!`;
+          awardPoints('path-' + currentPathType, 15, `بناء مسار ${currentPathType}`);
+        }
+      } else {
+        haptic('error');
+        fb.className = 'feedback-box show err';
+        fb.textContent = 'هذه الخطوة ليست التالية في الشلال الإشاري، حاول مجدداً.';
+      }
+    }
+
+    // ======== G Matrix Check ========
+    function checkGMatrix() {
+      const ok =
+        document.getElementById('mat-gs-enz').value === 'ac_act' &&
+        document.getElementById('mat-gs-msg').value === 'camp_up' &&
+        document.getElementById('mat-gi-enz').value === 'ac_inh' &&
+        document.getElementById('mat-gi-msg').value === 'camp_down' &&
+        document.getElementById('mat-gq-enz').value === 'plc' &&
+        document.getElementById('mat-gq-msg').value === 'ip3_dag';
+      const fb = document.getElementById('gmatrix-fb');
+      if (ok) {
+        fb.className = 'feedback-box show ok';
+        fb.textContent = 'تطابق تام! أتقنت الفروق بين Gs و Gi و Gq.';
+        awardPoints('gmatrix', 15, 'التوصيل الشبكي لبروتينات G');
+      } else {
+        haptic('error');
+        fb.className = 'feedback-box show err';
+        fb.textContent = 'توجد خيارات غير متطابقة، راجع الإنزيمات والمراسيل الثانوية.';
+      }
+    }
+
+    // ======== Imposter Challenge (Topic 2) ========
+    let foundExceptions = 0;
+    function checkImposter(card, isEx, msg) {
+      const fb = document.getElementById('imposter-fb');
+      if (isEx) {
+        if (!card.classList.contains('found-exception')) {
+          card.classList.add('found-exception');
+          foundExceptions++;
+          haptic('light');
+        }
+        fb.className = 'feedback-box show ok';
+        fb.textContent = msg;
+        if (foundExceptions === 3) awardPoints('exceptions-3', 15, 'اكتشفت الاستثناءات الثلاثة الذهبية!');
+      } else {
+        haptic('error');
+        card.classList.add('not-exception');
+        fb.className = 'feedback-box show err';
+        fb.textContent = msg;
+      }
+    }
+
+    // ======== Interactive Organ Map (Topic 4) ========
+    const visitedOrgans = new Set(['eye']);
+    const organsData = {
+      eye: { title: 'العين (العضلات الدائرية)', rec: 'M3 (Gq)', mech: 'تقلص العضلات الدائرية المعصبة نظير ودي عبر M3.', res: 'تقبض الحدقة (Miosis).' },
+      heart: { title: 'القلب', rec: 'M2 (Gi)', mech: 'تثبيط الأدينيل سيكلاز ← نقص cAMP وتثبيط فتح قنوات الكالسيوم.', res: 'إنقاص معدل ضربات القلب ونقص قوة التقلص.' },
+      lungs: { title: 'القناة التنفسية والقصبات', rec: 'M3 (Gq)', mech: 'تنبيه M3 في العضلات الملساء للقصبات والغدد المخاطية.', res: 'تشنج قصبي وزيادة المفرزات المخاطية (أعراض الربو).' },
+      vessels: { title: 'الأوعية الدموية (لا تملك تعصيباً نظير ودي)', rec: 'M3 البطاني', mech: 'عند إعطاء ACh خارجياً يرتبط بـ M3 في بطانة الأوعية محرراً أكسيد النتريك (NO).', res: 'ارتخاء الأوعية الدموية وانخفاض ضغط الدم.' },
+      gut: { title: 'الأمعاء', rec: 'M3 (Gq)', mech: 'تفعيل الفوسفوليباز C ← تشكل IP3 و DAG ← رفع الكالسيوم الحر وتفعيل PKC.', res: 'زيادة الحركة الحوية، زيادة الإفرازات، وتقلص العضلات الملساء.' },
+      bladder: { title: 'المثانة البولية', rec: 'M3 (Gq)', mech: 'تفعيل M3 في جدار المثانة بالتوازي مع تأثير معاكس على المصرة.', res: 'تقلص جدار المثانة وارتخاء المصرة ← تفريغ البول.' }
+    };
+
+    function showOrgan(key, btn) {
+      if (btn) {
+        haptic('select');
+        document.querySelectorAll('.organ-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        visitedOrgans.add(key);
+        if (visitedOrgans.size === 6) {
+          awardPoints('organ-map', 10, 'استكملت خريطة الأعضاء الجهازية!');
+        }
+      }
+      const d = organsData[key];
+      document.getElementById('organ-detail-panel').innerHTML = `
+        <h4 style="color:var(--text-heading); margin-bottom:10px;"><i class="fa-solid fa-circle-info icon-cyan"></i> ${d.title}</h4>
+        <div class="step-box"><strong>المستقبل الموسكاريني:</strong> <span class="hl-term">${d.rec}</span></div>
+        <div class="step-box"><strong>الآلية الخلوية:</strong> ${d.mech}</div>
+        <div class="step-box" style="border-right:3px solid var(--emerald);"><strong>الاستجابة النهائية:</strong> <span class="hl-num">${d.res}</span></div>
+      `;
+    }
+
+    // ======== Dual Response & Nicotine Case ========
+    function checkDualResponse() {
+      const ok =
+        document.getElementById('dual-stomach').value === 'contract' &&
+        document.getElementById('dual-pylorus').value === 'relax' &&
+        document.getElementById('dual-bladder').value === 'contract' &&
+        document.getElementById('dual-sphincter').value === 'relax' &&
+        document.getElementById('dual-muscle').value === 'contract' &&
+        document.getElementById('dual-pupil').value === 'miosis';
+      const fb = document.getElementById('dual-fb');
+      if (ok) {
+        fb.className = 'feedback-box show ok';
+        fb.textContent = 'أحسنت! أتقنت الاستجابة المزدوجة المتعاكسة (جدار متقلص مقابل مصرة مرتخية).';
+        awardPoints('dual-resp', 15, 'تحدي التناقض المزدوج');
+      } else {
+        haptic('error');
+        fb.className = 'feedback-box show err';
+        fb.textContent = 'تحقق من الاختيارات؛ تذكر أن جدار العضو يتقلص بينما ترتخي المصرة أو فتحة البواب.';
+      }
+    }
+
+    function checkNicotineCase() {
+      const ok =
+        document.getElementById('nic-r1').value === 'nAChR' &&
+        document.getElementById('nic-h1').value === 'adr' &&
+        document.getElementById('nic-loc').value === 'brain' &&
+        document.getElementById('nic-h2').value === 'adh';
+      const fb = document.getElementById('nic-fb');
+      if (ok) {
+        fb.className = 'feedback-box show ok';
+        fb.textContent = 'تحليل سريري سليم! يرفع النيكوتين الضغط عبر الأدرينالين الكظري وهرمون ADH الدماغي.';
+        awardPoints('nic-case', 15, 'حل حالة المدخنين');
+      } else {
+        haptic('error');
+        fb.className = 'feedback-box show err';
+        fb.textContent = 'راجع خطوات مساري النيكوتين (الكظر ← أدرينالين، الدماغ ← ADH).';
+      }
+    }
+
+    // ======== Kymograph Wave Simulator (Responsive HiDPI) ========
+    let kymoRate = 100;
+    let kymoPhase = 0;
+
+    function setKymoStage(rate, label) {
+      haptic('select');
+      kymoRate = rate;
+      document.getElementById('kymoReadout').textContent = `الحالة: ${label} | المعدل: ${rate}`;
+    }
+
+    function resizeKymoCanvas() {
+      const canvas = document.getElementById('kymoWaveCanvas');
+      if (!canvas) return;
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const rect = canvas.getBoundingClientRect();
+      if (rect.width > 0) {
+        const targetW = Math.round(rect.width * dpr);
+        const targetH = Math.round(150 * dpr);
+        if (canvas.width !== targetW || canvas.height !== targetH) {
+          canvas.width = targetW;
+          canvas.height = targetH;
+        }
+      }
+    }
+
+    function animateKymo() {
+      const canvas = document.getElementById('kymoWaveCanvas');
+      if (canvas && canvas.offsetParent !== null) {
+        resizeKymoCanvas();
+        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+        const ctx = canvas.getContext('2d');
+        const w = canvas.width / dpr;
+        const h = canvas.height / dpr;
+
+        ctx.save();
+        ctx.scale(dpr, dpr);
+        ctx.fillStyle = '#020617';
+        ctx.fillRect(0, 0, w, h);
+
+        ctx.strokeStyle = 'rgba(51, 65, 85, 0.45)';
+        ctx.lineWidth = 1;
+        for (let y = 30; y < h; y += 30) {
+          ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
+        }
+
+        const amp = kymoRate === 100 ? 52 : (kymoRate === 62 ? 32 : 16);
+        const freq = kymoRate === 100 ? 0.08 : (kymoRate === 62 ? 0.05 : 0.025);
+        kymoPhase += kymoRate === 100 ? 0.14 : (kymoRate === 62 ? 0.085 : 0.045);
+
+        ctx.strokeStyle = kymoRate === 100 ? '#10B981' : (kymoRate === 62 ? '#06B6D4' : '#F43F5E');
+        ctx.lineWidth = 2.6;
+        ctx.beginPath();
+        for (let x = 0; x < w; x++) {
+          const t = x * freq - kymoPhase;
+          const beat = Math.pow(Math.max(0, Math.sin(t)), 3) * amp - Math.sin(t * 2) * (amp * 0.15);
+          const y = h * 0.72 - beat;
+          if (x === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+        ctx.restore();
+      }
+      requestAnimationFrame(animateKymo);
+    }
+
+    // ======== Chart.js Frog Heart Bar Chart ========
+    function initFrogChart() {
+      const ctx = document.getElementById('frogChart');
+      if (!ctx || typeof Chart === 'undefined') return;
+      new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: ['الطبيعي', '0.1 مل', 'رينجر', '0.2 مل', 'رينجر', '0.4 مل'],
+          datasets: [{
+            label: 'معدل النبض',
+            data: [100, 62, 100, 30, 100, 30],
+            backgroundColor: ['#10B981', '#06B6D4', '#10B981', '#F59E0B', '#10B981', '#F43F5E'],
+            borderRadius: 6
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            y: { beginAtZero: true, max: 115, ticks: { color: '#334155' } },
+            x: { ticks: { color: '#334155', font: { family: 'IBM Plex Sans Arabic', size: 11 } } }
+          }
+        }
+      });
+    }
+
+    // ======== Boot ========
+    window.addEventListener('load', () => {
+      initTelegramWebApp();
+      loadProgress();
+      initDnD();
+      loadPathway('Gs');
+      showOrgan('eye');
+      initFrogChart();
+      resizeKymoCanvas();
+      animateKymo();
+    });
+
+    window.addEventListener('resize', resizeKymoCanvas);
+  </script>
+</body>
+</html>
