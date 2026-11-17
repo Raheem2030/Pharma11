@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>التحدي التفاعلي: المعاكسات الكولينية | علم الأدوية التجريبي</title>
 
   <!-- Telegram Web App SDK -->
@@ -17,66 +17,82 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
 
   <style>
+
     :root {
       --bg-main: #F1F5F9;
-      --bg-card: #FFFFFF;
-      --bg-sub: rgba(226, 232, 240, 0.7);
-      --border-card: rgba(0, 0, 0, 0.08);
-      --border-sub: #CBD5E1;
-      --shadow-card: 0 10px 25px -5px rgba(139, 92, 246, 0.12);
-
+      --bg-soft: #F8FAFC;
+      --card-bg: #FFFFFF;
+      --card-border: rgba(0, 0, 0, 0.08);
+      --box-bg: rgba(226, 232, 240, 0.7);
+      --box-border: #CBD5E1;
       --text-title: #0F172A;
       --text-heading: #1E293B;
       --text-body: #334155;
-      --text-muted: #475569;
+      --text-sub: #475569;
 
-      --accent-purple: #8B5CF6;
-      --accent-cyan: #06B6D4;
-      --accent-emerald: #10B981;
-      --accent-amber: #F59E0B;
-      --accent-rose: #F43F5E;
+      --violet: #8B5CF6;
+      --violet-soft: rgba(139, 92, 246, 0.1);
+      --cyan: #06B6D4;
+      --cyan-soft: rgba(6, 182, 212, 0.1);
+      --emerald: #10B981;
+      --emerald-soft: rgba(16, 185, 129, 0.12);
+      --amber: #F59E0B;
+      --amber-soft: rgba(245, 158, 11, 0.12);
+      --rose: #F43F5E;
+      --rose-soft: rgba(244, 63, 94, 0.12);
+
+      --shadow-card: 0 10px 25px -5px rgba(139, 92, 246, 0.12);
+      --radius-card: 16px;
+      --radius-box: 12px;
+
+      --safe-top: 0px;
+      --hud-h: 64px;
     }
 
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-    html { scroll-behavior: smooth; }
+
+    html {
+      scroll-behavior: smooth;
+      -webkit-text-size-adjust: 100%;
+      text-size-adjust: 100%;
+    }
 
     body {
       margin: 0;
-      padding: 0 0 80px 0;
+      padding: 0;
       background-color: var(--bg-main);
       color: var(--text-body);
-      font-family: 'IBM Plex Sans Arabic', sans-serif;
+      font-family: 'IBM Plex Sans Arabic', system-ui, -apple-system, 'Segoe UI', Tahoma, sans-serif;
       font-weight: 400;
       line-height: 1.7;
+      overflow-x: hidden;
+      overflow-wrap: anywhere;
+      padding-bottom: calc(88px + env(safe-area-inset-bottom));
     }
 
-    h1, h2, h3, h4 {
-      font-family: 'Cairo', sans-serif;
+    h1, h2, h3, h4, .font-cairo {
+      font-family: 'Cairo', system-ui, sans-serif;
       color: var(--text-title);
-      margin-top: 0;
+      margin: 0;
     }
 
-    /* Sticky Top Telemetry Bar */
-    .top-hud {
+    button { font-family: inherit; }
+
+    /* ---------- Sticky Top HUD ---------- */
+    .hud-bar {
       position: sticky;
       top: 0;
       z-index: 100;
-      background: rgba(255, 255, 255, 0.95);
+      background: rgba(248, 250, 252, 0.94);
+      -webkit-backdrop-filter: blur(10px);
       backdrop-filter: blur(10px);
-      border-bottom: 1px solid var(--border-sub);
-      padding: 10px 16px;
-      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
+      border-bottom: 1px solid var(--box-border);
+      padding: calc(10px + max(env(safe-area-inset-top), var(--safe-top))) 14px 10px;
     }
 
     .hud-inner {
-      max-width: 960px;
+      max-width: 980px;
       margin: 0 auto;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .hud-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -86,365 +102,302 @@
 
     .hud-stats { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 
-    .stat-pill {
+    .hud-pill {
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      padding: 4px 12px;
+      padding: 5px 11px;
       border-radius: 999px;
       font-size: 0.84rem;
       font-weight: 600;
-      background: rgba(139, 92, 246, 0.1);
-      color: var(--accent-purple);
-      border: 1px solid rgba(139, 92, 246, 0.22);
+      background: var(--card-bg);
+      border: 1px solid var(--box-border);
+      color: var(--text-heading);
     }
+    .hud-pill.xp { color: var(--violet); background: var(--violet-soft); border-color: rgba(139, 92, 246, 0.25); }
+    .hud-pill.streak { color: #B45309; background: var(--amber-soft); border-color: rgba(245, 158, 11, 0.25); }
+    .hud-pill.done { color: #047857; background: var(--emerald-soft); border-color: rgba(16, 185, 129, 0.25); }
 
-    .stat-pill.emerald {
-      background: rgba(16, 185, 129, 0.1);
-      color: #059669;
-      border-color: rgba(16, 185, 129, 0.25);
+    .hud-progress-wrap {
+      flex: 1;
+      min-width: 140px;
+      max-width: 260px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
-
-    .progress-track {
-      width: 100%;
-      height: 7px;
-      background: #E2E8F0;
-      border-radius: 999px;
-      overflow: hidden;
-    }
-
+    .progress-track { flex: 1; height: 8px; background: #E2E8F0; border-radius: 999px; overflow: hidden; }
     .progress-fill {
       height: 100%;
       width: 0%;
-      background: linear-gradient(90deg, var(--accent-purple), var(--accent-cyan), var(--accent-emerald));
-      border-radius: 999px;
-      transition: width 0.35s ease;
+      background: linear-gradient(90deg, var(--violet), var(--cyan), var(--emerald));
+      transition: width 0.4s ease;
     }
 
-    .nav-pills-scroll {
-      display: flex;
-      gap: 8px;
-      overflow-x: auto;
-      scrollbar-width: none;
-    }
-    .nav-pills-scroll::-webkit-scrollbar { display: none; }
-
-    .nav-chip {
-      flex: 0 0 auto;
-      padding: 4px 12px;
-      border-radius: 999px;
-      font-size: 0.78rem;
-      font-weight: 600;
-      text-decoration: none;
-      color: var(--text-muted);
-      background: var(--bg-main);
-      border: 1px solid var(--border-sub);
-      transition: all 0.2s ease;
-    }
-    .nav-chip:hover, .nav-chip.active {
-      background: var(--accent-purple);
-      color: #FFFFFF;
-      border-color: var(--accent-purple);
-    }
-
-    /* Main Container */
-    .container {
-      max-width: 960px;
-      margin: 0 auto;
-      padding: 20px 14px;
-    }
-
-    /* Header */
-    .lecture-header { margin-bottom: 26px; }
+    /* ---------- Layout ---------- */
+    .container { max-width: 980px; margin: 0 auto; padding: 18px 14px; }
+    section { scroll-margin-top: calc(var(--hud-h) + 6px); }
+    .lecture-header { margin-bottom: 22px; }
 
     .session-badge {
       display: inline-flex;
       align-items: center;
-      gap: 8px;
-      background: rgba(139, 92, 246, 0.1);
-      color: var(--accent-purple);
+      gap: 6px;
+      padding: 6px 14px;
+      border-radius: 999px;
+      background: var(--violet-soft);
+      color: var(--violet);
       font-family: 'Cairo', sans-serif;
       font-weight: 700;
-      font-size: 0.88rem;
-      padding: 6px 16px;
-      border-radius: 999px;
-      margin-bottom: 12px;
+      font-size: 0.85rem;
+      margin-bottom: 10px;
     }
 
-    .main-title {
-      font-size: clamp(1.55rem, 4vw, 2.15rem);
+    .lecture-title {
+      font-size: clamp(1.4rem, 3.8vw, 2.1rem);
       font-weight: 800;
+      color: var(--text-title);
       margin-bottom: 14px;
-      line-height: 1.3;
+      line-height: 1.4;
     }
 
-    .objectives-box {
-      background: var(--bg-card);
-      border: 1px solid var(--border-card);
-      border-right: 5px solid var(--accent-purple);
-      border-radius: 16px;
-      padding: 18px 22px;
-      box-shadow: var(--shadow-card);
-    }
-
-    .objectives-box h3 {
-      font-size: 1.05rem;
-      margin-bottom: 6px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      color: var(--accent-purple);
-    }
-
-    /* Topic Header Card */
-    .topic-header-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border-card);
-      border-radius: 16px;
-      padding: 18px 22px;
-      margin: 28px 0 16px 0;
-      box-shadow: var(--shadow-card);
-    }
-
-    .topic-en {
-      font-size: 0.76rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--accent-purple);
-      display: block;
-      margin-bottom: 4px;
-    }
-
-    .topic-ar {
-      font-size: 1.26rem;
-      font-weight: 800;
-      margin: 0;
-    }
-
-    /* Academic Cards */
+    /* ---------- Cards ---------- */
     .academic-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border-card);
-      border-radius: 16px;
-      padding: 24px;
-      margin-bottom: 18px;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius-card);
+      padding: 20px;
       box-shadow: var(--shadow-card);
+      margin-bottom: 18px;
+      border-right: 4px solid var(--violet);
+      position: relative;
+      min-width: 0;
+      scroll-margin-top: calc(var(--hud-h) + 8px);
     }
+    @media (min-width: 640px) { .academic-card { padding: 24px; } }
 
-    .academic-card.accent-purple { border-right: 4px solid var(--accent-purple); }
-    .academic-card.accent-cyan { border-right: 4px solid var(--accent-cyan); }
-    .academic-card.accent-emerald { border-right: 4px solid var(--accent-emerald); }
-    .academic-card.accent-amber { border-right: 4px solid var(--accent-amber); }
-    .academic-card.accent-rose { border-right: 4px solid var(--accent-rose); }
+    .accent-violet { border-right-color: var(--violet); }
+    .accent-cyan { border-right-color: var(--cyan); }
+    .accent-emerald { border-right-color: var(--emerald); }
+    .accent-amber { border-right-color: var(--amber); }
+    .accent-rose { border-right-color: var(--rose); }
 
     .card-header {
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       justify-content: space-between;
-      gap: 10px;
+      gap: 12px;
       margin-bottom: 14px;
-      flex-wrap: wrap;
     }
+    .card-title-wrap { display: flex; align-items: center; gap: 10px; min-width: 0; }
+    .card-icon { font-size: 1.25rem; flex-shrink: 0; }
+    .icon-violet { color: var(--violet); }
+    .icon-cyan { color: var(--cyan); }
+    .icon-emerald { color: var(--emerald); }
+    .icon-amber { color: var(--amber); }
+    .icon-rose { color: var(--rose); }
+    .card-title { font-size: 1.08rem; font-weight: 800; color: var(--text-heading); line-height: 1.5; }
+    .card-intro { margin: 0 0 12px; font-size: 0.92rem; color: var(--text-sub); }
 
-    .card-title {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-family: 'Cairo', sans-serif;
-      font-weight: 700;
-      font-size: 1.1rem;
-      color: var(--text-heading);
-      margin: 0;
-    }
-
-    .accent-purple .card-title i { color: var(--accent-purple); }
-    .accent-cyan .card-title i { color: var(--accent-cyan); }
-    .accent-emerald .card-title i { color: var(--accent-emerald); }
-    .accent-amber .card-title i { color: var(--accent-amber); }
-    .accent-rose .card-title i { color: var(--accent-rose); }
-
-    .game-tag {
-      font-size: 0.74rem;
+    .game-status-badge {
+      font-size: 0.75rem;
       font-weight: 600;
       padding: 3px 10px;
       border-radius: 999px;
-      background: var(--bg-sub);
-      color: var(--text-muted);
-      border: 1px solid var(--border-sub);
+      background: var(--box-bg);
+      color: var(--text-sub);
+      border: 1px solid var(--box-border);
+      white-space: nowrap;
+    }
+    .game-status-badge.completed {
+      background: var(--emerald-soft);
+      color: #047857;
+      border-color: rgba(16, 185, 129, 0.35);
     }
 
+    .topic-header-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius-card);
+      padding: 18px 22px;
+      box-shadow: var(--shadow-card);
+      margin: 28px 0 16px;
+      border-right: 4px solid var(--violet);
+    }
+    .topic-en {
+      font-size: 0.74rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--violet);
+      margin-bottom: 4px;
+      font-family: 'Cairo', sans-serif;
+      direction: ltr;
+      text-align: right;
+    }
+    .topic-ar { font-size: 1.2rem; font-weight: 800; color: var(--text-title); }
+
     .step-box {
-      background: var(--bg-sub);
-      border: 1px solid var(--border-sub);
-      border-radius: 12px;
-      padding: 14px 16px;
-      margin-bottom: 12px;
+      background: var(--box-bg);
+      border: 1px solid var(--box-border);
+      border-radius: var(--radius-box);
+      padding: 12px 14px;
+      margin-bottom: 10px;
     }
 
     .formula-box {
-      background: var(--bg-sub);
-      border: 1px solid var(--border-sub);
-      border-radius: 12px;
-      padding: 12px 14px;
+      background: var(--box-bg);
+      border: 1px solid var(--box-border);
+      border-radius: var(--radius-box);
+      padding: 14px;
+      margin: 12px 0;
       direction: ltr;
       text-align: center;
-      font-family: monospace;
-      font-weight: 600;
       color: #5B21B6;
-      font-size: 0.92rem;
-      margin: 12px 0;
+      font-weight: 600;
       overflow-x: auto;
     }
 
-    .grid-2 {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 14px;
-    }
+    .comparison-grid { display: grid; grid-template-columns: 1fr; gap: 14px; }
+    .comparison-grid > * { min-width: 0; }
+    @media (min-width: 820px) { .comparison-grid { grid-template-columns: 1fr 1fr; } }
 
-    @media (max-width: 720px) {
-      .grid-2 { grid-template-columns: 1fr; }
-      .academic-card { padding: 18px 16px; }
-    }
-
-    /* Buttons */
+    /* ---------- Buttons ---------- */
     .btn {
       display: inline-flex;
       align-items: center;
       justify-content: center;
       gap: 8px;
-      font-family: 'IBM Plex Sans Arabic', sans-serif;
-      font-weight: 600;
-      font-size: 0.88rem;
-      padding: 9px 16px;
+      padding: 10px 16px;
       border-radius: 10px;
       border: 1px solid transparent;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-
-    .btn-primary { background: var(--accent-purple); color: #FFFFFF; }
-    .btn-primary:hover { background: #7C3AED; }
-    .btn-outline { background: #FFFFFF; color: var(--text-heading); border-color: var(--border-sub); }
-    .btn-outline:hover { background: var(--bg-main); }
-
-    /* Sort Tokens & Drop Zones */
-    .token-pool {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      padding: 12px;
-      background: var(--bg-sub);
-      border: 1px dashed var(--border-sub);
-      border-radius: 12px;
-      min-height: 52px;
-      margin-bottom: 14px;
-    }
-
-    .drag-token {
-      padding: 7px 14px;
-      background: #FFFFFF;
-      border: 1.5px solid var(--border-sub);
-      border-radius: 10px;
       font-weight: 600;
-      font-size: 0.86rem;
-      color: var(--text-title);
+      font-size: 0.92rem;
       cursor: pointer;
-      user-select: none;
-      box-shadow: 0 2px 5px rgba(15, 23, 42, 0.06);
       transition: all 0.18s ease;
+      user-select: none;
+      -webkit-user-select: none;
     }
+    .btn:active:not(:disabled) { transform: scale(0.97); }
+    .btn:disabled { opacity: 0.45; cursor: not-allowed; }
+    .btn-violet { background: var(--violet); color: #fff; }
+    .btn-violet:hover:not(:disabled) { background: #7C3AED; }
+    .btn-cyan { background: var(--cyan); color: #fff; }
+    .btn-emerald { background: var(--emerald); color: #fff; }
+    .btn-outline { background: var(--card-bg); border-color: var(--box-border); color: var(--text-heading); }
+    .btn-outline:hover:not(:disabled) { background: var(--bg-soft); }
+    .btn-sm { padding: 7px 12px; font-size: 0.83rem; }
 
-    .drag-token.selected {
-      border-color: var(--accent-purple);
-      background: rgba(139, 92, 246, 0.1);
-      color: #5B21B6;
-      transform: translateY(-2px);
-    }
-    .drag-token.correct { border-color: var(--accent-emerald); background: rgba(16, 185, 129, 0.12); color: #065F46; }
-    .drag-token.wrong { border-color: var(--accent-rose); background: rgba(244, 63, 94, 0.12); color: #9F1239; }
-
-    .drop-zones {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-      gap: 12px;
-    }
-
-    .drop-zone {
-      background: #F8FAFC;
-      border: 2px dashed #CBD5E1;
-      border-radius: 14px;
-      padding: 12px;
-      min-height: 105px;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-    .drop-zone.drag-over { border-color: var(--accent-purple); background: rgba(139, 92, 246, 0.06); }
-
-    .drop-zone-title {
-      font-family: 'Cairo', sans-serif;
-      font-weight: 700;
-      font-size: 0.9rem;
-      margin-bottom: 8px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .drop-zone-items { display: flex; flex-wrap: wrap; gap: 6px; }
-
-    /* Quiz Options */
-    .quiz-options { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
-
-    .quiz-opt {
-      text-align: right;
-      background: #F8FAFC;
-      border: 1.5px solid var(--border-sub);
-      border-radius: 12px;
-      padding: 11px 14px;
-      font-family: 'IBM Plex Sans Arabic', sans-serif;
-      font-size: 0.9rem;
-      font-weight: 600;
-      color: var(--text-heading);
-      cursor: pointer;
+    /* ---------- Question meta ---------- */
+    .q-meta {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 8px;
-      transition: all 0.2s ease;
+      gap: 8px 12px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
     }
-    .quiz-opt:hover { border-color: var(--accent-purple); background: rgba(139, 92, 246, 0.05); }
-    .quiz-opt.correct { background: rgba(16, 185, 129, 0.12); border-color: var(--accent-emerald); color: #065F46; }
-    .quiz-opt.wrong { background: rgba(244, 63, 94, 0.1); border-color: var(--accent-rose); color: #9F1239; }
+    .type-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 3px 11px;
+      border-radius: 999px;
+      font-size: 0.76rem;
+      font-weight: 700;
+      font-family: 'Cairo', sans-serif;
+    }
+    .type-quiz { background: var(--violet-soft); color: #5B21B6; }
+    .type-tf { background: var(--emerald-soft); color: #065F46; }
+    .type-flash { background: var(--cyan-soft); color: #155E75; }
 
-    .tf-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+    .q-counter { font-size: 0.78rem; color: var(--text-sub); font-weight: 600; }
+    .dots { display: flex; gap: 5px; flex-wrap: wrap; align-items: center; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; background: #E2E8F0; border: 1px solid var(--box-border); }
+    .dot.done { background: var(--emerald); border-color: var(--emerald); }
+    .dot.current { outline: 2px solid var(--violet); outline-offset: 2px; }
 
+    .q-text { font-weight: 600; color: var(--text-heading); margin: 0 0 10px; font-size: 1rem; }
+
+    /* ---------- Quiz options ---------- */
+    .quiz-options { display: flex; flex-direction: column; gap: 8px; margin: 12px 0; }
+
+    .quiz-opt {
+      width: 100%;
+      text-align: right;
+      padding: 12px 14px;
+      border-radius: 12px;
+      background: var(--bg-soft);
+      border: 1.5px solid var(--box-border);
+      color: var(--text-heading);
+      font-size: 0.93rem;
+      font-weight: 600;
+      line-height: 1.6;
+      cursor: pointer;
+      transition: all 0.18s ease;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 10px;
+    }
+    .quiz-opt .opt-letter {
+      flex-shrink: 0;
+      width: 26px;
+      height: 26px;
+      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--card-bg);
+      border: 1px solid var(--box-border);
+      font-family: 'Cairo', sans-serif;
+      font-weight: 800;
+      font-size: 0.82rem;
+      color: var(--violet);
+    }
+    .quiz-opt:hover:not(:disabled) { border-color: var(--violet); background: var(--violet-soft); }
+    .quiz-opt:disabled { cursor: default; }
+    .quiz-opt.correct { background: var(--emerald-soft); border-color: var(--emerald); color: #065F46; }
+    .quiz-opt.wrong { background: var(--rose-soft); border-color: var(--rose); color: #9F1239; }
+    .quiz-opt.dim { opacity: 0.6; }
+
+    /* ---------- True / False ---------- */
+    .tf-row { display: flex; gap: 10px; margin: 12px 0; }
+    .tf-row .btn { flex: 1; padding: 12px 14px; font-size: 0.98rem; }
+    .tf-row .btn.correct { background: var(--emerald-soft); border-color: var(--emerald); color: #065F46; }
+    .tf-row .btn.wrong { background: var(--rose-soft); border-color: var(--rose); color: #9F1239; }
+    .tf-row .btn:disabled.correct, .tf-row .btn:disabled.wrong { opacity: 1; }
+
+    /* ---------- Feedback ---------- */
     .feedback-box {
       margin-top: 12px;
-      padding: 11px 14px;
+      padding: 12px 14px;
       border-radius: 12px;
-      font-size: 0.87rem;
+      font-size: 0.9rem;
       font-weight: 600;
-      display: none;
+      border-right: 4px solid;
+      animation: fadeIn 0.25s ease;
     }
-    .feedback-box.show { display: block; }
-    .feedback-box.success { background: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.35); color: #065F46; }
-    .feedback-box.error { background: rgba(244, 63, 94, 0.1); border: 1px solid rgba(244, 63, 94, 0.3); color: #9F1239; }
+    .feedback-box.ok { background: var(--emerald-soft); border-color: var(--emerald); color: #065F46; }
+    .feedback-box.err { background: var(--rose-soft); border-color: var(--rose); color: #9F1239; }
 
-    /* Flashcards */
-    .flashcard-stage { perspective: 1000px; cursor: pointer; }
-    .flashcard-inner {
-      position: relative;
+    /* ---------- Flashcards (auto-height 3D flip) ---------- */
+    .flashcard-wrap { perspective: 1000px; margin: 10px 0; }
+    .flashcard {
+      display: grid;
       width: 100%;
-      min-height: 190px;
-      transition: transform 0.6s;
+      min-height: 175px;
       transform-style: preserve-3d;
+      transition: transform 0.55s cubic-bezier(0.4, 0.2, 0.2, 1);
+      cursor: pointer;
+      outline: none;
     }
-    .flashcard-stage.flipped .flashcard-inner { transform: rotateY(180deg); }
-    .flashcard-face {
-      position: absolute;
-      inset: 0;
+    .flashcard:focus-visible .fc-face { box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.35); }
+    .flashcard.flipped { transform: rotateY(180deg); }
+
+    .fc-face {
+      grid-area: 1 / 1;
+      -webkit-backface-visibility: hidden;
       backface-visibility: hidden;
       border-radius: 14px;
       padding: 18px;
@@ -452,108 +405,192 @@
       flex-direction: column;
       justify-content: center;
       align-items: center;
+      gap: 6px;
       text-align: center;
-      border: 1px solid var(--border-sub);
+      border: 1.5px solid var(--box-border);
     }
-    .flashcard-front { background: linear-gradient(135deg, #F8FAFC, rgba(139, 92, 246, 0.08)); }
-    .flashcard-back { background: linear-gradient(135deg, #FFFFFF, rgba(6, 182, 212, 0.08)); transform: rotateY(180deg); }
-
-    /* Body Map */
-    .bodymap-wrap {
-      display: grid;
-      grid-template-columns: 245px 1fr;
-      gap: 16px;
-      align-items: start;
-    }
-    @media (max-width: 720px) { .bodymap-wrap { grid-template-columns: 1fr; } }
-
-    .body-svg-box {
-      background: #F8FAFC;
-      border: 1px solid var(--border-sub);
-      border-radius: 14px;
-      padding: 12px;
-      text-align: center;
-    }
-    .organ-hotspot { cursor: pointer; }
-    .organ-hotspot:hover circle { fill: var(--accent-purple); }
-    .organ-hotspot.solved circle { fill: var(--accent-emerald); }
-    .organ-hotspot.active circle { stroke: var(--text-title); stroke-width: 3; }
-
-    /* Sliders & Wave Canvases */
-    .slider-panel {
-      background: #F8FAFC;
-      border: 1px solid var(--border-sub);
-      border-radius: 14px;
-      padding: 16px;
-    }
-    .range-input { width: 100%; accent-color: var(--accent-purple); cursor: pointer; height: 8px; }
-    .bpm-display { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 8px; flex-wrap: wrap; }
-    .bpm-badge { font-family: 'Cairo', sans-serif; font-weight: 800; font-size: 1.4rem; color: var(--accent-cyan); display: inline-flex; align-items: center; gap: 8px; }
-    canvas.wave-canvas { width: 100%; height: 110px; background: #FFFFFF; border: 1px solid var(--border-sub); border-radius: 10px; display: block; }
-
-    /* Bar Chart */
-    .bar-chart { display: flex; flex-direction: column; gap: 10px; margin-top: 14px; }
-    .bar-row { display: grid; grid-template-columns: 110px 1fr 75px; align-items: center; gap: 10px; font-size: 0.84rem; font-weight: 600; }
-    .bar-track { height: 14px; background: #E2E8F0; border-radius: 999px; overflow: hidden; }
-    .bar-fill { height: 100%; border-radius: 999px; }
-
-    /* Clinical Match */
-    .match-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    @media (max-width: 600px) { .match-grid { grid-template-columns: 1fr; } }
-    .match-btn {
-      padding: 11px 14px;
-      border-radius: 12px;
-      border: 1.5px solid var(--border-sub);
-      background: #F8FAFC;
-      font-family: 'IBM Plex Sans Arabic', sans-serif;
-      font-size: 0.86rem;
-      font-weight: 600;
+    .fc-front { background: var(--bg-soft); color: var(--text-title); }
+    .fc-back {
+      background: linear-gradient(135deg, rgba(139, 92, 246, 0.08), rgba(6, 182, 212, 0.08));
+      border-color: var(--violet);
       color: var(--text-heading);
-      text-align: right;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-    .match-btn.selected { border-color: var(--accent-purple); background: rgba(139, 92, 246, 0.12); }
-    .match-btn.matched { border-color: var(--accent-emerald); background: rgba(16, 185, 129, 0.12); color: #065F46; cursor: default; }
-
-    /* Phase Flowchart */
-    .phase-flow { display: flex; gap: 10px; flex-wrap: wrap; margin: 12px 0; }
-    .phase-node {
-      flex: 1 1 200px;
-      background: var(--bg-sub);
-      border: 1.5px solid var(--border-sub);
-      border-radius: 12px;
-      padding: 12px;
-      text-align: center;
-      font-size: 0.86rem;
+      transform: rotateY(180deg);
       font-weight: 600;
+      font-size: 0.95rem;
     }
-    .phase-node.active-p1 { border-color: var(--accent-amber); background: rgba(245, 158, 11, 0.14); }
-    .phase-node.active-p2 { border-color: var(--accent-rose); background: rgba(244, 63, 94, 0.12); }
+    .fc-tag { font-size: 0.78rem; color: var(--cyan); font-weight: 700; }
+    .fc-tag-back { font-size: 0.78rem; color: var(--violet); font-weight: 700; }
+    .fc-hint { font-size: 0.78rem; color: var(--text-sub); margin-top: 6px; }
+    .fc-q { font-size: 1rem; }
 
-    /* Summary Footer */
-    .summary-card {
-      background: linear-gradient(135deg, #FFFFFF, rgba(139, 92, 246, 0.06));
-      border: 1px solid rgba(139, 92, 246, 0.25);
-      border-radius: 16px;
-      padding: 24px;
-      text-align: center;
-      box-shadow: var(--shadow-card);
-      margin-top: 26px;
+    /* ---------- Nav inside a card ---------- */
+    .card-nav { display: flex; justify-content: space-between; gap: 10px; margin-top: 14px; }
+
+    .done-banner {
+      margin-top: 14px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      background: var(--emerald-soft);
+      border: 1px solid rgba(16, 185, 129, 0.35);
+      color: #065F46;
+      font-weight: 700;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
     }
+
+    /* ---------- DUMBBELSS letters ---------- */
+    .dumbbelss-letters { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin: 4px 0 14px; direction: ltr; }
+    .d-letter {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Cairo', sans-serif;
+      font-weight: 800;
+      background: var(--rose-soft);
+      color: #9F1239;
+      border: 1.5px solid rgba(244, 63, 94, 0.3);
+      transition: all 0.25s ease;
+    }
+    .d-letter.solved { background: var(--emerald-soft); color: #065F46; border-color: var(--emerald); }
+
+    /* ---------- Bottom navigation ---------- */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      background: rgba(255, 255, 255, 0.96);
+      -webkit-backdrop-filter: blur(10px);
+      backdrop-filter: blur(10px);
+      border-top: 1px solid var(--box-border);
+      padding: 8px 10px calc(8px + env(safe-area-inset-bottom));
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+    .bottom-nav::-webkit-scrollbar { display: none; }
+    .bottom-nav > :first-child { margin-inline-start: auto; }
+    .bottom-nav > :last-child { margin-inline-end: auto; }
+
+    .nav-pill {
+      flex-shrink: 0;
+      padding: 7px 12px;
+      border-radius: 999px;
+      background: var(--bg-soft);
+      border: 1px solid var(--box-border);
+      color: var(--text-sub);
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-decoration: none;
+      white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .nav-pill.active, .nav-pill:hover { background: var(--violet-soft); border-color: var(--violet); color: var(--violet); }
+
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+    @media (max-width: 380px) {
+      .container { padding: 14px 10px; }
+      .academic-card { padding: 16px; }
+      .card-title { font-size: 1rem; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      * { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
+      html { scroll-behavior: auto; }
+    }
+  
+    /* ===== Session 6 overrides (match original identity) ===== */
+    :root {
+      --accent-purple: #8B5CF6; --accent-cyan: #06B6D4; --accent-emerald: #10B981;
+      --accent-amber: #F59E0B; --accent-rose: #F43F5E;
+      --bg-card: #FFFFFF; --border-sub: #CBD5E1; --text-muted: #475569;
+    }
+    body { padding-bottom: calc(40px + env(safe-area-inset-bottom)); }
+    .accent-purple { border-right-color: var(--violet); }
+    .icon-purple { color: var(--violet); }
+    .btn-sm { padding: 5px 12px; font-size: 0.8rem; }
+
+    .top-hud {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(255, 255, 255, 0.95);
+      -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border-sub);
+      padding: calc(10px + max(env(safe-area-inset-top), var(--safe-top))) 16px 10px;
+      box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
+    }
+    .top-hud .hud-inner { max-width: 960px; margin: 0 auto; display: flex; flex-direction: column; gap: 8px; align-items: stretch; flex-wrap: nowrap; }
+    .hud-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+    .stat-pill {
+      display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 999px;
+      font-size: 0.84rem; font-weight: 600; background: rgba(139, 92, 246, 0.1); color: var(--accent-purple);
+      border: 1px solid rgba(139, 92, 246, 0.22);
+    }
+    .stat-pill.emerald { background: rgba(16, 185, 129, 0.1); color: #059669; border-color: rgba(16, 185, 129, 0.25); }
+    .top-hud .progress-track { width: 100%; flex: none; height: 7px; }
+    .nav-pills-scroll { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+    .nav-pills-scroll::-webkit-scrollbar { display: none; }
+    .nav-chip {
+      flex: 0 0 auto; padding: 4px 12px; border-radius: 999px; font-size: 0.78rem; font-weight: 600;
+      text-decoration: none; color: var(--text-muted); background: var(--bg-main); border: 1px solid var(--border-sub);
+      transition: all 0.2s ease; white-space: nowrap;
+    }
+    .nav-chip:hover, .nav-chip.active { background: var(--accent-purple); color: #FFFFFF; border-color: var(--accent-purple); }
+
+    .container { max-width: 960px; padding: 20px 14px; }
+    .main-title { font-family: 'Cairo', sans-serif; font-size: clamp(1.45rem, 4vw, 2.15rem); font-weight: 800; margin-bottom: 14px; line-height: 1.35; }
+    .objectives-box {
+      background: var(--bg-card); border: 1px solid var(--card-border); border-right: 5px solid var(--accent-purple);
+      border-radius: 16px; padding: 18px 22px; box-shadow: var(--shadow-card);
+    }
+    .objectives-box h3 { font-size: 1.05rem; margin-bottom: 6px; display: flex; align-items: center; gap: 8px; color: var(--accent-purple); }
+    .topic-header-card { border-right: 1px solid var(--card-border); }
+    .topic-en { font-family: 'IBM Plex Sans Arabic', sans-serif; font-weight: 600; display: block; }
+
+    .game-tag {
+      font-size: 0.75rem; font-weight: 600; padding: 3px 10px; border-radius: 999px; background: var(--box-bg);
+      color: var(--text-sub); border: 1px solid var(--box-border); white-space: nowrap;
+    }
+    .game-tag.completed { background: var(--emerald-soft); color: #047857; border-color: rgba(16, 185, 129, 0.35); }
+
+    .fc-fx {
+      direction: ltr; text-align: center; margin-top: 10px; padding: 8px 10px; border-radius: 10px;
+      background: var(--box-bg); border: 1px solid var(--box-border); color: #5B21B6;
+      font-size: 0.78rem; font-weight: 600; line-height: 1.6;
+    }
+    .comparison-grid { gap: 14px; }
+    @media (min-width: 721px) { .comparison-grid { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 720px) { .comparison-grid { grid-template-columns: 1fr; } }
+
+    .summary-card {
+      background: linear-gradient(135deg, #FFFFFF, rgba(139, 92, 246, 0.06)); border: 1px solid rgba(139, 92, 246, 0.25);
+      border-radius: 16px; padding: 24px; text-align: center; box-shadow: var(--shadow-card); margin-top: 26px;
+    }
+
   </style>
 </head>
 <body>
 
   <!-- Sticky Top HUD -->
-  <header class="top-hud">
+  <header class="top-hud" id="hud">
     <div class="hud-inner">
       <div class="hud-row">
         <div class="hud-stats">
           <span class="stat-pill"><i class="fa-solid fa-trophy"></i> النقاط: <strong id="scoreDisplay">0</strong></span>
           <span class="stat-pill emerald"><i class="fa-solid fa-circle-check"></i> المهام: <strong id="tasksDisplay">0 / 20</strong></span>
         </div>
-        <button class="btn btn-outline" style="padding: 5px 12px; font-size: 0.8rem;" onclick="resetAllProgress()">
+        <button type="button" class="btn btn-outline btn-sm" onclick="resetAllProgress()">
           <i class="fa-solid fa-rotate-right"></i> إعادة ضبط
         </button>
       </div>
@@ -571,498 +608,78 @@
   </header>
 
   <main class="container">
-    <!-- Header -->
     <section class="lecture-header">
-      <div class="session-badge"><i class="fa-solid fa-gamepad"></i> الجلسة السادسة • التقييم والألعاب التفاعلية</div>
+      <div class="session-badge"><i class="fa-solid fa-gamepad"></i> الجلسة السادسة • التقييم والاختبارات التفاعلية</div>
       <h1 class="main-title">المعاكسات الكولينية (Cholinergic Antagonists)</h1>
       <div class="objectives-box">
         <h3><i class="fa-solid fa-bullseye"></i> الوصف والأهداف التطبيقية</h3>
-        <p style="margin: 0; font-size: 0.94rem;">
-          تطبيق تدريبي وتقييمي في <strong>علم الأدوية التجريبي</strong> لترسيخ تصنيف المعاكسات الكولينية، التأثيرات الجهازية والقلبية للأتروبين، بدائله السريرية، حاصرات العقد والوصل العصبي العضلي، والتجربة المخبرية على قلب الضفدع.
+        <p style="margin: 0 0 12px; font-size: 0.94rem;">
+          تطبيق تدريبي وتقييمي في <strong>علم الأدوية التجريبي</strong> لترسيخ تصنيف المعاكسات الكولينية، التأثيرات الجهازية والقلبية للأتروبين، بدائله السريرية، حاصرات العقد والوصل العصبي العضلي، والتجربة المخبرية على قلب الضفدع. يضم <strong>20 مهمة</strong> و<strong><span id="total-q">0</span> سؤالاً</strong> بثلاثة أنماط فقط: <strong>QUIZ</strong> و<strong>FlashCards</strong> و<strong>صح/خطأ</strong>.
         </p>
+        <div class="step-box" style="margin-bottom:0; display:flex; flex-wrap:wrap; gap:12px; justify-content:space-between; font-size:0.88rem;">
+          <span><i class="fa-solid fa-list-check" style="color:var(--accent-purple)"></i> QUIZ: اختيار من متعدد</span>
+          <span><i class="fa-solid fa-layer-group" style="color:var(--accent-cyan)"></i> FlashCards: بطاقات استذكار</span>
+          <span><i class="fa-solid fa-check-double" style="color:var(--accent-emerald)"></i> صح أو خطأ</span>
+        </div>
       </div>
     </section>
 
-    <!-- SECTION 1.0 -->
     <section id="sec1">
       <div class="topic-header-card">
-        <span class="topic-en">SECTION 1.0 • TAXONOMY & PHYSIOLOGICAL CONCEPT</span>
+        <span class="topic-en">SECTION 1.0 • TAXONOMY &amp; PHYSIOLOGICAL CONCEPT</span>
         <h2 class="topic-ar">1.0 مدخل إلى المعاكسات الكولينية وشجرة التصنيف</h2>
       </div>
-
-      <div class="academic-card accent-purple">
-        <div class="card-header">
-          <h3 class="card-title"><i class="fa-solid fa-diagram-project"></i> لعبة السحب والإفلات الشجري</h3>
-          <span class="game-tag">اضغط على الدواء ثم الفرع (أو اسحبه)</span>
-        </div>
-        <div class="token-pool" id="treePool">
-          <div class="drag-token" draggable="true" data-group="tree" data-target="musc" id="tk-atropine">الأتروبين</div>
-          <div class="drag-token" draggable="true" data-group="tree" data-target="gang" id="tk-nicotine">النيكوتين</div>
-          <div class="drag-token" draggable="true" data-group="tree" data-target="nmb" id="tk-curare">الكورار</div>
-          <div class="drag-token" draggable="true" data-group="tree" data-target="musc" id="tk-scopolamine">السكوبولامين</div>
-          <div class="drag-token" draggable="true" data-group="tree" data-target="nmb" id="tk-tubocurarine">التوبوكورارين</div>
-          <div class="drag-token" draggable="true" data-group="tree" data-target="nmb" id="tk-succinylcholine">السكسينيل كولين</div>
-        </div>
-        <div class="drop-zones">
-          <div class="drop-zone" data-zone-group="tree" data-zone="musc">
-            <div class="drop-zone-title" style="color: var(--accent-purple);"><i class="fa-solid fa-eye-dropper"></i> مضادات المستقبلات الموسكارينية</div>
-            <div class="drop-zone-items"></div>
-          </div>
-          <div class="drop-zone" data-zone-group="tree" data-zone="gang">
-            <div class="drop-zone-title" style="color: var(--accent-cyan);"><i class="fa-solid fa-network-wired"></i> حاصرات العقد العصبية</div>
-            <div class="drop-zone-items"></div>
-          </div>
-          <div class="drop-zone" data-zone-group="tree" data-zone="nmb">
-            <div class="drop-zone-title" style="color: var(--accent-emerald);"><i class="fa-solid fa-dumbbell"></i> حاصرات الوصل العصبي العضلي</div>
-            <div class="drop-zone-items"></div>
-          </div>
-        </div>
-        <div style="margin-top: 12px; display: flex; gap: 10px; flex-wrap: wrap;">
-          <button class="btn btn-primary" onclick="checkSortGame('tree', 6, 'task-tree')"><i class="fa-solid fa-check"></i> تحقق من التصنيف</button>
-          <button class="btn btn-outline" onclick="resetSortGame('tree', 'treePool')"><i class="fa-solid fa-rotate-left"></i> إعادة</button>
-        </div>
-        <div class="feedback-box" id="fb-tree"></div>
-      </div>
-
-      <div class="grid-2">
-        <div class="academic-card accent-cyan">
-          <div class="card-header"><h3 class="card-title"><i class="fa-solid fa-circle-question"></i> سؤال الفهم الفسيولوجي</h3></div>
-          <p style="font-weight: 600; margin-top: 0;">ما النتيجة الفسيولوجية المباشرة لإعطاء حاصرات المستقبلات الموسكارينية الانتقائية سريرياً؟</p>
-          <div class="quiz-options">
-            <button class="quiz-opt" onclick="answerQuiz(this, false, 'q1_2', 'task-q1_2', 'خطأ: الحاصرات الموسكارينية لا تعطل التعصيب الودي.')">أ) تعطيل التعصيب الودي ونظير الودي معاً.</button>
-            <button class="quiz-opt" onclick="answerQuiz(this, false, 'q1_2', 'task-q1_2', 'خطأ: يحدث العكس بتعطيل نظير الودي.')">ب) تعطيل التعصيب الودي وبقاء نظير الودي دون معاكسة.</button>
-            <button class="quiz-opt" onclick="answerQuiz(this, true, 'q1_2', 'task-q1_2', 'أحسنت! تُعطّل تأثيرات التعصيب نظير الودي وتُترك تأثيرات التعصيب الودي دون معاكسة.')">ج) تعطيل تأثيرات التعصيب نظير الودي وبقاء التعصيب الودي دون معاكسة.</button>
-            <button class="quiz-opt" onclick="answerQuiz(this, false, 'q1_2', 'task-q1_2', 'خطأ: هذا عمل حاصرات الوصل العصبي العضلي.')">د) حصر المستقبلات النيكوتينية في اللوحة الحركية.</button>
-          </div>
-          <div class="feedback-box" id="fb-q1_2"></div>
-        </div>
-
-        <div class="academic-card accent-amber">
-          <div class="card-header"><h3 class="card-title"><i class="fa-solid fa-scale-balanced"></i> تحدي الصواب والخطأ</h3></div>
-          <div class="step-box">"تُعد الحاصرات الانتقائية للمستقبلات النيكوتينية في العقد هي الأكثر فائدة وشيوعاً سريرياً مقارنة بمضادات الموسكارين."</div>
-          <div class="tf-row">
-            <button class="quiz-opt" style="justify-content: center;" onclick="answerQuiz(this, false, 'q1_3', 'task-q1_3', 'خطأ! حاصرات العقد نادراً ما تُستخدم سريرياً وتُستعمل غالباً كأدوات بحثية.')"><i class="fa-solid fa-check"></i> صح</button>
-            <button class="quiz-opt" style="justify-content: center;" onclick="answerQuiz(this, true, 'q1_3', 'task-q1_3', 'إجابة صحيحة! مضادات المستقبلات الموسكارينية هي الأكثر فائدة سريرياً.')"><i class="fa-solid fa-xmark"></i> خطأ</button>
-          </div>
-          <div class="feedback-box" id="fb-q1_3"></div>
-        </div>
-      </div>
+      <div id="mount-sec1"></div>
     </section>
 
-    <!-- SECTION 2.0 -->
     <section id="sec2">
       <div class="topic-header-card">
-        <span class="topic-en">SECTION 2.0 • ANTIMUSCARINIC PROFILES & INTERACTIONS</span>
+        <span class="topic-en">SECTION 2.0 • ANTIMUSCARINIC PROFILES &amp; INTERACTIONS</span>
         <h2 class="topic-ar">2.0 العوامل المضادة للمستقبلات الموسكارينية</h2>
       </div>
-
-      <div class="grid-2">
-        <div class="academic-card accent-purple">
-          <div class="card-header">
-            <h3 class="card-title"><i class="fa-solid fa-clone"></i> بطاقة استذكار: الأتروبين</h3>
-            <span class="game-tag">اضغط للقلب</span>
-          </div>
-          <div class="flashcard-stage" onclick="flipCard(this, 'task-fc1')">
-            <div class="flashcard-inner">
-              <div class="flashcard-face flashcard-front">
-                <i class="fa-solid fa-capsules" style="font-size: 2rem; color: var(--accent-purple); margin-bottom: 10px;"></i>
-                <h4 style="margin-bottom: 6px;">الأتروبين (Atropine)</h4>
-                <p style="margin: 0; font-size: 0.88rem; color: var(--text-muted);">ما منشأه الطبيعي، طبيعته الكيميائية، نفوذيته للـ BBB، وعمره النصفي؟</p>
-              </div>
-              <div class="flashcard-face flashcard-back">
-                <p style="margin: 0; font-size: 0.88rem; font-weight: 600;">
-                  قلويد طبيعي من أوراق <strong>اللفاح (Atropa belladonna)</strong>. أمين ثالثي غير قطبي يعبر الـ BBB ليُحدث تأثيرات مركزية ومحيطية. عمره النصفي نحو <strong>4 ساعات</strong> (ويمتد موضعياً في العين لـ 7–14 يوماً).
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="academic-card accent-rose">
-          <div class="card-header"><h3 class="card-title"><i class="fa-solid fa-triangle-exclamation"></i> التداخل الدوائي والسيناريو السريري</h3></div>
-          <p style="font-size: 0.9rem; font-weight: 600; margin-top: 0;">مريض يتناول مضادات اكتئاب ثلاثية الحلقات (TCA) أُضيف له دواء مضاد للتشنج، فعانى فجأة جفاف فم شديد، احتباس بول، وتسرع قلب. ما التفسير؟</p>
-          <div class="quiz-options">
-            <button class="quiz-opt" onclick="answerQuiz(this, false, 'q2_3', 'task-q2_3', 'خطأ: لا تحفز TCA إفراز الأستيل كولين بل تعاكسه.')">أ) زيادة تحرر الأستيل كولين في الغدد اللعابية.</button>
-            <button class="quiz-opt" onclick="answerQuiz(this, true, 'q2_3', 'task-q2_3', 'ممتاز! تمتلك TCA وبعض مضادات الهيستامين فعالية مضادة للمسكارين تتآزر مع مضاد التشنج.')">ب) تآزر الفعالية المضادة للمسكارين بين مضادات الاكتئاب ومضاد التشنج.</button>
-            <button class="quiz-opt" onclick="answerQuiz(this, false, 'q2_3', 'task-q2_3', 'خطأ: لا يتعلق ذلك باللوحة الحركية.')">ج) حصر المستقبلات النيكوتينية في اللوحة الحركية.</button>
-          </div>
-          <div class="feedback-box" id="fb-q2_3"></div>
-        </div>
-      </div>
+      <div id="mount-sec2"></div>
     </section>
 
-    <!-- SECTION 3.0 -->
     <section id="sec3">
       <div class="topic-header-card">
-        <span class="topic-en">SECTION 3.0 • SYSTEMIC EFFECTS & CARDIAC DOSE-RESPONSE</span>
+        <span class="topic-en">SECTION 3.0 • SYSTEMIC EFFECTS &amp; CARDIAC DOSE-RESPONSE</span>
         <h2 class="topic-ar">3.0 التأثيرات الجهازية للأتروبين بحسب الأعضاء</h2>
       </div>
-
-      <!-- 3.1 Interactive Body Map -->
-      <div class="academic-card accent-cyan">
-        <div class="card-header">
-          <h3 class="card-title"><i class="fa-solid fa-child-reaching"></i> مخطط الجسم التفاعلي (Interactive Body Map)</h3>
-          <span class="game-tag">أجب عن جميع الأعضاء (<span id="organSolvedCount">0</span>/5)</span>
-        </div>
-        <div class="bodymap-wrap">
-          <div class="body-svg-box">
-            <svg viewBox="0 0 220 340" width="205" height="310" aria-label="مخطط الجسم التفاعلي">
-              <circle cx="110" cy="42" r="26" fill="#E2E8F0" stroke="#94A3B8" stroke-width="2" />
-              <path d="M72 78 Q110 66 148 78 L162 185 L142 188 L136 125 L136 225 L142 320 L118 320 L110 235 L102 320 L78 320 L84 225 L84 125 L78 188 L58 185 Z" fill="#E2E8F0" stroke="#94A3B8" stroke-width="2" />
-              <g class="organ-hotspot active" id="hs-eye" onclick="selectOrgan('eye')"><circle cx="101" cy="36" r="11" fill="#06B6D4" /><text x="101" y="40" text-anchor="middle" fill="#fff" font-size="10" font-weight="bold">1</text></g>
-              <g class="organ-hotspot" id="hs-glands" onclick="selectOrgan('glands')"><circle cx="122" cy="54" r="11" fill="#06B6D4" /><text x="122" y="58" text-anchor="middle" fill="#fff" font-size="10" font-weight="bold">2</text></g>
-              <g class="organ-hotspot" id="hs-resp" onclick="selectOrgan('resp')"><circle cx="94" cy="112" r="12" fill="#06B6D4" /><text x="94" y="116" text-anchor="middle" fill="#fff" font-size="10" font-weight="bold">3</text></g>
-              <g class="organ-hotspot" id="hs-heart" onclick="selectOrgan('heart')"><circle cx="124" cy="118" r="12" fill="#06B6D4" /><text x="124" y="122" text-anchor="middle" fill="#fff" font-size="10" font-weight="bold">4</text></g>
-              <g class="organ-hotspot" id="hs-gi" onclick="selectOrgan('gi')"><circle cx="110" cy="166" r="13" fill="#06B6D4" /><text x="110" y="170" text-anchor="middle" fill="#fff" font-size="10" font-weight="bold">5</text></g>
-            </svg>
-            <div style="font-size: 0.78rem; color: var(--text-muted); margin-top: 6px;">1: العين • 2: الغدد • 3: القصبات • 4: القلب • 5: المعدة</div>
-          </div>
-          <div id="organQuestionPanel" class="step-box" style="margin: 0; background: #FFFFFF;"></div>
-        </div>
-      </div>
-
-      <!-- 3.2 Cardiac Dose-Response Slider -->
-      <div class="academic-card accent-purple">
-        <div class="card-header">
-          <h3 class="card-title"><i class="fa-solid fa-heart-pulse"></i> محاكي شريط الجرعة القلبية (Cardiac Dose-Response)</h3>
-          <span class="game-tag">حرّك المنزلق لاكتشاف التناقض الجرعي</span>
-        </div>
-        <div class="slider-panel">
-          <div class="bpm-display">
-            <div>
-              <span style="font-size: 0.84rem; color: var(--text-muted); font-weight: 600;">جرعة الأتروبين:</span>
-              <div style="font-family: 'Cairo', sans-serif; font-weight: 800; font-size: 1.25rem; color: var(--accent-purple);" id="doseValLabel">0.35 mg</div>
-            </div>
-            <div class="bpm-badge" id="bpmBadge"><i class="fa-solid fa-heart"></i> <span id="bpmValLabel">62 BPM</span></div>
-          </div>
-          <input type="range" min="0.1" max="2.0" step="0.05" value="0.35" class="range-input" id="atropineSlider" oninput="updateCardiacSlider(this.value)" />
-          <div style="display: flex; justify-content: space-between; font-size: 0.76rem; color: var(--text-muted); margin-top: 4px; direction: ltr;">
-            <span>0.1 mg</span><span>0.2–0.5 mg (Low)</span><span>1.0–2.0 mg (High)</span>
-          </div>
-          <div class="formula-box" id="cardiacFormulaBox">0.35 mg (Low) ──▶ Blocks presynaptic M₁ ──▶ ↑ ACh ──▶ Mild Bradycardia</div>
-          <canvas id="ecgCanvas" class="wave-canvas" width="600" height="110"></canvas>
-        </div>
-
-        <div style="margin-top: 14px;">
-          <p style="font-weight: 600; font-size: 0.9rem; margin-bottom: 8px;">سؤال التحقق: أي مستقبل يُحصر عند الجرعة العالية (1–2 ملغ) ليُحدث تسرع القلب؟</p>
-          <div class="tf-row">
-            <button class="quiz-opt" style="justify-content: center;" onclick="answerQuiz(this, false, 'q3_cardiac', 'task-cardiac', 'خطأ: M1 قبل المشبكية مسؤولة عن البطء الطفيف بالجرعات المنخفضة.')">مستقبل M₁ قبل المشبكي</button>
-            <button class="quiz-opt" style="justify-content: center;" onclick="answerQuiz(this, true, 'q3_cardiac', 'task-cardiac', 'صحيح! حصر M2 في العقدة الجيبية الأذينية SA node يحل تأثير المبهم ويسرع القلب.')">مستقبل M₂ في العقدة SA</button>
-          </div>
-          <div class="feedback-box" id="fb-q3_cardiac"></div>
-        </div>
-      </div>
-
-      <!-- 3.3 Pitfalls -->
-      <div class="grid-2">
-        <div class="academic-card accent-amber">
-          <div class="card-header"><h3 class="card-title"><i class="fa-solid fa-bomb"></i> فخ صيدلاني (1)</h3></div>
-          <div class="step-box">"يُستخدم الأتروبين بنجاح كعلاج نوعي في التخفيف من حموضة المعدة وشفاء القرحة الهضمية."</div>
-          <div class="tf-row">
-            <button class="quiz-opt" style="justify-content: center;" onclick="answerQuiz(this, false, 'q3_pit1', 'task-pit1', 'انتبه! حركية المعدة تنخفض لكن إنتاج HCl لا يتأثر بدرجة ملحوظة.')">صح</button>
-            <button class="quiz-opt" style="justify-content: center;" onclick="answerQuiz(this, true, 'q3_pit1', 'task-pit1', 'صحيح! لا يتأثر إفراز HCl بشكل ملحوظ ولذلك لا يُعد فعالاً في علاج القرحات.')">خطأ</button>
-          </div>
-          <div class="feedback-box" id="fb-q3_pit1"></div>
-        </div>
-
-        <div class="academic-card accent-rose">
-          <div class="card-header"><h3 class="card-title"><i class="fa-solid fa-eye-slash"></i> فخ صيدلاني (2)</h3></div>
-          <div class="step-box">"يُمنع استخدام الأتروبين لدى مرضى الزرق مغلق الزاوية لتفادي ارتفاع ضغط العين الخطير."</div>
-          <div class="tf-row">
-            <button class="quiz-opt" style="justify-content: center;" onclick="answerQuiz(this, true, 'q3_pit2', 'task-pit2', 'أصبت! يرفع الأتروبين ضغط العين ارتفاعاً خطيراً لدى مرضى الزرق مغلق الزاوية.')">صح</button>
-            <button class="quiz-opt" style="justify-content: center;" onclick="answerQuiz(this, false, 'q3_pit2', 'task-pit2', 'احذر! الأتروبين خطير جداً في الزرق مغلق الزاوية.')">خطأ</button>
-          </div>
-          <div class="feedback-box" id="fb-q3_pit2"></div>
-        </div>
-      </div>
+      <div id="mount-sec3"></div>
     </section>
 
-    <!-- SECTION 4.0 -->
     <section id="sec4">
       <div class="topic-header-card">
         <span class="topic-en">SECTION 4.0 • SELECTIVE ANTIMUSCARINIC ALTERNATIVES</span>
         <h2 class="topic-ar">4.0 بدائل الأتروبين العينية والتنفسية والهضمية والبولية</h2>
       </div>
-
-      <!-- 4.1 Eye Duration Ranking -->
-      <div class="academic-card accent-emerald">
-        <div class="card-header">
-          <h3 class="card-title"><i class="fa-solid fa-stopwatch"></i> لعبة «سباق الزمن العيني»</h3>
-          <span class="game-tag">رتّب موسعات الحدقة تنازلياً من الأطول إلى الأقصر</span>
-        </div>
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 10px; margin-bottom: 14px;">
-          <div class="step-box" style="margin: 0;">
-            <label style="font-weight: 700; display: block; margin-bottom: 6px; color: var(--accent-emerald);">المركز 1 (7–14 يوماً)</label>
-            <select id="eyeRank1" class="quiz-opt" style="width: 100%; padding: 8px;">
-              <option value="">-- اختر --</option>
-              <option value="tropicamide">التروبيكاميد</option>
-              <option value="atropine">الأتروبين</option>
-              <option value="cyclopentolate">السيكلوبنتولات</option>
-            </select>
-          </div>
-          <div class="step-box" style="margin: 0;">
-            <label style="font-weight: 700; display: block; margin-bottom: 6px; color: var(--accent-cyan);">المركز 2 (24 ساعة)</label>
-            <select id="eyeRank2" class="quiz-opt" style="width: 100%; padding: 8px;">
-              <option value="">-- اختر --</option>
-              <option value="tropicamide">التروبيكاميد</option>
-              <option value="atropine">الأتروبين</option>
-              <option value="cyclopentolate">السيكلوبنتولات</option>
-            </select>
-          </div>
-          <div class="step-box" style="margin: 0;">
-            <label style="font-weight: 700; display: block; margin-bottom: 6px; color: var(--accent-purple);">المركز 3 (6 ساعات)</label>
-            <select id="eyeRank3" class="quiz-opt" style="width: 100%; padding: 8px;">
-              <option value="">-- اختر --</option>
-              <option value="tropicamide">التروبيكاميد</option>
-              <option value="atropine">الأتروبين</option>
-              <option value="cyclopentolate">السيكلوبنتولات</option>
-            </select>
-          </div>
-        </div>
-        <button class="btn btn-primary" onclick="checkEyeRanking()"><i class="fa-solid fa-flag-checkered"></i> تثبيت الترتيب</button>
-        <div class="feedback-box" id="fb-eyeRank"></div>
-        <div class="bar-chart" id="eyeBarChart" style="display: none;">
-          <div class="bar-row"><span>الأتروبين</span><div class="bar-track"><div class="bar-fill" style="width: 100%; background: var(--accent-rose);"></div></div><span>7–14 يوماً</span></div>
-          <div class="bar-row"><span>السيكلوبنتولات</span><div class="bar-track"><div class="bar-fill" style="width: 22%; background: var(--accent-cyan);"></div></div><span>24 ساعة</span></div>
-          <div class="bar-row"><span>التروبيكاميد</span><div class="bar-track"><div class="bar-fill" style="width: 8%; background: var(--accent-emerald);"></div></div><span>6 ساعات</span></div>
-        </div>
-      </div>
-
-      <!-- 4.2 SAMA vs LAMA -->
-      <div class="academic-card accent-cyan">
-        <div class="card-header">
-          <h3 class="card-title"><i class="fa-solid fa-lungs"></i> مصفوفة الأدوية التنفسية (SAMA vs LAMA)</h3>
-          <span class="game-tag">اضغط على الدواء ثم الخانة</span>
-        </div>
-        <div class="token-pool" id="respPool">
-          <div class="drag-token" draggable="true" data-group="resp" data-target="sama" id="tk-ipra">الإبراتروبيوم</div>
-          <div class="drag-token" draggable="true" data-group="resp" data-target="lama" id="tk-tio">التيوتروبيوم</div>
-          <div class="drag-token" draggable="true" data-group="resp" data-target="lama" id="tk-glyco">الغليكوبيرولات</div>
-          <div class="drag-token" draggable="true" data-group="resp" data-target="lama" id="tk-acli">الأكليدينيوم</div>
-          <div class="drag-token" draggable="true" data-group="resp" data-target="lama" id="tk-ume">الأوميكليدينيوم</div>
-        </div>
-        <div class="drop-zones">
-          <div class="drop-zone" data-zone-group="resp" data-zone="sama">
-            <div class="drop-zone-title" style="color: var(--accent-amber);"><i class="fa-solid fa-bolt"></i> SAMA (قصير المفعول)</div>
-            <div class="drop-zone-items"></div>
-          </div>
-          <div class="drop-zone" data-zone-group="resp" data-zone="lama">
-            <div class="drop-zone-title" style="color: var(--accent-cyan);"><i class="fa-solid fa-clock"></i> LAMA (طويل المفعول)</div>
-            <div class="drop-zone-items"></div>
-          </div>
-        </div>
-        <div style="margin-top: 12px; display: flex; gap: 10px; flex-wrap: wrap;">
-          <button class="btn btn-primary" onclick="checkSortGame('resp', 5, 'task-resp')"><i class="fa-solid fa-check"></i> تحقق من الفرز</button>
-          <button class="btn btn-outline" onclick="resetSortGame('resp', 'respPool')"><i class="fa-solid fa-rotate-left"></i> إعادة</button>
-        </div>
-        <div class="feedback-box" id="fb-resp"></div>
-
-        <div class="step-box" style="margin-top: 14px; margin-bottom: 0;">
-          <p style="font-weight: 600; margin: 0 0 8px 0;">تعليل حركي: لماذا لا تسبب هذه الموسعات المستنشقة آثاراً عصبية مركزية؟</p>
-          <div class="quiz-options">
-            <button class="quiz-opt" onclick="answerQuiz(this, true, 'q4_quat', 'task-quat', 'صحيح! لكونها مركبات أمونيوم رباعية موجبة الشحنة لا تدخل الدوران الجهازي ولا تعبر الـ BBB.')">لأنها مركبات أمونيوم رباعية مشحونة موجباً لا تعبر الدوران ولا الحاجز الدموي الدماغي.</button>
-            <button class="quiz-opt" onclick="answerQuiz(this, false, 'q4_quat', 'task-quat', 'خطأ: بل تحصر مستقبلات M3 القصبية.')">لأنها لا ترتبط بمستقبلات M3 إطلاقاً.</button>
-          </div>
-          <div class="feedback-box" id="fb-q4_quat"></div>
-        </div>
-      </div>
-
-      <!-- 4.3 Clinical Case Match -->
-      <div class="academic-card accent-amber">
-        <div class="card-header">
-          <h3 class="card-title"><i class="fa-solid fa-user-doctor"></i> طبيب العيادة — طابق الحالة بالدواء المناسب</h3>
-          <span class="game-tag">اختر حالة ثم دواءها</span>
-        </div>
-        <div class="match-grid">
-          <div style="display: flex; flex-direction: column; gap: 8px;" id="caseCol">
-            <button class="match-btn" data-match="scop" onclick="selectMatch('case', this)">1. غثيان وقيء ودوار الحركة في البحر</button>
-            <button class="match-btn" data-match="librax" onclick="selectMatch('case', this)">2. تشنج القولون العصبي المصحوب بالقلق</button>
-            <button class="match-btn" data-match="benz" onclick="selectMatch('case', this)">3. أعراض خارج هرمية ناجمة عن مضادات الذهان</button>
-            <button class="match-btn" data-match="oxy" onclick="selectMatch('case', this)">4. سلس بول تلحي ومثانة عصبية</button>
-          </div>
-          <div style="display: flex; flex-direction: column; gap: 8px;" id="drugCol">
-            <button class="match-btn" data-match="benz" onclick="selectMatch('drug', this)">بنزتروبين أو تري هيكسيفينيديل</button>
-            <button class="match-btn" data-match="oxy" onclick="selectMatch('drug', this)">أوكسيبوتينين (Oxybutynin)</button>
-            <button class="match-btn" data-match="scop" onclick="selectMatch('drug', this)">السكوبولامين (Scopolamine)</button>
-            <button class="match-btn" data-match="librax" onclick="selectMatch('drug', this)">كليدينيوم بروميد + كلورديازيبوكسيد (ليبراكس)</button>
-          </div>
-        </div>
-        <div class="feedback-box" id="fb-clinicalMatch"></div>
-      </div>
+      <div id="mount-sec4"></div>
     </section>
 
-    <!-- SECTION 5.0 -->
     <section id="sec5">
       <div class="topic-header-card">
-        <span class="topic-en">SECTION 5.0 • GANGLIONIC BLOCKERS & NICOTINE</span>
+        <span class="topic-en">SECTION 5.0 • GANGLIONIC BLOCKERS &amp; NICOTINE</span>
         <h2 class="topic-ar">5.0 حاصرات العقد العصبية والنيكوتين</h2>
       </div>
-
-      <div class="academic-card accent-cyan">
-        <div class="card-header">
-          <h3 class="card-title"><i class="fa-solid fa-sliders"></i> لعبة الميزان ثنائي الطور للنيكوتين</h3>
-          <span class="game-tag">صنّف كل تأثير في طوره الصحيح</span>
-        </div>
-        <div class="token-pool" id="nicPool">
-          <div class="drag-token" draggable="true" data-group="nic" data-target="p1" id="tk-bpup">ارتفاع ضغط الدم وزيادة النبض</div>
-          <div class="drag-token" draggable="true" data-group="nic" data-target="p2" id="tk-bpdown">هبوط ضغط الدم</div>
-          <div class="drag-token" draggable="true" data-group="nic" data-target="p1" id="tk-adr">إطلاق النواقل من لب الكظر</div>
-          <div class="drag-token" draggable="true" data-group="nic" data-target="p2" id="tk-gistop">توقف نشاط السبيل الهضمي والمثانة</div>
-          <div class="drag-token" draggable="true" data-group="nic" data-target="p1" id="tk-peris">زيادة الحركات الحوية والإفرازات</div>
-        </div>
-        <div class="drop-zones">
-          <div class="drop-zone" data-zone-group="nic" data-zone="p1">
-            <div class="drop-zone-title" style="color: var(--accent-amber);"><i class="fa-solid fa-bolt"></i> الطور الأول (التنبيه البدئي)</div>
-            <div class="drop-zone-items"></div>
-          </div>
-          <div class="drop-zone" data-zone-group="nic" data-zone="p2">
-            <div class="drop-zone-title" style="color: var(--accent-rose);"><i class="fa-solid fa-ban"></i> الطور الثاني (الشلل والحصار)</div>
-            <div class="drop-zone-items"></div>
-          </div>
-        </div>
-        <div style="margin-top: 12px; display: flex; gap: 10px; flex-wrap: wrap;">
-          <button class="btn btn-primary" onclick="checkSortGame('nic', 5, 'task-nic')"><i class="fa-solid fa-check"></i> تحقق من الميزان</button>
-          <button class="btn btn-outline" onclick="resetSortGame('nic', 'nicPool')"><i class="fa-solid fa-rotate-left"></i> إعادة</button>
-        </div>
-        <div class="feedback-box" id="fb-nic"></div>
-      </div>
-
-      <div class="academic-card accent-purple">
-        <div class="card-header"><h3 class="card-title"><i class="fa-solid fa-smoking-ban"></i> الاستخدام الصيدلاني للنيكوتين</h3></div>
-        <p style="font-weight: 600; margin-top: 0;">ما هو الاستخدام الصيدلاني الرئيسي للنيكوتين في الممارسة السريرية؟</p>
-        <div class="quiz-options">
-          <button class="quiz-opt" onclick="answerQuiz(this, false, 'q5_2', 'task-q5_2', 'خطأ: لا يُستخدم لارتفاع الضغط.')">أ) علاج ارتفاع ضغط الدم الإسعافي.</button>
-          <button class="quiz-opt" onclick="answerQuiz(this, true, 'q5_2', 'task-q5_2', 'صحيح! علكة، لصاقات، ومستحلبات فموية للمساعدة على الإقلاع عن التدخين.')">ب) لصاقات وعلكة ومستحلبات فموية للمساعدة على الإقلاع عن التدخين.</button>
-          <button class="quiz-opt" onclick="answerQuiz(this, false, 'q5_2', 'task-q5_2', 'خطأ: هذا دور حاصرات الوصل العصبي العضلي.')">ج) التخدير العام في العمليات الجراحية.</button>
-        </div>
-        <div class="feedback-box" id="fb-q5_2"></div>
-      </div>
+      <div id="mount-sec5"></div>
     </section>
 
-    <!-- SECTION 6.0 -->
     <section id="sec6">
       <div class="topic-header-card">
-        <span class="topic-en">SECTION 6.0 • NEUROMUSCULAR BLOCKERS & SUCCINYLCHOLINE</span>
+        <span class="topic-en">SECTION 6.0 • NEUROMUSCULAR BLOCKERS &amp; SUCCINYLCHOLINE</span>
         <h2 class="topic-ar">6.0 حاصرات الوصل العصبي العضلي</h2>
       </div>
-
-      <div class="academic-card accent-amber">
-        <div class="card-header">
-          <h3 class="card-title"><i class="fa-solid fa-wave-square"></i> محاكي أطوار السكسينيل كولين (Phase I vs Phase II)</h3>
-          <span class="game-tag">شغّل المحاكاة ثم وسم كل طور</span>
-        </div>
-        <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 12px;">
-          <button class="btn btn-outline" onclick="simulateSuccinyl(1)"><i class="fa-solid fa-play"></i> محاكاة المرحلة الأولى</button>
-          <button class="btn btn-outline" onclick="simulateSuccinyl(2)"><i class="fa-solid fa-forward-step"></i> محاكاة المرحلة الثانية</button>
-        </div>
-        <div class="phase-flow">
-          <div class="phase-node" id="pNode1">
-            <div style="color: var(--accent-amber); font-weight: 800;">المرحلة (1)</div>
-            <div>فتح قنوات Na⁺ وزوال استقطاب مستمر ◀ تحزم عضلي عابر (Fasciculations)</div>
-          </div>
-          <div class="phase-node" id="pNode2">
-            <div style="color: var(--accent-rose); font-weight: 800;">المرحلة (2)</div>
-            <div>انغلاق قنوات Na⁺ وإعادة استقطاب تدريجية ◀ شلل رخو ومقاومة الاستقطاب</div>
-          </div>
-        </div>
-        <div class="formula-box" id="succinylStatus">اضغط على أزرار المحاكاة أعلاه لمعاينة الصفيحة المحركة</div>
-
-        <div class="grid-2" style="margin-top: 12px;">
-          <div class="step-box" style="margin: 0;">
-            <label style="font-weight: 700; display: block; margin-bottom: 6px;">وسم المرحلة (1):</label>
-            <select id="selPhase1" class="quiz-opt" style="width: 100%; padding: 8px;">
-              <option value="">-- اختر الوسم --</option>
-              <option value="phase1">Phase I (إزالة الاستقطاب المستمرة)</option>
-              <option value="phase2">Phase II (شلل رخو ومقاومة الاستقطاب)</option>
-            </select>
-          </div>
-          <div class="step-box" style="margin: 0;">
-            <label style="font-weight: 700; display: block; margin-bottom: 6px;">وسم المرحلة (2):</label>
-            <select id="selPhase2" class="quiz-opt" style="width: 100%; padding: 8px;">
-              <option value="">-- اختر الوسم --</option>
-              <option value="phase1">Phase I (إزالة الاستقطاب المستمرة)</option>
-              <option value="phase2">Phase II (شلل رخو ومقاومة الاستقطاب)</option>
-            </select>
-          </div>
-        </div>
-        <button class="btn btn-primary" style="margin-top: 10px;" onclick="checkSuccinylPhases()"><i class="fa-solid fa-check"></i> اعتماد وسم الأطوار</button>
-        <div class="feedback-box" id="fb-succinyl"></div>
-      </div>
-
-      <div class="grid-2">
-        <div class="academic-card accent-purple">
-          <div class="card-header">
-            <h3 class="card-title"><i class="fa-solid fa-lightbulb"></i> بطاقة الفارق الجوهري</h3>
-            <span class="game-tag">اضغط للقلب</span>
-          </div>
-          <div class="flashcard-stage" onclick="flipCard(this, 'task-fc2')">
-            <div class="flashcard-inner">
-              <div class="flashcard-face flashcard-front">
-                <h4 style="margin-bottom: 8px;">لماذا يدوم تأثير السكسينيل كولين أطول من الأستيل كولين؟</h4>
-                <span style="font-size: 0.82rem; color: var(--accent-purple); font-weight: 600;">انقر لكشف القيد الاستقلابي</span>
-              </div>
-              <div class="flashcard-face flashcard-back">
-                <p style="margin: 0; font-size: 0.88rem; font-weight: 600;">
-                  الأستيل كولين يتحلل فورياً بـ <strong>AChE</strong> في الشق المشبكي، أما السكسينيل كولين فلا يُستقلب موضعياً في الوصل، ويشترط لإنهاء مفعوله انتقاله إلى البلازما ليتحلل بـ <strong>الكولين إستراز البلازمي</strong>.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="academic-card accent-emerald">
-          <div class="card-header"><h3 class="card-title"><i class="fa-solid fa-clock-rotate-left"></i> التوقيت الحركي والاستطباب</h3></div>
-          <p style="font-weight: 600; margin-top: 0;">ما المدى الزمني النموذجي لفعالية السكسينيل كولين وما استطبابه الرئيسي؟</p>
-          <div class="quiz-options">
-            <button class="quiz-opt" onclick="answerQuiz(this, false, 'q6_3', 'task-q6_3', 'خطأ: تأثيره فائق القصر.')">أ) 1 – 2 ساعة، الجراحات البطنية الطويلة.</button>
-            <button class="quiz-opt" onclick="answerQuiz(this, true, 'q6_3', 'task-q6_3', 'دقيق! يدوم 2–8 دقائق فقط للتنبيب الرغامي السريع والإجراءات القصيرة مثل ECT.')">ب) 2 – 8 دقائق، التنبيب الرغامي السريع والإجراءات القصيرة مثل ECT.</button>
-            <button class="quiz-opt" onclick="answerQuiz(this, false, 'q6_3', 'task-q6_3', 'خطأ: ليس مسكناً.')">ج) 24 ساعة، التسكين المزمن.</button>
-          </div>
-          <div class="feedback-box" id="fb-q6_3"></div>
-        </div>
-      </div>
+      <div id="mount-sec6"></div>
     </section>
 
-    <!-- SECTION 7.0 -->
     <section id="sec7">
       <div class="topic-header-card">
         <span class="topic-en">SECTION 7.0 • VIRTUAL FROG HEART KYMOGRAPH LAB</span>
         <h2 class="topic-ar">7.0 التطبيق العملي المخبري: تجربة قلب الضفدع على الكيموغراف</h2>
       </div>
-
-      <div class="academic-card accent-emerald">
-        <div class="card-header">
-          <h3 class="card-title"><i class="fa-solid fa-flask-vial"></i> محاكي المختبر الافتراضي للكيموغراف</h3>
-          <span class="game-tag">إضافة ACh بعد الأتروبين (دون غسل)</span>
-        </div>
-        <div class="slider-panel">
-          <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 12px;">
-            <button class="btn btn-primary" onclick="runKymographTest('success')"><i class="fa-solid fa-play"></i> تجربة 1: حصر تام</button>
-            <button class="btn btn-outline" style="border-color: var(--accent-rose); color: var(--accent-rose);" onclick="runKymographTest('fail')"><i class="fa-solid fa-triangle-exclamation"></i> تجربة 2: تباطؤ مفاجئ</button>
-          </div>
-          <canvas id="kymoCanvas" class="wave-canvas" width="600" height="110"></canvas>
-          <div id="kymoStatus" style="margin-top: 8px; font-weight: 600; font-size: 0.9rem;">الحالة: قلب الضفدع ينبض بانتظام بعد تطبيق الأتروبين. اختر إحدى التجربتين أعلاه.</div>
-        </div>
-
-        <div id="kymoQuizWrap" style="margin-top: 14px; display: none;">
-          <p id="kymoQuizPrompt" style="font-weight: 700; margin-bottom: 8px;"></p>
-          <div class="quiz-options" id="kymoQuizOpts"></div>
-          <div class="feedback-box" id="fb-kymo"></div>
-        </div>
-      </div>
-
-      <div class="academic-card accent-rose">
-        <div class="card-header"><h3 class="card-title"><i class="fa-solid fa-clipboard-check"></i> تحدي البروتوكول المخبري</h3></div>
-        <div class="step-box">"عند اختبار التأثير الحاصر للأتروبين في الخطوة (8) على قلب الضفدع، يجب غسل القلب بمحلول رينجر جيداً قبل وضع الجرعة المؤثرة من الأستيل كولين."</div>
-        <div class="tf-row">
-          <button class="quiz-opt" style="justify-content: center;" onclick="answerQuiz(this, false, 'q7_2', 'task-q7_2', 'خطأ! غسل القلب يزيل الأتروبين الحاجب.')">صح</button>
-          <button class="quiz-opt" style="justify-content: center;" onclick="answerQuiz(this, true, 'q7_2', 'task-q7_2', 'أحسنت! ينص البروتوكول على وضع الأستيل كولين دون غسل لاختبار فعالية الحصر.')">خطأ</button>
-        </div>
-        <div class="feedback-box" id="fb-q7_2"></div>
-      </div>
+      <div id="mount-sec7"></div>
     </section>
 
-    <!-- Summary -->
     <section class="summary-card">
       <i class="fa-solid fa-award" style="font-size: 2.4rem; color: var(--accent-purple); margin-bottom: 10px;"></i>
       <h2 style="margin-bottom: 6px;">حصيلة التحدي التطبيقي</h2>
@@ -1075,464 +692,688 @@
   </main>
 
   <script>
-    // Telegram WebApp Init
-    try {
-      if (window.Telegram && window.Telegram.WebApp) {
-        const tg = window.Telegram.WebApp;
+    // =========================================================
+    // 1. TELEGRAM MINI APP + STATE
+    // =========================================================
+    const tg = window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initData !== undefined ? window.Telegram.WebApp : null;
+
+    function measureHud() {
+      const h = document.getElementById('hud');
+      if (h) document.documentElement.style.setProperty('--hud-h', h.offsetHeight + 'px');
+    }
+    function applyInsets() {
+      if (!tg) return;
+      const s = tg.safeAreaInset || {}, c = tg.contentSafeAreaInset || {};
+      document.documentElement.style.setProperty('--safe-top', ((s.top || 0) + (c.top || 0)) + 'px');
+      measureHud();
+    }
+    if (tg) {
+      try {
         tg.ready();
         tg.expand();
         if (tg.setHeaderColor) tg.setHeaderColor('#F1F5F9');
         if (tg.setBackgroundColor) tg.setBackgroundColor('#F1F5F9');
-      }
+        if (tg.disableVerticalSwipes) tg.disableVerticalSwipes();
+        if (tg.onEvent) {
+          tg.onEvent('safeAreaChanged', applyInsets);
+          tg.onEvent('contentSafeAreaChanged', applyInsets);
+        }
+        applyInsets();
+      } catch (e) {}
+    }
+
+    function haptic(type) {
+      if (!tg || !tg.HapticFeedback) return;
+      try {
+        if (type === 'ok') tg.HapticFeedback.notificationOccurred('success');
+        else if (type === 'err') tg.HapticFeedback.notificationOccurred('error');
+        else tg.HapticFeedback.impactOccurred('light');
+      } catch (e) {}
+    }
+
+    const STORE_KEY = 'cholinergic_antagonists_s6_v2';
+    let state = { score: 0, completed: {}, progress: {} };
+    try {
+      const saved = JSON.parse(localStorage.getItem(STORE_KEY) || 'null');
+      if (saved && typeof saved === 'object') state = Object.assign(state, saved);
     } catch (e) {}
+    if (!state.completed) state.completed = {};
+    if (!state.progress) state.progress = {};
 
-    // Global State
-    const TOTAL_TASKS = 20;
-    let score = 0;
-    const completedTasks = new Set();
-
-    function awardTask(taskId, points = 10) {
-      if (!completedTasks.has(taskId)) {
-        completedTasks.add(taskId);
-        score += points;
-        updateHUD();
-      }
+    function saveState() {
+      try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch (e) {}
+      renderHUD();
     }
 
-    function updateHUD() {
-      const pct = Math.round((completedTasks.size / TOTAL_TASKS) * 100);
-      document.getElementById('scoreDisplay').textContent = score;
-      document.getElementById('tasksDisplay').textContent = `${completedTasks.size} / ${TOTAL_TASKS}`;
-      document.getElementById('globalProgress').style.width = `${pct}%`;
-      document.getElementById('summaryScore').textContent = score;
-      document.getElementById('summaryPct').textContent = `${pct}%`;
-      if (completedTasks.size >= TOTAL_TASKS) {
-        document.getElementById('summaryText').textContent = 'تهانينا! أتممت جميع الألعاب والمحاكاة في الجلسة السادسة بنجاح تام.';
-      }
-    }
+    // =========================================================
+    // 2. CONTENT: 20 TASKS -> QUIZ / FLASHCARDS / TRUE-FALSE
+    // =========================================================
+    const Q  = (q, opts, a, exp, o) => Object.assign({ t: 'quiz', q, opts, a, exp }, o || {});
+    const TF = (q, a, exp, o) => Object.assign({ t: 'tf', q, a, exp }, o || {});
+    const F  = (q, a) => ({ t: 'flash', q, a });
+    const FX = s => '<div class="fc-fx">' + s + '</div>';
 
-    document.querySelectorAll('.nav-chip').forEach(chip => {
-      chip.addEventListener('click', () => {
-        document.querySelectorAll('.nav-chip').forEach(c => c.classList.remove('active'));
-        chip.classList.add('active');
-      });
-    });
+    const BR = ['مضادات المستقبلات الموسكارينية', 'حاصرات العقد العصبية', 'حاصرات الوصل العصبي العضلي'];
+    const treeDrugs = [
+      ['الأتروبين', 0], ['النيكوتين', 1], ['الكورار', 2],
+      ['السكوبولامين', 0], ['التوبوكورارين', 2], ['السكسينيل كولين', 2]
+    ];
 
-    // Drag & Drop + Tap-to-Place
-    let selectedToken = null;
-    document.querySelectorAll('.drag-token').forEach(token => {
-      token.addEventListener('click', (e) => {
-        e.stopPropagation();
-        if (selectedToken === token) {
-          token.classList.remove('selected');
-          selectedToken = null;
-          return;
-        }
-        document.querySelectorAll('.drag-token').forEach(t => t.classList.remove('selected'));
-        selectedToken = token;
-        token.classList.add('selected');
-      });
-      token.addEventListener('dragstart', (e) => {
-        selectedToken = token;
-        e.dataTransfer.setData('text/plain', token.id);
-      });
-    });
+    const EYE = ['التروبيكاميد', 'الأتروبين', 'السيكلوبنتولات'];
+    const EYE_HINT = 'الترتيب غير دقيق. تذكر أن الأتروبين يدوم لأيام، والتروبيكاميد هو الأقصر (6 ساعات).';
 
-    document.querySelectorAll('.drop-zone').forEach(zone => {
-      zone.addEventListener('click', () => {
-        if (!selectedToken || selectedToken.dataset.group !== zone.dataset.zoneGroup) return;
-        zone.querySelector('.drop-zone-items').appendChild(selectedToken);
-        selectedToken.classList.remove('selected', 'correct', 'wrong');
-        selectedToken = null;
-      });
-      zone.addEventListener('dragover', (e) => { e.preventDefault(); zone.classList.add('drag-over'); });
-      zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
-      zone.addEventListener('drop', (e) => {
-        e.preventDefault();
-        zone.classList.remove('drag-over');
-        const tok = document.getElementById(e.dataTransfer.getData('text/plain')) || selectedToken;
-        if (!tok || tok.dataset.group !== zone.dataset.zoneGroup) return;
-        zone.querySelector('.drop-zone-items').appendChild(tok);
-        tok.classList.remove('selected', 'correct', 'wrong');
-        selectedToken = null;
-      });
-    });
+    const SAMA_LAMA = ['SAMA (قصير المفعول)', 'LAMA (طويل المفعول)'];
+    const respDrugs = [
+      ['الإبراتروبيوم', 0], ['التيوتروبيوم', 1], ['الغليكوبيرولات', 1], ['الأكليدينيوم', 1], ['الأوميكليدينيوم', 1]
+    ];
 
-    function checkSortGame(group, expectedTotal, taskId) {
-      const tokens = document.querySelectorAll(`.drag-token[data-group="${group}"]`);
-      let placed = 0, correctCount = 0;
-      tokens.forEach(tok => {
-        tok.classList.remove('correct', 'wrong');
-        const z = tok.closest('.drop-zone');
-        if (z) {
-          placed++;
-          if (z.dataset.zone === tok.dataset.target) { tok.classList.add('correct'); correctCount++; }
-          else { tok.classList.add('wrong'); }
-        }
-      });
-      const fb = document.getElementById(`fb-${group}`);
-      fb.className = 'feedback-box show';
-      if (placed < expectedTotal) {
-        fb.classList.add('error');
-        fb.textContent = `يرجى تصنيف جميع البطاقات أولاً (${placed}/${expectedTotal}).`;
-      } else if (correctCount === expectedTotal) {
-        fb.classList.add('success');
-        fb.textContent = `ممتاز! جميع البطاقات (${correctCount}/${expectedTotal}) في فروعها الصحيحة.`;
-        awardTask(taskId, 15);
-      } else {
-        fb.classList.add('error');
-        fb.textContent = `النتيجة: ${correctCount} من ${expectedTotal} صحيح. انقل البطاقات الحمراء للخانة المناسبة.`;
-      }
-    }
+    const CASE_DRUGS = [
+      'بنزتروبين أو تري هيكسيفينيديل',
+      'أوكسيبوتينين (Oxybutynin)',
+      'السكوبولامين (Scopolamine)',
+      'كليدينيوم بروميد + كلورديازيبوكسيد (ليبراكس)'
+    ];
+    const MATCH_HINT = 'هذه المطابقة غير صحيحة، حاول مجدداً.';
 
-    function resetSortGame(group, poolId) {
-      const pool = document.getElementById(poolId);
-      document.querySelectorAll(`.drag-token[data-group="${group}"]`).forEach(tok => {
-        tok.classList.remove('selected', 'correct', 'wrong');
-        pool.appendChild(tok);
-      });
-      document.getElementById(`fb-${group}`).className = 'feedback-box';
-    }
+    const PHASES = ['الطور الأول (التنبيه البدئي)', 'الطور الثاني (الشلل والحصار)'];
+    const nicEffects = [
+      ['ارتفاع ضغط الدم وزيادة النبض', 0], ['هبوط ضغط الدم', 1], ['إطلاق النواقل من لب الكظر', 0],
+      ['توقف نشاط السبيل الهضمي والمثانة', 1], ['زيادة الحركات الحوية والإفرازات', 0]
+    ];
 
-    // Quiz & True/False
-    function answerQuiz(btn, isCorrect, quizId, taskId, msg) {
-      const box = btn.closest('.quiz-options, .tf-row');
-      box.querySelectorAll('.quiz-opt').forEach(b => b.classList.remove('correct', 'wrong'));
-      const fb = document.getElementById(`fb-${quizId}`);
-      fb.className = 'feedback-box show';
-      if (isCorrect) {
-        btn.classList.add('correct');
-        fb.classList.add('success');
-        fb.textContent = msg;
-        awardTask(taskId, 10);
-      } else {
-        btn.classList.add('wrong');
-        fb.classList.add('error');
-        fb.textContent = msg;
-      }
-    }
+    const ORGAN_HINT = 'حاول مرة أخرى بناءً على آلية الأتروبين في هذا العضو.';
+    const PH = ['Phase I (إزالة الاستقطاب المستمرة)', 'Phase II (شلل رخو ومقاومة الاستقطاب)'];
+    const PH_HINT = 'تحقق من الترتيب: التحزم في Phase I والشلل الرخو في Phase II.';
 
-    // Flashcards
-    function flipCard(stage, taskId) {
-      stage.classList.toggle('flipped');
-      awardTask(taskId, 5);
-    }
-
-    // Body Map
-    const organsData = {
-      eye: {
-        title: '1. العين (M3)',
-        q: 'ما التأثير المباشر للأتروبين على العين وما التحذير المرتبط به؟',
-        opts: [
-          { text: 'توسع الحدقة + شلل المطابقة + خطر ارتفاع ضغط العين بالزرق مغلق الزاوية', ok: true },
-          { text: 'تقبض الحدقة + زيادة مطابقة الرؤية القريبة', ok: false },
-          { text: 'جفاف القرنية فقط دون التأثير على الحدقة', ok: false }
-        ],
-        exp: 'صحيح! يحصر M3 فيسبب Mydriasis و Cycloplegia وفقدان منعكس الضوء، ويُمنع في الزرق مغلق الزاوية.'
+    const GAMES = [
+      // ---------------- SECTION 1 ----------------
+      {
+        id: 'g1', sec: 1, icon: 'fa-diagram-project', accent: 'purple', points: 15,
+        title: 'لعبة التصنيف الشجري للمعاكسات الكولينية',
+        intro: 'صنّف كل دواء ضمن الفرع الشجري الصحيح:',
+        items: treeDrugs.map(d => Q('صنّف «' + d[0] + '» ضمن الفرع الشجري الصحيح:', BR, d[1],
+          'تصنيف صحيح! «' + d[0] + '» ينتمي إلى: ' + BR[d[1]] + '.',
+          { fix: true, hint: 'تصنيف خاطئ لـ (' + d[0] + ')؛ راجع الفرع الشجري وحاول مجدداً.' }))
       },
-      glands: {
-        title: '2. الغدد خارج الإفراز (M3)',
-        q: 'كيف يؤثر الأتروبين على الغدد اللعابية والعرقية والدمعية؟',
-        opts: [
-          { text: 'يزيد إفراز اللعاب والعرق بشكل غزير', ok: false },
-          { text: 'يثبط الإفراز فيسبب جفاف الفم ونقص العرق والدموع', ok: true },
-          { text: 'يؤثر على الغدد الدمعية فقط', ok: false }
-        ],
-        exp: 'صحيح! الغدد اللعابية شديدة الحساسية للأتروبين، مما يسبب جفاف الفم ونقص العرق والدمع.'
+      {
+        id: 'g2', sec: 1, group: 'a', icon: 'fa-circle-question', accent: 'cyan', points: 10,
+        title: 'سؤال الفهم الفسيولوجي',
+        items: [
+          Q('ما النتيجة الفسيولوجية المباشرة لإعطاء حاصرات المستقبلات الموسكارينية الانتقائية سريرياً؟',
+            ['تعطيل التعصيب الودي ونظير الودي معاً.',
+             'تعطيل التعصيب الودي وبقاء نظير الودي دون معاكسة.',
+             'تعطيل تأثيرات التعصيب نظير الودي وبقاء التعصيب الودي دون معاكسة.',
+             'حصر المستقبلات النيكوتينية في اللوحة الحركية.'], 2,
+            'أحسنت! تُعطّل تأثيرات التعصيب نظير الودي وتُترك تأثيرات التعصيب الودي دون معاكسة.',
+            { hints: ['خطأ: الحاصرات الموسكارينية لا تعطل التعصيب الودي.', 'خطأ: يحدث العكس بتعطيل نظير الودي.', null, 'خطأ: هذا عمل حاصرات الوصل العصبي العضلي.'] })
+        ]
       },
-      resp: {
-        title: '3. الجهاز التنفسي',
-        q: 'ما أثر الأتروبين على القصبات والإفرازات التنفسية؟',
-        opts: [
-          { text: 'تضيق قصبي وزيادة الإفرازات', ok: false },
-          { text: 'توسع قصبي وتقليل الإفرازات التنفسية', ok: true },
-          { text: 'لا تأثير له على العضلات الملساء القصبية', ok: false }
-        ],
-        exp: 'أحسنت! يسبب توسعاً قصبياً وتجفيفاً للإفرازات التنفسية.'
+      {
+        id: 'g3', sec: 1, group: 'a', icon: 'fa-scale-balanced', accent: 'amber', points: 10,
+        title: 'تحدي الصواب والخطأ',
+        items: [
+          TF('«تُعد الحاصرات الانتقائية للمستقبلات النيكوتينية في العقد هي الأكثر فائدة وشيوعاً سريرياً مقارنة بمضادات الموسكارين.»', false,
+            'إجابة صحيحة! مضادات المستقبلات الموسكارينية هي الأكثر فائدة سريرياً.',
+            { hint: 'خطأ! حاصرات العقد نادراً ما تُستخدم سريرياً وتُستعمل غالباً كأدوات بحثية.' })
+        ]
       },
-      heart: {
-        title: '4. القلب والأوعية (M1 / M2)',
-        q: 'ماذا يسبب الأتروبين بجرعة علاجية مرتفعة (1–2 ملغ)؟',
-        opts: [
-          { text: 'زيادة تدريجية في نبض القلب عبر حصر M2 في SA node', ok: true },
-          { text: 'بطء قلب شديد عبر تنبيه العصب المبهم', ok: false },
-          { text: 'توقف انقباض البطينين', ok: false }
-        ],
-        exp: 'صحيح! بالجرعات الأعلى يحل تأثير العصب المبهم بحجب M2 في العقدة الجيبية الأذينية.'
+
+      // ---------------- SECTION 2 ----------------
+      {
+        id: 'g4', sec: 2, group: 'a', icon: 'fa-clone', accent: 'purple', points: 5,
+        title: 'بطاقة استذكار: الأتروبين',
+        items: [
+          F('الأتروبين (Atropine): ما منشأه الطبيعي، طبيعته الكيميائية، نفوذيته للـ BBB، وعمره النصفي؟',
+            'قلويد طبيعي من أوراق <strong>اللفاح (Atropa belladonna)</strong>. أمين ثالثي غير قطبي يعبر الـ BBB ليُحدث تأثيرات مركزية ومحيطية. عمره النصفي نحو <strong>4 ساعات</strong> (ويمتد موضعياً في العين لـ 7–14 يوماً).')
+        ]
       },
-      gi: {
-        title: '5. الجهاز الهضمي',
-        q: 'ما حقيقة تأثير الأتروبين على حركية المعدة وحمض HCl؟',
-        opts: [
-          { text: 'يثبط الحركية ويشفي القرحة بإيقاف HCl كلياً', ok: false },
-          { text: 'ينقص الحركية والتشنج دون تأثير ملحوظ على إنتاج HCl', ok: true },
-          { text: 'يزيد الحركات الحوية للأمعاء', ok: false }
-        ],
-        exp: 'ممتاز! هو مضاد تشنج يقلل الحركية لكنه لا يؤثر بدرجة ملحوظة على إفراز HCl.'
+      {
+        id: 'g5', sec: 2, group: 'a', icon: 'fa-triangle-exclamation', accent: 'rose', points: 10,
+        title: 'التداخل الدوائي والسيناريو السريري',
+        items: [
+          Q('مريض يتناول مضادات اكتئاب ثلاثية الحلقات (TCA) أُضيف له دواء مضاد للتشنج، فعانى فجأة جفاف فم شديد، احتباس بول، وتسرع قلب. ما التفسير؟',
+            ['زيادة تحرر الأستيل كولين في الغدد اللعابية.',
+             'تآزر الفعالية المضادة للمسكارين بين مضادات الاكتئاب ومضاد التشنج.',
+             'حصر المستقبلات النيكوتينية في اللوحة الحركية.'], 1,
+            'ممتاز! تمتلك TCA وبعض مضادات الهيستامين فعالية مضادة للمسكارين تتآزر مع مضاد التشنج.',
+            { hints: ['خطأ: لا تحفز TCA إفراز الأستيل كولين بل تعاكسه.', null, 'خطأ: لا يتعلق ذلك باللوحة الحركية.'] })
+        ]
+      },
+
+      // ---------------- SECTION 3 ----------------
+      {
+        id: 'g6', sec: 3, icon: 'fa-child-reaching', accent: 'cyan', points: 15,
+        title: 'مخطط الجسم التفاعلي: تأثيرات الأتروبين بحسب الأعضاء',
+        intro: 'أجب عن أسئلة الأعضاء الخمسة: العين • الغدد • القصبات • القلب • المعدة.',
+        items: [
+          Q('ما التأثير المباشر للأتروبين على العين وما التحذير المرتبط به؟',
+            ['توسع الحدقة + شلل المطابقة + خطر ارتفاع ضغط العين بالزرق مغلق الزاوية',
+             'تقبض الحدقة + زيادة مطابقة الرؤية القريبة',
+             'جفاف القرنية فقط دون التأثير على الحدقة'], 0,
+            'صحيح! يحصر M3 فيسبب Mydriasis و Cycloplegia وفقدان منعكس الضوء، ويُمنع في الزرق مغلق الزاوية.',
+            { ctx: '<strong>1. العين (M3)</strong>', hint: ORGAN_HINT }),
+          Q('كيف يؤثر الأتروبين على الغدد اللعابية والعرقية والدمعية؟',
+            ['يزيد إفراز اللعاب والعرق بشكل غزير',
+             'يثبط الإفراز فيسبب جفاف الفم ونقص العرق والدموع',
+             'يؤثر على الغدد الدمعية فقط'], 1,
+            'صحيح! الغدد اللعابية شديدة الحساسية للأتروبين، مما يسبب جفاف الفم ونقص العرق والدمع.',
+            { ctx: '<strong>2. الغدد خارج الإفراز (M3)</strong>', hint: ORGAN_HINT }),
+          Q('ما أثر الأتروبين على القصبات والإفرازات التنفسية؟',
+            ['تضيق قصبي وزيادة الإفرازات',
+             'توسع قصبي وتقليل الإفرازات التنفسية',
+             'لا تأثير له على العضلات الملساء القصبية'], 1,
+            'أحسنت! يسبب توسعاً قصبياً وتجفيفاً للإفرازات التنفسية.',
+            { ctx: '<strong>3. الجهاز التنفسي</strong>', hint: ORGAN_HINT }),
+          Q('ماذا يسبب الأتروبين بجرعة علاجية مرتفعة (1–2 ملغ)؟',
+            ['زيادة تدريجية في نبض القلب عبر حصر M2 في SA node',
+             'بطء قلب شديد عبر تنبيه العصب المبهم',
+             'توقف انقباض البطينين'], 0,
+            'صحيح! بالجرعات الأعلى يحل تأثير العصب المبهم بحجب M2 في العقدة الجيبية الأذينية.',
+            { ctx: '<strong>4. القلب والأوعية (M1 / M2)</strong>', hint: ORGAN_HINT }),
+          Q('ما حقيقة تأثير الأتروبين على حركية المعدة وحمض HCl؟',
+            ['يثبط الحركية ويشفي القرحة بإيقاف HCl كلياً',
+             'ينقص الحركية والتشنج دون تأثير ملحوظ على إنتاج HCl',
+             'يزيد الحركات الحوية للأمعاء'], 1,
+            'ممتاز! هو مضاد تشنج يقلل الحركية لكنه لا يؤثر بدرجة ملحوظة على إفراز HCl.',
+            { ctx: '<strong>5. الجهاز الهضمي</strong>', hint: ORGAN_HINT })
+        ]
+      },
+      {
+        id: 'g7', sec: 3, icon: 'fa-heart-pulse', accent: 'purple', points: 10,
+        title: 'شريط الجرعة القلبية (Cardiac Dose-Response)',
+        intro: 'اكتشف التناقض الجرعي للأتروبين على القلب: بطء بالجرعات المنخفضة وتسرع بالجرعات العالية.',
+        items: [
+          F('ما الآلية والتأثير القلبي للأتروبين بالجرعة المنخفضة (0.2–0.5 mg)؟',
+            'يحصر المستقبل <strong>M₁ قبل المشبكي</strong> ← زيادة تحرر ACh ← <strong>بطء قلب طفيف</strong>.' +
+            FX('0.35 mg (Low) ──▶ Blocks presynaptic M₁ ──▶ ↑ ACh ──▶ Mild Bradycardia')),
+          F('ماذا يحدث عند الجرعات المتوسطة (الانتقالية) للأتروبين بين الجرعة المنخفضة والعالية؟',
+            'تتحول الغلبة من حصر <strong>M₁</strong> إلى حصر <strong>M₂ في العقدة الجيبية الأذينية SA node</strong>.' +
+            FX('Transition ──▶ Shifting from M₁ to SA node M₂ blockade')),
+          F('ما الآلية والتأثير القلبي للأتروبين بالجرعة العالية (1.0–2.0 mg)؟',
+            'يحصر <strong>M₂ في العقدة SA</strong> (حلّ لتأثير المبهم Vagolytic) ← <strong>تسرع القلب</strong>.' +
+            FX('High ──▶ Blocks SA node M₂ (Vagolytic) ──▶ Tachycardia')),
+          Q('سؤال التحقق: أي مستقبل يُحصر عند الجرعة العالية (1–2 ملغ) ليُحدث تسرع القلب؟',
+            ['مستقبل M₁ قبل المشبكي', 'مستقبل M₂ في العقدة SA'], 1,
+            'صحيح! حصر M2 في العقدة الجيبية الأذينية SA node يحل تأثير المبهم ويسرع القلب.',
+            { fix: true, hint: 'خطأ: M1 قبل المشبكية مسؤولة عن البطء الطفيف بالجرعات المنخفضة.' })
+        ]
+      },
+      {
+        id: 'g8', sec: 3, group: 'b', icon: 'fa-bomb', accent: 'amber', points: 10,
+        title: 'فخ صيدلاني (1)',
+        items: [
+          TF('«يُستخدم الأتروبين بنجاح كعلاج نوعي في التخفيف من حموضة المعدة وشفاء القرحة الهضمية.»', false,
+            'صحيح! لا يتأثر إفراز HCl بشكل ملحوظ ولذلك لا يُعد فعالاً في علاج القرحات.',
+            { hint: 'انتبه! حركية المعدة تنخفض لكن إنتاج HCl لا يتأثر بدرجة ملحوظة.' })
+        ]
+      },
+      {
+        id: 'g9', sec: 3, group: 'b', icon: 'fa-eye-slash', accent: 'rose', points: 10,
+        title: 'فخ صيدلاني (2)',
+        items: [
+          TF('«يُمنع استخدام الأتروبين لدى مرضى الزرق مغلق الزاوية لتفادي ارتفاع ضغط العين الخطير.»', true,
+            'أصبت! يرفع الأتروبين ضغط العين ارتفاعاً خطيراً لدى مرضى الزرق مغلق الزاوية.',
+            { hint: 'احذر! الأتروبين خطير جداً في الزرق مغلق الزاوية.' })
+        ]
+      },
+
+      // ---------------- SECTION 4 ----------------
+      {
+        id: 'g10', sec: 4, icon: 'fa-stopwatch', accent: 'emerald', points: 10,
+        title: 'لعبة «سباق الزمن العيني»',
+        intro: 'رتّب موسعات الحدقة تنازلياً من الأطول إلى الأقصر مدة تأثير:',
+        items: [
+          Q('أي دواء يشغل المركز 1 (7–14 يوماً)؟', EYE, 1,
+            'صحيح! الأتروبين (7–14 يوماً) هو الأطول مفعولاً.', { fix: true, hint: EYE_HINT }),
+          Q('أي دواء يشغل المركز 2 (24 ساعة)؟', EYE, 2,
+            'صحيح! السيكلوبنتولات (24 ساعة) في المركز الثاني.', { fix: true, hint: EYE_HINT }),
+          Q('أي دواء يشغل المركز 3 (6 ساعات)؟', EYE, 0,
+            'ترتيب صحيح! الأتروبين (7–14 يوماً) > السيكلوبنتولات (24 ساعة) > التروبيكاميد (6 ساعات).', { fix: true, hint: EYE_HINT })
+        ]
+      },
+      {
+        id: 'g11', sec: 4, icon: 'fa-lungs', accent: 'cyan', points: 15,
+        title: 'مصفوفة الأدوية التنفسية (SAMA vs LAMA)',
+        intro: 'صنّف كل دواء تنفسي إلى فئته الصحيحة:',
+        items: respDrugs.map(d => Q('إلى أي فئة ينتمي «' + d[0] + '»؟', SAMA_LAMA, d[1],
+          'صحيح! «' + d[0] + '» ينتمي إلى: ' + SAMA_LAMA[d[1]] + '.',
+          { fix: true, hint: 'الفرز غير صحيح؛ راجع الفئة وحاول مجدداً.' }))
+      },
+      {
+        id: 'g12', sec: 4, icon: 'fa-flask', accent: 'cyan', points: 10,
+        title: 'تعليل حركي: الموسعات المستنشقة',
+        items: [
+          Q('تعليل حركي: لماذا لا تسبب هذه الموسعات المستنشقة آثاراً عصبية مركزية؟',
+            ['لأنها مركبات أمونيوم رباعية مشحونة موجباً لا تعبر الدوران ولا الحاجز الدموي الدماغي.',
+             'لأنها لا ترتبط بمستقبلات M3 إطلاقاً.'], 0,
+            'صحيح! لكونها مركبات أمونيوم رباعية موجبة الشحنة لا تدخل الدوران الجهازي ولا تعبر الـ BBB.',
+            { hints: [null, 'خطأ: بل تحصر مستقبلات M3 القصبية.'] })
+        ]
+      },
+      {
+        id: 'g13', sec: 4, icon: 'fa-user-doctor', accent: 'amber', points: 15,
+        title: 'طبيب العيادة — طابق الحالة بالدواء المناسب',
+        items: [
+          Q('اختر الدواء المناسب للحالة: «غثيان وقيء ودوار الحركة في البحر»', CASE_DRUGS, 2,
+            'مطابقة موفقة! (1/4) السكوبولامين لدوار الحركة.', { hint: MATCH_HINT }),
+          Q('اختر الدواء المناسب للحالة: «تشنج القولون العصبي المصحوب بالقلق»', CASE_DRUGS, 3,
+            'مطابقة موفقة! (2/4) ليبراكس لتشنج القولون العصبي المصحوب بالقلق.', { hint: MATCH_HINT }),
+          Q('اختر الدواء المناسب للحالة: «أعراض خارج هرمية ناجمة عن مضادات الذهان»', CASE_DRUGS, 0,
+            'مطابقة موفقة! (3/4) بنزتروبين أو تري هيكسيفينيديل للأعراض خارج الهرمية.', { hint: MATCH_HINT }),
+          Q('اختر الدواء المناسب للحالة: «سلس بول تلحي ومثانة عصبية»', CASE_DRUGS, 1,
+            'أحسنت! تمت مطابقة جميع الحالات السريرية بدقة.', { hint: MATCH_HINT })
+        ]
+      },
+
+      // ---------------- SECTION 5 ----------------
+      {
+        id: 'g14', sec: 5, icon: 'fa-sliders', accent: 'cyan', points: 15,
+        title: 'لعبة الميزان ثنائي الطور للنيكوتين',
+        intro: 'صنّف كل تأثير في طوره الصحيح:',
+        items: nicEffects.map(d => Q('في أي طور من تأثير النيكوتين يحدث: «' + d[0] + '»؟', PHASES, d[1],
+          'صحيح! «' + d[0] + '» يحدث في: ' + PHASES[d[1]] + '.',
+          { fix: true, hint: 'الميزان غير متوازن؛ راجع طور تأثير النيكوتين وحاول مجدداً.' }))
+      },
+      {
+        id: 'g15', sec: 5, icon: 'fa-smoking-ban', accent: 'purple', points: 10,
+        title: 'الاستخدام الصيدلاني للنيكوتين',
+        items: [
+          Q('ما هو الاستخدام الصيدلاني الرئيسي للنيكوتين في الممارسة السريرية؟',
+            ['علاج ارتفاع ضغط الدم الإسعافي.',
+             'لصاقات وعلكة ومستحلبات فموية للمساعدة على الإقلاع عن التدخين.',
+             'التخدير العام في العمليات الجراحية.'], 1,
+            'صحيح! علكة، لصاقات، ومستحلبات فموية للمساعدة على الإقلاع عن التدخين.',
+            { hints: ['خطأ: لا يُستخدم لارتفاع الضغط.', null, 'خطأ: هذا دور حاصرات الوصل العصبي العضلي.'] })
+        ]
+      },
+
+      // ---------------- SECTION 6 ----------------
+      {
+        id: 'g16', sec: 6, icon: 'fa-wave-square', accent: 'amber', points: 10,
+        title: 'أطوار السكسينيل كولين (Phase I vs Phase II)',
+        intro: 'استعرض المرحلتين ثم وسم كل طور بالاسم الصحيح.',
+        items: [
+          F('المرحلة (1) للسكسينيل كولين: ما الذي يحدث على الصفيحة المحركة؟',
+            'فتح قنوات Na⁺ وزوال استقطاب مستمر ◀ تحزم عضلي عابر (Fasciculations).' +
+            FX('Succinylcholine ──▶ Open Na⁺ channels ──▶ Persistent depolarization ──▶ Fasciculations (Phase I)')),
+          F('المرحلة (2) للسكسينيل كولين: ما الذي يحدث على الصفيحة المحركة؟',
+            'انغلاق قنوات Na⁺ وإعادة استقطاب تدريجية ◀ شلل رخو ومقاومة الاستقطاب.' +
+            FX('Continuous binding ──▶ Na⁺ channels close/block ──▶ Gradual repolarization ──▶ Flaccid Paralysis (Phase II)')),
+          Q('وسم المرحلة (1):', PH, 0,
+            'أحسنت! Phase I تحزم عضلي عابر.',
+            { fix: true, hint: PH_HINT,
+              ctx: '<strong>المرحلة (1):</strong> فتح قنوات Na⁺ وزوال استقطاب مستمر ◀ تحزم عضلي عابر (Fasciculations)' }),
+          Q('وسم المرحلة (2):', PH, 1,
+            'أحسنت! Phase II شلل رخو ومقاومة زوال الاستقطاب.',
+            { fix: true, hint: PH_HINT,
+              ctx: '<strong>المرحلة (2):</strong> انغلاق قنوات Na⁺ وإعادة استقطاب تدريجية ◀ شلل رخو ومقاومة الاستقطاب' })
+        ]
+      },
+      {
+        id: 'g17', sec: 6, group: 'a', icon: 'fa-lightbulb', accent: 'purple', points: 5,
+        title: 'بطاقة الفارق الجوهري',
+        items: [
+          F('لماذا يدوم تأثير السكسينيل كولين أطول من الأستيل كولين؟',
+            'الأستيل كولين يتحلل فورياً بـ <strong>AChE</strong> في الشق المشبكي، أما السكسينيل كولين فلا يُستقلب موضعياً في الوصل، ويشترط لإنهاء مفعوله انتقاله إلى البلازما ليتحلل بـ <strong>الكولين إستراز البلازمي</strong>.')
+        ]
+      },
+      {
+        id: 'g18', sec: 6, group: 'a', icon: 'fa-clock-rotate-left', accent: 'emerald', points: 10,
+        title: 'التوقيت الحركي والاستطباب',
+        items: [
+          Q('ما المدى الزمني النموذجي لفعالية السكسينيل كولين وما استطبابه الرئيسي؟',
+            ['1 – 2 ساعة، الجراحات البطنية الطويلة.',
+             '2 – 8 دقائق، التنبيب الرغامي السريع والإجراءات القصيرة مثل ECT.',
+             '24 ساعة، التسكين المزمن.'], 1,
+            'دقيق! يدوم 2–8 دقائق فقط للتنبيب الرغامي السريع والإجراءات القصيرة مثل ECT.',
+            { hints: ['خطأ: تأثيره فائق القصر.', null, 'خطأ: ليس مسكناً.'] })
+        ]
+      },
+
+      // ---------------- SECTION 7 ----------------
+      {
+        id: 'g19', sec: 7, icon: 'fa-flask-vial', accent: 'emerald', points: 15,
+        title: 'محاكي المختبر الافتراضي للكيموغراف',
+        intro: 'إضافة ACh بعد الأتروبين (دون غسل): الحالة الأساسية: قلب الضفدع ينبض بانتظام بعد تطبيق الأتروبين.',
+        items: [
+          Q('ما الاستنتاج العلمي الدقيق لهذه النتيجة؟',
+            ['الحصر التنافسي للمستقبلات الموسكارينية بالأتروبين تام وناجح.',
+             'تخرب القلب وتوقفه عن الاستجابة نهائياً.'], 0,
+            'ممتاز! بقاء النبض ثابتاً يؤكد أن المستقبلات الموسكارينية محجوبة تماماً بالاستخدام المسبق للأتروبين.',
+            { ctx: '<strong>تجربة 1: حصر تام</strong><br>النتيجة: لم يحدث أي تغير في معدل ضربات القلب بعد إضافة الجرعة المؤثرة من الأستيل كولين.',
+              hints: [null, 'خطأ: ثبات النبض يدل على نجاح الحصر.'] }),
+          Q('ما التفسير العلمي والإجراء المخبري التصحيحي المطلوب فوراً؟',
+            ['غسل القلب بمحلول رينجر وإيقاف التجربة.',
+             'جرعة الأتروبين غير كافية؛ يجب إعادة الخطوات مع زيادة جرعة الأتروبين.',
+             'إضافة البيلوكاربين بدلاً من الأستيل كولين.'], 1,
+            'صحيح! جرعة الأتروبين غير كافية، ويجب إعادة الخطوات مع زيادة جرعة الأتروبين لضمان الإشغال التام للمستقبلات.',
+            { ctx: '<strong>تجربة 2: تباطؤ مفاجئ</strong><br>النتيجة: حدث نقص واضح ومفاجئ في عدد ضربات القلب بعد إضافة الأستيل كولين!',
+              hints: ['خطأ: غسل القلب يزيل الأتروبين.', null, 'خطأ: البيلوكاربين سيزيد التباطؤ.'] })
+        ]
+      },
+      {
+        id: 'g20', sec: 7, icon: 'fa-clipboard-check', accent: 'rose', points: 10,
+        title: 'تحدي البروتوكول المخبري',
+        items: [
+          TF('«عند اختبار التأثير الحاصر للأتروبين في الخطوة (8) على قلب الضفدع، يجب غسل القلب بمحلول رينجر جيداً قبل وضع الجرعة المؤثرة من الأستيل كولين.»', false,
+            'أحسنت! ينص البروتوكول على وضع الأستيل كولين دون غسل لاختبار فعالية الحصر.',
+            { hint: 'خطأ! غسل القلب يزيل الأتروبين الحاجب.' })
+        ]
       }
+    ];
+
+    const TOTAL_GAMES = GAMES.length;
+    const AR_LET = ['أ', 'ب', 'ج', 'د', 'هـ'];
+    const TYPE_META = {
+      quiz:  { cls: 'type-quiz',  icon: 'fa-list-check',   label: 'QUIZ • اختيار من متعدد' },
+      tf:    { cls: 'type-tf',    icon: 'fa-check-double', label: 'صح أو خطأ' },
+      flash: { cls: 'type-flash', icon: 'fa-layer-group',  label: 'FlashCard • بطاقة استذكار' }
     };
+    const DEFAULT_HINT = 'إجابة غير صحيحة؛ راجع المعلومة وحاول مجدداً.';
 
-    const solvedOrgans = new Set();
-    function selectOrgan(key) {
-      document.querySelectorAll('.organ-hotspot').forEach(el => el.classList.remove('active'));
-      document.getElementById(`hs-${key}`).classList.add('active');
-      const d = organsData[key];
-      document.getElementById('organQuestionPanel').innerHTML = `
-        <h4 style="margin-bottom: 6px; color: var(--accent-cyan);">${d.title}</h4>
-        <p style="font-weight: 600; font-size: 0.92rem; margin: 0 0 10px 0;">${d.q}</p>
-        <div class="quiz-options">
-          ${d.opts.map(o => `<button class="quiz-opt" onclick="checkOrganAnswer('${key}', ${o.ok}, this)">${o.text}</button>`).join('')}
-        </div>
-        <div class="feedback-box" id="fb-organ"></div>`;
+    // =========================================================
+    // 3. HUD
+    // =========================================================
+    function renderHUD() {
+      const done = Object.keys(state.completed).length;
+      const pct = Math.round((done / TOTAL_GAMES) * 100);
+      document.getElementById('scoreDisplay').textContent = state.score;
+      document.getElementById('tasksDisplay').textContent = done + ' / ' + TOTAL_GAMES;
+      document.getElementById('globalProgress').style.width = pct + '%';
+      document.getElementById('summaryScore').textContent = state.score;
+      document.getElementById('summaryPct').textContent = pct + '%';
+      document.getElementById('summaryText').textContent = done >= TOTAL_GAMES
+        ? 'تهانينا! أتممت جميع الاختبارات والبطاقات في الجلسة السادسة بنجاح تام.'
+        : 'أكمل جميع المهام التفاعلية أعلاه لتقييم إتقانك للجلسة السادسة.';
+      GAMES.forEach(updateBadge);
     }
 
-    function checkOrganAnswer(key, isOk, btn) {
-      const fb = document.getElementById('fb-organ');
-      fb.className = 'feedback-box show';
-      if (isOk) {
-        btn.classList.add('correct');
-        fb.classList.add('success');
-        fb.textContent = organsData[key].exp;
-        solvedOrgans.add(key);
-        document.getElementById(`hs-${key}`).classList.add('solved');
-        document.getElementById('organSolvedCount').textContent = solvedOrgans.size;
-        if (solvedOrgans.size === 5) awardTask('task-bodymap', 15);
+    function updateBadge(g) {
+      const b = document.getElementById('badge-' + g.id);
+      if (!b) return;
+      const r = rt[g.id];
+      if (state.completed[g.id]) {
+        b.classList.add('completed');
+        b.innerHTML = '<i class="fa-solid fa-check"></i> مكتمل';
       } else {
-        btn.classList.add('wrong');
-        fb.classList.add('error');
-        fb.textContent = 'حاول مرة أخرى بناءً على آلية الأتروبين في هذا العضو.';
-      }
-    }
-    selectOrgan('eye');
-
-    // Cardiac Dose Slider + ECG
-    let currentBPM = 62, ecgPhase = 0;
-    function updateCardiacSlider(val) {
-      const dose = parseFloat(val);
-      document.getElementById('doseValLabel').textContent = `${dose.toFixed(2)} mg`;
-      const fBox = document.getElementById('cardiacFormulaBox');
-      const badge = document.getElementById('bpmBadge');
-      if (dose <= 0.55) {
-        currentBPM = Math.round(72 - ((0.55 - Math.abs(dose - 0.35)) * 22));
-        badge.style.color = 'var(--accent-cyan)';
-        fBox.textContent = `${dose.toFixed(2)} mg (Low) ──▶ Blocks presynaptic M₁ ──▶ ↑ ACh ──▶ Mild Bradycardia`;
-      } else if (dose < 1.0) {
-        currentBPM = Math.round(72 + (dose - 0.55) * 40);
-        badge.style.color = 'var(--accent-amber)';
-        fBox.textContent = `${dose.toFixed(2)} mg (Transition) ──▶ Shifting from M₁ to SA node M₂ blockade`;
-      } else {
-        currentBPM = Math.round(90 + (dose - 1.0) * 42);
-        badge.style.color = 'var(--accent-rose)';
-        fBox.textContent = `${dose.toFixed(2)} mg (High) ──▶ Blocks SA node M₂ (Vagolytic) ──▶ Tachycardia`;
-      }
-      document.getElementById('bpmValLabel').textContent = `${currentBPM} BPM`;
-    }
-
-    function drawECGFrame() {
-      const c = document.getElementById('ecgCanvas');
-      if (c) {
-        const ctx = c.getContext('2d'), w = c.width, h = c.height;
-        ctx.clearRect(0, 0, w, h);
-        ctx.strokeStyle = 'rgba(203, 213, 225, 0.5)';
-        ctx.lineWidth = 1;
-        for (let x = 0; x < w; x += 25) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke(); }
-        for (let y = 0; y < h; y += 25) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke(); }
-        const cycleLen = Math.max(45, Math.round(9500 / currentBPM));
-        ecgPhase = (ecgPhase + 2.2) % cycleLen;
-        ctx.strokeStyle = currentBPM > 88 ? '#F43F5E' : (currentBPM < 68 ? '#06B6D4' : '#8B5CF6');
-        ctx.lineWidth = 2.5;
-        ctx.beginPath();
-        const baseY = h * 0.62;
-        for (let x = 0; x < w; x++) {
-          const t = ((x + ecgPhase) % cycleLen) / cycleLen;
-          let y = baseY;
-          if (t > 0.12 && t < 0.20) y -= 9 * Math.sin(((t - 0.12) / 0.08) * Math.PI);
-          else if (t >= 0.26 && t < 0.29) y += 10;
-          else if (t >= 0.29 && t < 0.34) y -= 44 * Math.sin(((t - 0.29) / 0.05) * Math.PI);
-          else if (t >= 0.34 && t < 0.38) y += 14;
-          else if (t >= 0.50 && t < 0.64) y -= 14 * Math.sin(((t - 0.50) / 0.14) * Math.PI);
-          if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
-        }
-        ctx.stroke();
-      }
-      requestAnimationFrame(drawECGFrame);
-    }
-    requestAnimationFrame(drawECGFrame);
-
-    // Eye Ranking
-    function checkEyeRanking() {
-      const r1 = document.getElementById('eyeRank1').value;
-      const r2 = document.getElementById('eyeRank2').value;
-      const r3 = document.getElementById('eyeRank3').value;
-      const fb = document.getElementById('fb-eyeRank');
-      fb.className = 'feedback-box show';
-      if (!r1 || !r2 || !r3) { fb.classList.add('error'); fb.textContent = 'اختر الأدوية الثلاثة أولاً.'; return; }
-      if (r1 === 'atropine' && r2 === 'cyclopentolate' && r3 === 'tropicamide') {
-        fb.classList.add('success');
-        fb.textContent = 'ترتيب صحيح! الأتروبين (7–14 يوماً) > السيكلوبنتولات (24 ساعة) > التروبيكاميد (6 ساعات).';
-        document.getElementById('eyeBarChart').style.display = 'flex';
-        awardTask('task-eye', 10);
-      } else {
-        fb.classList.add('error');
-        fb.textContent = 'الترتيب غير دقيق. تذكر أن الأتروبين يدوم لأيام، والتروبيكاميد هو الأقصر (6 ساعات).';
+        b.classList.remove('completed');
+        b.textContent = (r ? r.done.size : 0) + ' / ' + g.items.length;
       }
     }
 
-    // Clinical Case Match
-    let selCaseBtn = null, selDrugBtn = null, matchedCount = 0;
-    function selectMatch(side, btn) {
-      if (btn.classList.contains('matched')) return;
-      if (side === 'case') {
-        document.querySelectorAll('#caseCol .match-btn').forEach(b => b.classList.remove('selected'));
-        selCaseBtn = btn;
-      } else {
-        document.querySelectorAll('#drugCol .match-btn').forEach(b => b.classList.remove('selected'));
-        selDrugBtn = btn;
+    function awardGame(id, points) {
+      if (!state.completed[id]) {
+        state.completed[id] = true;
+        state.score += points;
       }
-      btn.classList.add('selected');
-      if (selCaseBtn && selDrugBtn) {
-        const fb = document.getElementById('fb-clinicalMatch');
-        fb.className = 'feedback-box show';
-        if (selCaseBtn.dataset.match === selDrugBtn.dataset.match) {
-          selCaseBtn.classList.remove('selected'); selDrugBtn.classList.remove('selected');
-          selCaseBtn.classList.add('matched'); selDrugBtn.classList.add('matched');
-          matchedCount++;
-          fb.classList.add('success');
-          fb.textContent = matchedCount === 4 ? 'أحسنت! تمت مطابقة جميع الحالات السريرية بدقة.' : `مطابقة موفقة! (${matchedCount}/4)`;
-          if (matchedCount === 4) awardTask('task-match', 15);
-        } else {
-          fb.classList.add('error');
-          fb.textContent = 'هذه المطابقة غير صحيحة، حاول مجدداً.';
-          selCaseBtn.classList.remove('selected'); selDrugBtn.classList.remove('selected');
-        }
-        selCaseBtn = null; selDrugBtn = null;
-      }
+      haptic('ok');
+      saveState();
     }
 
-    // Succinylcholine Simulator
-    function simulateSuccinyl(stage) {
-      const n1 = document.getElementById('pNode1'), n2 = document.getElementById('pNode2'), box = document.getElementById('succinylStatus');
-      n1.classList.remove('active-p1'); n2.classList.remove('active-p2');
-      if (stage === 1) {
-        n1.classList.add('active-p1');
-        box.textContent = 'Succinylcholine ──▶ Open Na⁺ channels ──▶ Persistent depolarization ──▶ Fasciculations (Phase I)';
-      } else {
-        n2.classList.add('active-p2');
-        box.textContent = 'Continuous binding ──▶ Na⁺ channels close/block ──▶ Gradual repolarization ──▶ Flaccid Paralysis (Phase II)';
-      }
-    }
-
-    function checkSuccinylPhases() {
-      const p1 = document.getElementById('selPhase1').value, p2 = document.getElementById('selPhase2').value;
-      const fb = document.getElementById('fb-succinyl');
-      fb.className = 'feedback-box show';
-      if (!p1 || !p2) { fb.classList.add('error'); fb.textContent = 'اختر الوسم لكلتا المرحلتين.'; return; }
-      if (p1 === 'phase1' && p2 === 'phase2') {
-        fb.classList.add('success');
-        fb.textContent = 'أحسنت! Phase I تحزم عضلي عابر، و Phase II شلل رخو ومقاومة زوال الاستقطاب.';
-        awardTask('task-succinyl', 10);
-      } else {
-        fb.classList.add('error');
-        fb.textContent = 'تحقق من الترتيب: التحزم في Phase I والشلل الرخو في Phase II.';
-      }
-    }
-
-    // Frog Heart Kymograph Lab
-    let kymoMode = 'normal', kymoOffset = 0;
-    function drawKymoFrame() {
-      const c = document.getElementById('kymoCanvas');
-      if (c) {
-        const ctx = c.getContext('2d'), w = c.width, h = c.height;
-        ctx.clearRect(0, 0, w, h);
-        ctx.strokeStyle = 'rgba(203, 213, 225, 0.5)';
-        ctx.lineWidth = 1;
-        for (let x = 0; x < w; x += 25) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke(); }
-        for (let y = 0; y < h; y += 25) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke(); }
-        const speed = kymoMode === 'fail' ? 0.9 : 2.1;
-        const freq = kymoMode === 'fail' ? 0.035 : 0.085;
-        const amp = kymoMode === 'fail' ? 22 : 36;
-        kymoOffset += speed;
-        ctx.strokeStyle = kymoMode === 'fail' ? '#F43F5E' : '#10B981';
-        ctx.lineWidth = 2.5;
-        ctx.beginPath();
-        for (let x = 0; x < w; x++) {
-          const wave = Math.sin((x + kymoOffset) * freq);
-          const y = (h * 0.55) - (Math.pow(Math.max(0, wave), 3) * amp) + 8;
-          if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
-        }
-        ctx.stroke();
-      }
-      requestAnimationFrame(drawKymoFrame);
-    }
-    requestAnimationFrame(drawKymoFrame);
-
-    function runKymographTest(mode) {
-      kymoMode = mode;
-      const st = document.getElementById('kymoStatus');
-      const wrap = document.getElementById('kymoQuizWrap');
-      const prompt = document.getElementById('kymoQuizPrompt');
-      const opts = document.getElementById('kymoQuizOpts');
-      document.getElementById('fb-kymo').className = 'feedback-box';
-      wrap.style.display = 'block';
-
-      if (mode === 'success') {
-        st.textContent = 'النتيجة: لم يحدث أي تغير في معدل ضربات القلب بعد إضافة الجرعة المؤثرة من الأستيل كولين.';
-        st.style.color = '#059669';
-        prompt.textContent = 'ما الاستنتاج العلمي الدقيق لهذه النتيجة؟';
-        opts.innerHTML = `
-          <button class="quiz-opt" onclick="checkKymoAnswer(true, this, 'ممتاز! بقاء النبض ثابتاً يؤكد أن المستقبلات الموسكارينية محجوبة تماماً بالأستخدام المسبق للأتروبين.')">الحصر التنافسي للمستقبلات الموسكارينية بالأتروبين تام وناجح.</button>
-          <button class="quiz-opt" onclick="checkKymoAnswer(false, this, 'خطأ: ثبات النبض يدل على نجاح الحصر.')">تخرب القلب وتوقفه عن الاستجابة نهائياً.</button>`;
-      } else {
-        st.textContent = 'النتيجة: حدث نقص واضح ومفاجئ في عدد ضربات القلب بعد إضافة الأستيل كولين!';
-        st.style.color = '#E11D48';
-        prompt.textContent = 'ما التفسير العلمي والإجراء المخبري التصحيحي المطلوب فوراً؟';
-        opts.innerHTML = `
-          <button class="quiz-opt" onclick="checkKymoAnswer(false, this, 'خطأ: غسل القلب يزيل الأتروبين.')">غسل القلب بمحلول رينجر وإيقاف التجربة.</button>
-          <button class="quiz-opt" onclick="checkKymoAnswer(true, this, 'صحيح! جرعة الأتروبين غير كافية، ويجب إعادة الخطوات مع زيادة جرعة الأتروبين لضمان الإشغال التام للمستقبلات.')">جرعة الأتروبين غير كافية؛ يجب إعادة الخطوات مع زيادة جرعة الأتروبين.</button>
-          <button class="quiz-opt" onclick="checkKymoAnswer(false, this, 'خطأ: البيلوكاربين سيزيد التباطؤ.')">إضافة البيلوكاربين بدلاً من الأستيل كولين.</button>`;
-      }
-    }
-
-    function checkKymoAnswer(isOk, btn, msg) {
-      document.querySelectorAll('#kymoQuizOpts .quiz-opt').forEach(b => b.classList.remove('correct', 'wrong'));
-      const fb = document.getElementById('fb-kymo');
-      fb.className = 'feedback-box show';
-      if (isOk) {
-        btn.classList.add('correct'); fb.classList.add('success'); fb.textContent = msg;
-        awardTask('task-kymo', 15);
-      } else {
-        btn.classList.add('wrong'); fb.classList.add('error'); fb.textContent = msg;
-      }
-    }
-
-    // Reset All
     function resetAllProgress() {
-      score = 0; completedTasks.clear(); solvedOrgans.clear(); matchedCount = 0;
-      selCaseBtn = null; selDrugBtn = null;
-      resetSortGame('tree', 'treePool'); resetSortGame('resp', 'respPool'); resetSortGame('nic', 'nicPool');
-      document.querySelectorAll('.quiz-opt').forEach(b => b.classList.remove('correct', 'wrong'));
-      document.querySelectorAll('.feedback-box').forEach(f => f.className = 'feedback-box');
-      document.querySelectorAll('.flashcard-stage').forEach(c => c.classList.remove('flipped'));
-      document.querySelectorAll('.organ-hotspot').forEach(h => h.classList.remove('solved'));
-      document.querySelectorAll('.match-btn').forEach(m => m.classList.remove('selected', 'matched'));
-      document.getElementById('organSolvedCount').textContent = '0';
-      selectOrgan('eye');
-      document.getElementById('eyeRank1').value = ''; document.getElementById('eyeRank2').value = ''; document.getElementById('eyeRank3').value = '';
-      document.getElementById('eyeBarChart').style.display = 'none';
-      document.getElementById('selPhase1').value = ''; document.getElementById('selPhase2').value = '';
-      document.getElementById('pNode1').classList.remove('active-p1'); document.getElementById('pNode2').classList.remove('active-p2');
-      document.getElementById('succinylStatus').textContent = 'اضغط على أزرار المحاكاة أعلاه لمعاينة الصفيحة المحركة';
-      document.getElementById('atropineSlider').value = '0.35'; updateCardiacSlider('0.35');
-      kymoMode = 'normal';
-      document.getElementById('kymoQuizWrap').style.display = 'none';
-      document.getElementById('kymoStatus').style.color = 'var(--text-heading)';
-      document.getElementById('kymoStatus').textContent = 'الحالة: قلب الضفدع ينبض بانتظام بعد تطبيق الأتروبين. اختر إحدى التجربتين أعلاه.';
-      document.getElementById('summaryText').textContent = 'أكمل جميع المهام التفاعلية أعلاه لتقييم إتقانك للجلسة السادسة.';
-      updateHUD();
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      const doReset = () => {
+        try { localStorage.removeItem(STORE_KEY); } catch (e) {}
+        location.reload();
+      };
+      const msg = 'هل تريد إعادة ضبط جميع النقاط والمهام للبدء من جديد؟';
+      if (tg && tg.showConfirm && tg.isVersionAtLeast && tg.isVersionAtLeast('6.2')) {
+        tg.showConfirm(msg, ok => { if (ok) doReset(); });
+      } else if (confirm(msg)) {
+        doReset();
+      }
     }
 
-    updateHUD();
+    // =========================================================
+    // 4. GAME ENGINE
+    // =========================================================
+    const rt = {};
+
+    function loadRT(g) {
+      const p = state.progress[g.id];
+      const done = new Set((p && Array.isArray(p.done) ? p.done : []).filter(i => i >= 0 && i < g.items.length));
+      const i = p && Number.isInteger(p.i) ? Math.min(Math.max(p.i, 0), g.items.length - 1) : 0;
+      rt[g.id] = { i, done, wrong: {}, order: {}, fb: {}, flipped: {} };
+    }
+
+    function persist(g) {
+      const r = rt[g.id];
+      state.progress[g.id] = { i: r.i, done: Array.from(r.done) };
+      saveState();
+    }
+
+    function shuffleIdx(n) {
+      const a = Array.from({ length: n }, (_, k) => k);
+      for (let k = n - 1; k > 0; k--) {
+        const j = Math.floor(Math.random() * (k + 1));
+        [a[k], a[j]] = [a[j], a[k]];
+      }
+      return a;
+    }
+
+    function gameById(id) { return GAMES.find(x => x.id === id); }
+
+    function mainHtml(g, r) {
+      const it = g.items[r.i];
+      const done = r.done.has(r.i);
+      let h = '';
+      if (it.ctx) h += '<div class="step-box">' + it.ctx + '</div>';
+
+      if (it.t === 'flash') {
+        const flipped = !!r.flipped[r.i];
+        h += '<div class="flashcard-wrap"><div class="flashcard' + (flipped ? ' flipped' : '') + '" id="fc-' + g.id + '" role="button" tabindex="0" aria-label="بطاقة استذكار: انقر لقلبها" ' +
+          'onclick="flipF(\'' + g.id + '\')" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();flipF(\'' + g.id + '\')}">' +
+          '<div class="fc-face fc-front"><span class="fc-tag">بطاقة ' + (r.i + 1) + ' من ' + g.items.length + '</span>' +
+          '<strong class="fc-q">' + it.q + '</strong>' +
+          '<span class="fc-hint"><i class="fa-solid fa-hand-pointer"></i> انقر لقلب البطاقة</span></div>' +
+          '<div class="fc-face fc-back"><span class="fc-tag-back">الإجابة العلمية</span><div>' + it.a + '</div></div>' +
+          '</div></div>';
+        return h;
+      }
+
+      h += '<p class="q-text">' + it.q + '</p>';
+      const wrong = r.wrong[r.i] || [];
+
+      if (it.t === 'quiz') {
+        if (!r.order[r.i]) r.order[r.i] = it.fix ? it.opts.map((_, k) => k) : shuffleIdx(it.opts.length);
+        h += '<div class="quiz-options">' + r.order[r.i].map((k, pos) => {
+          let cls = '';
+          if (done) cls = (k === it.a) ? ' correct' : ' dim';
+          else if (wrong.indexOf(k) > -1) cls = ' wrong';
+          const dis = (done || wrong.indexOf(k) > -1) ? ' disabled' : '';
+          return '<button type="button" class="quiz-opt' + cls + '"' + dis + ' onclick="pickQ(\'' + g.id + '\',' + k + ')">' +
+            '<span class="opt-letter">' + AR_LET[pos] + '</span><span>' + it.opts[k] + '</span></button>';
+        }).join('') + '</div>';
+      } else {
+        const mk = (val, label, icon, color) => {
+          const key = val ? 'T' : 'F';
+          let cls = '';
+          if (done) cls = (val === it.a) ? ' correct' : '';
+          else if (wrong.indexOf(key) > -1) cls = ' wrong';
+          const dis = (done || wrong.indexOf(key) > -1) ? ' disabled' : '';
+          return '<button type="button" class="btn btn-outline' + cls + '"' + dis + ' onclick="pickTF(\'' + g.id + '\',' + val + ')">' +
+            '<i class="fa-solid ' + icon + '" style="color:' + color + '"></i> ' + label + '</button>';
+        };
+        h += '<div class="tf-row">' + mk(true, 'صح', 'fa-check', 'var(--accent-emerald)') + mk(false, 'خطأ', 'fa-xmark', 'var(--accent-rose)') + '</div>';
+      }
+
+      const fb = r.fb[r.i];
+      if (fb) {
+        h += '<div class="feedback-box ' + (fb.ok ? 'ok' : 'err') + '"><i class="fa-solid ' + (fb.ok ? 'fa-circle-check' : 'fa-circle-xmark') + '"></i> ' + fb.html + '</div>';
+      } else if (done && it.exp) {
+        h += '<div class="feedback-box ok"><i class="fa-solid fa-circle-check"></i> ' + it.exp + '</div>';
+      }
+      return h;
+    }
+
+    function metaHtml(g, r) {
+      const it = g.items[r.i];
+      const tm = TYPE_META[it.t];
+      const dots = g.items.map((_, idx) =>
+        '<span class="dot' + (r.done.has(idx) ? ' done' : '') + (idx === r.i ? ' current' : '') + '"></span>').join('');
+      return '<div class="q-meta">' +
+        '<span class="type-tag ' + tm.cls + '"><i class="fa-solid ' + tm.icon + '"></i> ' + tm.label + '</span>' +
+        '<span class="q-counter">' + (r.i + 1) + ' / ' + g.items.length + '</span>' +
+        '</div><div class="dots" style="margin-bottom:12px;">' + dots + '</div>';
+    }
+
+    function navHtml(g, r) {
+      const n = g.items.length;
+      const complete = r.done.size === n;
+      if (n === 1 && !complete) return '';
+      let h = '';
+      if (n > 1) {
+        const canNext = r.done.has(r.i) && r.i < n - 1;
+        h += '<div class="card-nav">' +
+          '<button type="button" class="btn btn-outline btn-sm" onclick="goG(\'' + g.id + '\',-1)"' + (r.i === 0 ? ' disabled' : '') + '><i class="fa-solid fa-chevron-right"></i> السابق</button>' +
+          '<button type="button" class="btn btn-violet btn-sm" onclick="goG(\'' + g.id + '\',1)"' + (canNext ? '' : ' disabled') + '>التالي <i class="fa-solid fa-chevron-left"></i></button>' +
+          '</div>';
+      }
+      if (complete) {
+        h += '<div class="done-banner"><span><i class="fa-solid fa-trophy"></i> أكملت هذه المهمة بنجاح! (+' + g.points + ' نقطة عند أول إتمام)</span>' +
+          '<button type="button" class="btn btn-outline btn-sm" onclick="restartG(\'' + g.id + '\')"><i class="fa-solid fa-rotate-right"></i> إعادة</button></div>';
+      }
+      return h;
+    }
+
+    function refreshChrome(g) {
+      const r = rt[g.id];
+      document.getElementById('meta-' + g.id).innerHTML = metaHtml(g, r);
+      document.getElementById('nav-' + g.id).innerHTML = navHtml(g, r);
+      updateBadge(g);
+    }
+
+    function renderGame(g) {
+      const r = rt[g.id];
+      document.getElementById('main-' + g.id).innerHTML = mainHtml(g, r);
+      refreshChrome(g);
+    }
+
+    function checkComplete(g) {
+      if (rt[g.id].done.size === g.items.length) awardGame(g.id, g.points);
+    }
+
+    function answer(gid, correct, wrongKey, wrongMsg) {
+      const g = gameById(gid), r = rt[gid], it = g.items[r.i];
+      if (r.done.has(r.i)) return;
+      if (correct) {
+        r.done.add(r.i);
+        r.fb[r.i] = { ok: true, html: it.exp };
+        haptic('ok');
+        persist(g);
+        checkComplete(g);
+      } else {
+        (r.wrong[r.i] = r.wrong[r.i] || []).push(wrongKey);
+        r.fb[r.i] = { ok: false, html: wrongMsg || it.hint || DEFAULT_HINT };
+        haptic('err');
+      }
+      renderGame(g);
+    }
+
+    function pickQ(gid, k) {
+      const it = gameById(gid).items[rt[gid].i];
+      answer(gid, k === it.a, k, it.hints && it.hints[k]);
+    }
+    function pickTF(gid, val) {
+      const it = gameById(gid).items[rt[gid].i];
+      answer(gid, val === it.a, val ? 'T' : 'F', null);
+    }
+
+    function flipF(gid) {
+      const g = gameById(gid), r = rt[gid];
+      haptic();
+      r.flipped[r.i] = !r.flipped[r.i];
+      const el = document.getElementById('fc-' + gid);
+      if (el) el.classList.toggle('flipped', !!r.flipped[r.i]);
+      if (r.flipped[r.i] && !r.done.has(r.i)) {
+        r.done.add(r.i);
+        persist(g);
+        checkComplete(g);
+        refreshChrome(g);
+      }
+    }
+
+    function goG(gid, d) {
+      const g = gameById(gid), r = rt[gid];
+      const ni = r.i + d;
+      if (ni < 0 || ni >= g.items.length) return;
+      r.i = ni;
+      persist(g);
+      renderGame(g);
+      const card = document.getElementById('card-' + gid);
+      if (card) {
+        const top = (parseInt(getComputedStyle(document.documentElement).getPropertyValue('--hud-h')) || 100) + 4;
+        if (card.getBoundingClientRect().top < top) card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+
+    function restartG(gid) {
+      const g = gameById(gid);
+      delete state.progress[gid];
+      loadRT(g);
+      saveState();
+      renderGame(g);
+    }
+
+    // =========================================================
+    // 5. BUILD PAGE
+    // =========================================================
+    function cardHtml(g) {
+      return '<article class="academic-card accent-' + g.accent + '" id="card-' + g.id + '">' +
+        '<div class="card-header"><div class="card-title-wrap">' +
+        '<i class="fa-solid ' + g.icon + ' card-icon icon-' + g.accent + '"></i>' +
+        '<h3 class="card-title">' + g.title + '</h3></div>' +
+        '<span class="game-tag" id="badge-' + g.id + '"></span></div>' +
+        (g.intro ? '<p class="card-intro">' + g.intro + '</p>' : '') +
+        '<div id="meta-' + g.id + '"></div><div id="main-' + g.id + '"></div><div id="nav-' + g.id + '"></div>' +
+        '</article>';
+    }
+
+    function buildPage() {
+      for (let s = 1; s <= 7; s++) {
+        const mount = document.getElementById('mount-sec' + s);
+        const games = GAMES.filter(g => g.sec === s);
+        let html = '', i = 0;
+        while (i < games.length) {
+          const g = games[i];
+          if (g.group) {
+            const grp = games.filter(x => x.group === g.group);
+            html += '<div class="comparison-grid">' + grp.map(cardHtml).join('') + '</div>';
+            i += grp.length;
+          } else { html += cardHtml(g); i++; }
+        }
+        mount.innerHTML = html;
+      }
+      GAMES.forEach(g => { loadRT(g); renderGame(g); });
+      document.getElementById('total-q').textContent = GAMES.reduce((n, g) => n + g.items.length, 0);
+      renderHUD();
+    }
+
+    function setupNavSpy() {
+      const chips = Array.from(document.querySelectorAll('.nav-chip'));
+      chips.forEach(c => c.addEventListener('click', () => {
+        chips.forEach(x => x.classList.remove('active'));
+        c.classList.add('active');
+      }));
+      if (!('IntersectionObserver' in window)) return;
+      const io = new IntersectionObserver(entries => {
+        entries.forEach(en => {
+          if (en.isIntersecting) {
+            chips.forEach(c => c.classList.toggle('active', c.getAttribute('href') === '#' + en.target.id));
+            const act = chips.find(c => c.classList.contains('active'));
+            if (act) { try { act.scrollIntoView({ inline: 'center', block: 'nearest' }); } catch (e) {} }
+          }
+        });
+      }, { rootMargin: '-30% 0px -60% 0px' });
+      document.querySelectorAll('main section[id^="sec"]').forEach(s => io.observe(s));
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      buildPage();
+      measureHud();
+      setupNavSpy();
+    });
+    window.addEventListener('load', measureHud);
+    window.addEventListener('resize', measureHud);
   </script>
 </body>
 </html>
