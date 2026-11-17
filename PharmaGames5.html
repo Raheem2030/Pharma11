@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>ألعاب الجلسة الخامسة: المقلدات الكولينية | علم الأدوية التجريبي</title>
 
   <!-- Telegram Web App SDK -->
@@ -48,15 +48,17 @@
       --shadow-card: 0 10px 25px -5px rgba(139, 92, 246, 0.12);
       --radius-card: 16px;
       --radius-box: 12px;
+
+      --safe-top: 0px;
+      --hud-h: 64px;
     }
 
-    * {
-      box-sizing: border-box;
-      -webkit-tap-highlight-color: transparent;
-    }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
     html {
       scroll-behavior: smooth;
+      -webkit-text-size-adjust: 100%;
+      text-size-adjust: 100%;
     }
 
     body {
@@ -64,27 +66,32 @@
       padding: 0;
       background-color: var(--bg-main);
       color: var(--text-body);
-      font-family: 'IBM Plex Sans Arabic', sans-serif;
+      font-family: 'IBM Plex Sans Arabic', system-ui, -apple-system, 'Segoe UI', Tahoma, sans-serif;
       font-weight: 400;
       line-height: 1.7;
+      overflow-x: hidden;
+      overflow-wrap: anywhere;
       padding-bottom: calc(88px + env(safe-area-inset-bottom));
     }
 
     h1, h2, h3, h4, .font-cairo {
-      font-family: 'Cairo', sans-serif;
+      font-family: 'Cairo', system-ui, sans-serif;
       color: var(--text-title);
       margin: 0;
     }
 
-    /* Sticky Top HUD for Telegram Mini App & Devices */
+    button { font-family: inherit; }
+
+    /* ---------- Sticky Top HUD ---------- */
     .hud-bar {
       position: sticky;
       top: 0;
       z-index: 100;
-      background: rgba(248, 250, 252, 0.92);
+      background: rgba(248, 250, 252, 0.94);
+      -webkit-backdrop-filter: blur(10px);
       backdrop-filter: blur(10px);
       border-bottom: 1px solid var(--box-border);
-      padding: 10px 14px;
+      padding: calc(10px + max(env(safe-area-inset-top), var(--safe-top))) 14px 10px;
     }
 
     .hud-inner {
@@ -97,12 +104,7 @@
       flex-wrap: wrap;
     }
 
-    .hud-stats {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
+    .hud-stats { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 
     .hud-pill {
       display: inline-flex;
@@ -116,7 +118,6 @@
       border: 1px solid var(--box-border);
       color: var(--text-heading);
     }
-
     .hud-pill.xp { color: var(--violet); background: var(--violet-soft); border-color: rgba(139, 92, 246, 0.25); }
     .hud-pill.streak { color: #B45309; background: var(--amber-soft); border-color: rgba(245, 158, 11, 0.25); }
     .hud-pill.done { color: #047857; background: var(--emerald-soft); border-color: rgba(16, 185, 129, 0.25); }
@@ -129,15 +130,7 @@
       align-items: center;
       gap: 8px;
     }
-
-    .progress-track {
-      flex: 1;
-      height: 8px;
-      background: #E2E8F0;
-      border-radius: 999px;
-      overflow: hidden;
-    }
-
+    .progress-track { flex: 1; height: 8px; background: #E2E8F0; border-radius: 999px; overflow: hidden; }
     .progress-fill {
       height: 100%;
       width: 0%;
@@ -145,17 +138,10 @@
       transition: width 0.4s ease;
     }
 
-    /* Main Container */
-    .container {
-      max-width: 980px;
-      margin: 0 auto;
-      padding: 18px 14px;
-    }
-
-    /* Header Section */
-    .lecture-header {
-      margin-bottom: 22px;
-    }
+    /* ---------- Layout ---------- */
+    .container { max-width: 980px; margin: 0 auto; padding: 18px 14px; }
+    section { scroll-margin-top: calc(var(--hud-h) + 6px); }
+    .lecture-header { margin-bottom: 22px; }
 
     .session-badge {
       display: inline-flex;
@@ -172,14 +158,14 @@
     }
 
     .lecture-title {
-      font-size: clamp(1.45rem, 3.8vw, 2.1rem);
+      font-size: clamp(1.4rem, 3.8vw, 2.1rem);
       font-weight: 800;
       color: var(--text-title);
       margin-bottom: 14px;
-      line-height: 1.35;
+      line-height: 1.4;
     }
 
-    /* Academic Cards */
+    /* ---------- Cards ---------- */
     .academic-card {
       background: var(--card-bg);
       border: 1px solid var(--card-border);
@@ -189,14 +175,10 @@
       margin-bottom: 18px;
       border-right: 4px solid var(--violet);
       position: relative;
-      transition: transform 0.2s ease;
+      min-width: 0;
+      scroll-margin-top: calc(var(--hud-h) + 8px);
     }
-
-    @media (min-width: 640px) {
-      .academic-card {
-        padding: 24px;
-      }
-    }
+    @media (min-width: 640px) { .academic-card { padding: 24px; } }
 
     .accent-violet { border-right-color: var(--violet); }
     .accent-cyan { border-right-color: var(--cyan); }
@@ -211,29 +193,15 @@
       gap: 12px;
       margin-bottom: 14px;
     }
-
-    .card-title-wrap {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .card-icon {
-      font-size: 1.25rem;
-      flex-shrink: 0;
-    }
-
+    .card-title-wrap { display: flex; align-items: center; gap: 10px; min-width: 0; }
+    .card-icon { font-size: 1.25rem; flex-shrink: 0; }
     .icon-violet { color: var(--violet); }
     .icon-cyan { color: var(--cyan); }
     .icon-emerald { color: var(--emerald); }
     .icon-amber { color: var(--amber); }
     .icon-rose { color: var(--rose); }
-
-    .card-title {
-      font-size: 1.12rem;
-      font-weight: 800;
-      color: var(--text-heading);
-    }
+    .card-title { font-size: 1.08rem; font-weight: 800; color: var(--text-heading); line-height: 1.5; }
+    .card-intro { margin: 0 0 12px; font-size: 0.92rem; color: var(--text-sub); }
 
     .game-status-badge {
       font-size: 0.75rem;
@@ -245,14 +213,12 @@
       border: 1px solid var(--box-border);
       white-space: nowrap;
     }
-
     .game-status-badge.completed {
       background: var(--emerald-soft);
       color: #047857;
       border-color: rgba(16, 185, 129, 0.35);
     }
 
-    /* Topic Header Card */
     .topic-header-card {
       background: var(--card-bg);
       border: 1px solid var(--card-border);
@@ -262,7 +228,6 @@
       margin: 28px 0 16px;
       border-right: 4px solid var(--violet);
     }
-
     .topic-en {
       font-size: 0.74rem;
       font-weight: 700;
@@ -271,15 +236,11 @@
       color: var(--violet);
       margin-bottom: 4px;
       font-family: 'Cairo', sans-serif;
+      direction: ltr;
+      text-align: right;
     }
+    .topic-ar { font-size: 1.2rem; font-weight: 800; color: var(--text-title); }
 
-    .topic-ar {
-      font-size: 1.25rem;
-      font-weight: 800;
-      color: var(--text-title);
-    }
-
-    /* Step Boxes & Formula Boxes */
     .step-box {
       background: var(--box-bg);
       border: 1px solid var(--box-border);
@@ -301,20 +262,11 @@
       overflow-x: auto;
     }
 
-    /* Comparison 2-Column Grid */
-    .comparison-grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 14px;
-    }
+    .comparison-grid { display: grid; grid-template-columns: 1fr; gap: 14px; }
+    .comparison-grid > * { min-width: 0; }
+    @media (min-width: 820px) { .comparison-grid { grid-template-columns: 1fr 1fr; } }
 
-    @media (min-width: 720px) {
-      .comparison-grid {
-        grid-template-columns: 1fr 1fr;
-      }
-    }
-
-    /* Buttons */
+    /* ---------- Buttons ---------- */
     .btn {
       display: inline-flex;
       align-items: center;
@@ -323,124 +275,56 @@
       padding: 10px 16px;
       border-radius: 10px;
       border: 1px solid transparent;
-      font-family: 'IBM Plex Sans Arabic', sans-serif;
       font-weight: 600;
       font-size: 0.92rem;
       cursor: pointer;
       transition: all 0.18s ease;
       user-select: none;
+      -webkit-user-select: none;
     }
-
-    .btn:active { transform: scale(0.97); }
-
+    .btn:active:not(:disabled) { transform: scale(0.97); }
+    .btn:disabled { opacity: 0.45; cursor: not-allowed; }
     .btn-violet { background: var(--violet); color: #fff; }
-    .btn-violet:hover { background: #7C3AED; }
+    .btn-violet:hover:not(:disabled) { background: #7C3AED; }
     .btn-cyan { background: var(--cyan); color: #fff; }
     .btn-emerald { background: var(--emerald); color: #fff; }
-    .btn-amber { background: var(--amber); color: #fff; }
-    .btn-rose { background: var(--rose); color: #fff; }
-    .btn-outline {
-      background: var(--card-bg);
-      border-color: var(--box-border);
-      color: var(--text-heading);
-    }
-    .btn-outline:hover { background: var(--bg-soft); }
-
+    .btn-outline { background: var(--card-bg); border-color: var(--box-border); color: var(--text-heading); }
+    .btn-outline:hover:not(:disabled) { background: var(--bg-soft); }
     .btn-sm { padding: 7px 12px; font-size: 0.83rem; }
 
-    /* Option / Chip Pills */
-    .chip-pool {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin: 12px 0;
-    }
-
-    .chip {
-      padding: 8px 13px;
-      border-radius: 10px;
-      background: var(--card-bg);
-      border: 1.5px solid var(--box-border);
-      color: var(--text-heading);
-      font-weight: 600;
-      font-size: 0.88rem;
-      cursor: pointer;
-      transition: all 0.18s ease;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .chip.selected {
-      border-color: var(--violet);
-      background: var(--violet-soft);
-      color: #5B21B6;
-      box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.2);
-    }
-
-    .chip.correct {
-      border-color: var(--emerald);
-      background: var(--emerald-soft);
-      color: #065F46;
-    }
-
-    .chip.wrong {
-      border-color: var(--rose);
-      background: var(--rose-soft);
-      color: #9F1239;
-    }
-
-    .chip.disabled {
-      opacity: 0.55;
-      pointer-events: none;
-    }
-
-    /* Drop Zones */
-    .drop-grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 10px;
-      margin-top: 12px;
-    }
-
-    @media (min-width: 640px) {
-      .drop-grid.cols-2 { grid-template-columns: 1fr 1fr; }
-      .drop-grid.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
-    }
-
-    .drop-zone {
-      background: var(--bg-soft);
-      border: 2px dashed var(--box-border);
-      border-radius: 12px;
-      padding: 12px;
-      min-height: 86px;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-
-    .drop-zone:hover, .drop-zone.active-target {
-      border-color: var(--violet);
-      background: rgba(139, 92, 246, 0.05);
-    }
-
-    .drop-zone-title {
-      font-family: 'Cairo', sans-serif;
-      font-weight: 700;
-      font-size: 0.92rem;
-      color: var(--text-heading);
-      margin-bottom: 6px;
+    /* ---------- Question meta ---------- */
+    .q-meta {
       display: flex;
       align-items: center;
       justify-content: space-between;
+      gap: 8px 12px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
     }
+    .type-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 3px 11px;
+      border-radius: 999px;
+      font-size: 0.76rem;
+      font-weight: 700;
+      font-family: 'Cairo', sans-serif;
+    }
+    .type-quiz { background: var(--violet-soft); color: #5B21B6; }
+    .type-tf { background: var(--emerald-soft); color: #065F46; }
+    .type-flash { background: var(--cyan-soft); color: #155E75; }
 
-    /* Quiz Options */
-    .quiz-options {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      margin: 12px 0;
-    }
+    .q-counter { font-size: 0.78rem; color: var(--text-sub); font-weight: 600; }
+    .dots { display: flex; gap: 5px; flex-wrap: wrap; align-items: center; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; background: #E2E8F0; border: 1px solid var(--box-border); }
+    .dot.done { background: var(--emerald); border-color: var(--emerald); }
+    .dot.current { outline: 2px solid var(--violet); outline-offset: 2px; }
+
+    .q-text { font-weight: 600; color: var(--text-heading); margin: 0 0 10px; font-size: 1rem; }
+
+    /* ---------- Quiz options ---------- */
+    .quiz-options { display: flex; flex-direction: column; gap: 8px; margin: 12px 0; }
 
     .quiz-opt {
       width: 100%;
@@ -450,72 +334,74 @@
       background: var(--bg-soft);
       border: 1.5px solid var(--box-border);
       color: var(--text-heading);
-      font-family: 'IBM Plex Sans Arabic', sans-serif;
       font-size: 0.93rem;
       font-weight: 600;
+      line-height: 1.6;
       cursor: pointer;
       transition: all 0.18s ease;
       display: flex;
       align-items: center;
-      justify-content: space-between;
+      justify-content: flex-start;
       gap: 10px;
     }
-
-    .quiz-opt:hover:not(:disabled) {
-      border-color: var(--violet);
-      background: var(--violet-soft);
+    .quiz-opt .opt-letter {
+      flex-shrink: 0;
+      width: 26px;
+      height: 26px;
+      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--card-bg);
+      border: 1px solid var(--box-border);
+      font-family: 'Cairo', sans-serif;
+      font-weight: 800;
+      font-size: 0.82rem;
+      color: var(--violet);
     }
+    .quiz-opt:hover:not(:disabled) { border-color: var(--violet); background: var(--violet-soft); }
+    .quiz-opt:disabled { cursor: default; }
+    .quiz-opt.correct { background: var(--emerald-soft); border-color: var(--emerald); color: #065F46; }
+    .quiz-opt.wrong { background: var(--rose-soft); border-color: var(--rose); color: #9F1239; }
+    .quiz-opt.dim { opacity: 0.6; }
 
-    .quiz-opt.correct {
-      background: var(--emerald-soft);
-      border-color: var(--emerald);
-      color: #065F46;
-    }
+    /* ---------- True / False ---------- */
+    .tf-row { display: flex; gap: 10px; margin: 12px 0; }
+    .tf-row .btn { flex: 1; padding: 12px 14px; font-size: 0.98rem; }
+    .tf-row .btn.correct { background: var(--emerald-soft); border-color: var(--emerald); color: #065F46; }
+    .tf-row .btn.wrong { background: var(--rose-soft); border-color: var(--rose); color: #9F1239; }
+    .tf-row .btn:disabled.correct, .tf-row .btn:disabled.wrong { opacity: 1; }
 
-    .quiz-opt.wrong {
-      background: var(--rose-soft);
-      border-color: var(--rose);
-      color: #9F1239;
-    }
-
-    /* Feedback Banner */
+    /* ---------- Feedback ---------- */
     .feedback-box {
-      display: none;
       margin-top: 12px;
       padding: 12px 14px;
       border-radius: 12px;
       font-size: 0.9rem;
       font-weight: 600;
       border-right: 4px solid;
+      animation: fadeIn 0.25s ease;
     }
-
-    .feedback-box.show { display: block; animation: fadeIn 0.25s ease; }
     .feedback-box.ok { background: var(--emerald-soft); border-color: var(--emerald); color: #065F46; }
     .feedback-box.err { background: var(--rose-soft); border-color: var(--rose); color: #9F1239; }
-    .feedback-box.info { background: var(--cyan-soft); border-color: var(--cyan); color: #155E75; }
 
-    /* Flashcards */
-    .flashcard-wrap {
-      perspective: 1000px;
-      margin: 10px 0;
-    }
-
+    /* ---------- Flashcards (auto-height 3D flip) ---------- */
+    .flashcard-wrap { perspective: 1000px; margin: 10px 0; }
     .flashcard {
-      position: relative;
+      display: grid;
       width: 100%;
-      min-height: 165px;
+      min-height: 175px;
       transform-style: preserve-3d;
       transition: transform 0.55s cubic-bezier(0.4, 0.2, 0.2, 1);
       cursor: pointer;
+      outline: none;
     }
-
-    .flashcard.flipped {
-      transform: rotateY(180deg);
-    }
+    .flashcard:focus-visible .fc-face { box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.35); }
+    .flashcard.flipped { transform: rotateY(180deg); }
 
     .fc-face {
-      position: absolute;
-      inset: 0;
+      grid-area: 1 / 1;
+      -webkit-backface-visibility: hidden;
       backface-visibility: hidden;
       border-radius: 14px;
       padding: 18px;
@@ -523,171 +409,45 @@
       flex-direction: column;
       justify-content: center;
       align-items: center;
+      gap: 6px;
       text-align: center;
       border: 1.5px solid var(--box-border);
     }
-
-    .fc-front {
-      background: var(--bg-soft);
-      color: var(--text-title);
-    }
-
+    .fc-front { background: var(--bg-soft); color: var(--text-title); }
     .fc-back {
       background: linear-gradient(135deg, rgba(139, 92, 246, 0.08), rgba(6, 182, 212, 0.08));
       border-color: var(--violet);
       color: var(--text-heading);
       transform: rotateY(180deg);
-    }
-
-    /* Interactive Tables (Grand Matrix) */
-    .matrix-table-wrap {
-      overflow-x: auto;
-      border-radius: 12px;
-      border: 1px solid var(--box-border);
-      margin-top: 10px;
-    }
-
-    table.matrix-table {
-      width: 100%;
-      border-collapse: collapse;
-      min-width: 640px;
-      font-size: 0.86rem;
-    }
-
-    table.matrix-table th {
-      background: var(--bg-soft);
-      color: var(--text-title);
-      font-family: 'Cairo', sans-serif;
-      padding: 10px;
-      border-bottom: 2px solid var(--box-border);
-      text-align: right;
-    }
-
-    table.matrix-table td {
-      padding: 9px 10px;
-      border-bottom: 1px solid var(--box-border);
-      vertical-align: middle;
-    }
-
-    .matrix-slot {
-      display: inline-block;
-      min-width: 120px;
-      padding: 6px 10px;
-      border-radius: 8px;
-      border: 1.5px dashed var(--violet);
-      background: var(--violet-soft);
-      color: #5B21B6;
       font-weight: 600;
-      cursor: pointer;
-      text-align: center;
+      font-size: 0.95rem;
     }
+    .fc-tag { font-size: 0.78rem; color: var(--cyan); font-weight: 700; }
+    .fc-tag-back { font-size: 0.78rem; color: var(--violet); font-weight: 700; }
+    .fc-hint { font-size: 0.78rem; color: var(--text-sub); margin-top: 6px; }
+    .fc-q { font-size: 1rem; }
 
-    .matrix-slot.filled {
-      border-style: solid;
-      border-color: var(--emerald);
-      background: var(--emerald-soft);
-      color: #065F46;
-      cursor: default;
-    }
+    /* ---------- Nav inside a card ---------- */
+    .card-nav { display: flex; justify-content: space-between; gap: 10px; margin-top: 14px; }
 
-    /* Glaucoma SVG Simulator & Visual Charts */
-    .sim-stage {
-      background: var(--bg-soft);
-      border: 1px solid var(--box-border);
-      border-radius: 14px;
-      padding: 14px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      align-items: center;
-    }
-
-    .iop-meter {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-family: 'Cairo', sans-serif;
-      font-weight: 800;
-      padding: 6px 14px;
-      border-radius: 999px;
-      background: var(--rose-soft);
-      color: #9F1239;
-      transition: all 0.4s ease;
-    }
-
-    .iop-meter.normal {
-      background: var(--emerald-soft);
-      color: #065F46;
-    }
-
-    /* Bar Chart Comparison */
-    .chart-box {
-      background: var(--bg-soft);
-      border: 1px solid var(--box-border);
+    .done-banner {
+      margin-top: 14px;
+      padding: 12px 14px;
       border-radius: 12px;
-      padding: 14px;
-      margin-top: 12px;
-    }
-
-    .bar-row {
+      background: var(--emerald-soft);
+      border: 1px solid rgba(16, 185, 129, 0.35);
+      color: #065F46;
+      font-weight: 700;
+      font-size: 0.9rem;
       display: flex;
       align-items: center;
+      justify-content: space-between;
       gap: 10px;
-      margin-bottom: 8px;
-      font-size: 0.84rem;
-    }
-
-    .bar-label { width: 110px; font-weight: 600; color: var(--text-heading); flex-shrink: 0; }
-    .bar-track { flex: 1; height: 14px; background: #E2E8F0; border-radius: 999px; overflow: hidden; }
-    .bar-val { height: 100%; border-radius: 999px; transition: width 0.6s ease; }
-
-    /* Bottom Navigation Strip for Mobile / Telegram */
-    .bottom-nav {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      z-index: 100;
-      background: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(10px);
-      border-top: 1px solid var(--box-border);
-      padding: 8px 10px calc(8px + env(safe-area-inset-bottom));
-      display: flex;
-      justify-content: center;
-      gap: 6px;
-      overflow-x: auto;
-    }
-
-    .nav-pill {
-      padding: 7px 12px;
-      border-radius: 999px;
-      background: var(--bg-soft);
-      border: 1px solid var(--box-border);
-      color: var(--text-sub);
-      font-size: 0.8rem;
-      font-weight: 600;
-      text-decoration: none;
-      white-space: nowrap;
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-    }
-
-    .nav-pill.active, .nav-pill:hover {
-      background: var(--violet-soft);
-      border-color: var(--violet);
-      color: var(--violet);
-    }
-
-    /* ER DUMBBELSS Grid */
-    .dumbbelss-letters {
-      display: flex;
       flex-wrap: wrap;
-      gap: 6px;
-      justify-content: center;
-      margin: 12px 0;
     }
 
+    /* ---------- DUMBBELSS letters ---------- */
+    .dumbbelss-letters { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin: 4px 0 14px; direction: ltr; }
     .d-letter {
       width: 36px;
       height: 36px;
@@ -702,57 +462,64 @@
       border: 1.5px solid rgba(244, 63, 94, 0.3);
       transition: all 0.25s ease;
     }
+    .d-letter.solved { background: var(--emerald-soft); color: #065F46; border-color: var(--emerald); }
 
-    .d-letter.solved {
-      background: var(--emerald-soft);
-      color: #065F46;
-      border-color: var(--emerald);
-    }
-
-    /* Eyelid animation for Tensilon Test */
-    .eye-sim-box {
-      width: 140px;
-      height: 76px;
-      background: #FFF;
-      border: 2px solid var(--box-border);
-      border-radius: 999px;
-      position: relative;
-      overflow: hidden;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .eye-pupil {
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      background: radial-gradient(circle, #0F172A 40%, #3B82F6 45%, #1E3A8A 100%);
-    }
-
-    .eyelid {
-      position: absolute;
-      top: 0;
+    /* ---------- Bottom navigation ---------- */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
       left: 0;
       right: 0;
-      height: 78%;
-      background: #FDE68A;
-      border-bottom: 3px solid #D97706;
-      transition: height 0.5s ease;
+      z-index: 100;
+      background: rgba(255, 255, 255, 0.96);
+      -webkit-backdrop-filter: blur(10px);
+      backdrop-filter: blur(10px);
+      border-top: 1px solid var(--box-border);
+      padding: 8px 10px calc(8px + env(safe-area-inset-bottom));
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
     }
+    .bottom-nav::-webkit-scrollbar { display: none; }
+    .bottom-nav > :first-child { margin-inline-start: auto; }
+    .bottom-nav > :last-child { margin-inline-end: auto; }
 
-    .eyelid.open { height: 14%; }
+    .nav-pill {
+      flex-shrink: 0;
+      padding: 7px 12px;
+      border-radius: 999px;
+      background: var(--bg-soft);
+      border: 1px solid var(--box-border);
+      color: var(--text-sub);
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-decoration: none;
+      white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .nav-pill.active, .nav-pill:hover { background: var(--violet-soft); border-color: var(--violet); color: var(--violet); }
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(4px); }
-      to { opacity: 1; transform: translateY(0); }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+    @media (max-width: 380px) {
+      .container { padding: 14px 10px; }
+      .academic-card { padding: 16px; }
+      .card-title { font-size: 1rem; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      * { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
+      html { scroll-behavior: auto; }
     }
   </style>
 </head>
 <body>
 
   <!-- Top Live Gamification HUD -->
-  <header class="hud-bar">
+  <header class="hud-bar" id="hud">
     <div class="hud-inner">
       <div class="hud-stats">
         <span class="hud-pill xp"><i class="fa-solid fa-star"></i> <span id="hud-xp">0</span> XP</span>
@@ -761,20 +528,19 @@
       </div>
       <div class="hud-progress-wrap">
         <div class="progress-track"><div class="progress-fill" id="hud-progress"></div></div>
-        <button class="btn btn-outline btn-sm" onclick="resetAllProgress()" title="إعادة ضبط التقدم"><i class="fa-solid fa-rotate-right"></i></button>
+        <button type="button" class="btn btn-outline btn-sm" onclick="resetAllProgress()" title="إعادة ضبط التقدم" aria-label="إعادة ضبط التقدم"><i class="fa-solid fa-rotate-right"></i></button>
       </div>
     </div>
   </header>
 
   <main class="container">
 
-    <!-- Lecture Title & Objectives Card -->
     <section class="lecture-header">
       <div class="session-badge">
         <i class="fa-solid fa-gamepad"></i>
-        الجلسة الخامسة • تطبيق الألعاب التفاعلية
+        الجلسة الخامسة • اختبارات تفاعلية
       </div>
-      <h1 class="lecture-title">ألعاب وتحديات المقلدات الكولينية (Cholinergic Agonists)</h1>
+      <h1 class="lecture-title">اختبارات وتحديات المقلدات الكولينية (Cholinergic Agonists)</h1>
 
       <div class="academic-card accent-violet">
         <div class="card-header">
@@ -785,597 +551,97 @@
           <span class="game-status-badge">علم الأدوية التجريبي • د. هبة قنبر</span>
         </div>
         <p style="margin:0 0 12px;">
-          صُمم هذا التطبيق التفاعلي لاختبار إتقانك الكامل لمحاضرة <strong>المقلدات الكولينية</strong> عبر <strong>16 لعبة ومحاكياً سريرياً</strong> تغطي التصنيف، الحركية الدوائية، الآليات الجزيئية، وموانع الاستعمال. انقر لاختيار البطاقة ثم انقر على الخانة المناسبة لتسجيل نقاطك!
+          صُمم هذا التطبيق التفاعلي لاختبار إتقانك الكامل لمحاضرة <strong>المقلدات الكولينية</strong> عبر <strong>16 لعبة</strong> تضم <strong><span id="total-q">0</span> سؤالاً</strong> بثلاثة أنماط فقط: <strong>اختبارات QUIZ</strong>، <strong>بطاقات FlashCards</strong>، و<strong>أسئلة صح وخطأ</strong>، وتغطي التصنيف، الحركية الدوائية، الآليات الجزيئية، وموانع الاستعمال. أجب عن كل سؤال لتنتقل إلى التالي وتسجّل نقاطك!
         </p>
         <div class="step-box" style="margin-bottom:0; display:flex; flex-wrap:wrap; gap:12px; justify-content:space-between; font-size:0.88rem;">
-          <span><i class="fa-solid fa-vial-circle-check" style="color:var(--violet)"></i> تمييز الأمين الثالثي مقابل الرباعي</span>
-          <span><i class="fa-solid fa-eye" style="color:var(--cyan)"></i> محاكاة تصريف الخلط المائي</span>
-          <span><i class="fa-solid fa-heart-pulse" style="color:var(--rose)"></i> طوارئ التسمم DUMBBELSS</span>
+          <span><i class="fa-solid fa-list-check" style="color:var(--violet)"></i> QUIZ: اختيار من متعدد</span>
+          <span><i class="fa-solid fa-layer-group" style="color:var(--cyan)"></i> FlashCards: بطاقات استذكار</span>
+          <span><i class="fa-solid fa-check-double" style="color:var(--emerald)"></i> صح أو خطأ</span>
         </div>
       </div>
     </section>
 
-    <!-- ========================================================= -->
-    <!-- SECTION 1.0: INTRO & CLASSIFICATION                       -->
-    <!-- ========================================================= -->
     <section id="sec-1">
       <div class="topic-header-card">
         <div class="topic-en">1.0 INTRODUCTION &amp; PHARMACOLOGICAL CLASSIFICATION</div>
         <h2 class="topic-ar">1.0 مدخل إلى المقلدات الكولينية والتصنيف الشجري</h2>
       </div>
-
-      <!-- Game 1: Tree Branch Drag & Drop / Tap-to-Sort -->
-      <article class="academic-card accent-violet" id="card-g1">
-        <div class="card-header">
-          <div class="card-title-wrap">
-            <i class="fa-solid fa-sitemap card-icon icon-violet"></i>
-            <h3 class="card-title">اللعبة 1: فرز وتصنيف الشجرة الدوائية (Tree Classifier)</h3>
-          </div>
-          <span class="game-status-badge" id="badge-g1">غير مكتمل</span>
-        </div>
-        <p style="margin-top:0;">اختر اسم الدواء من الأعلى ثم اضغط على الفرع الشجري الصحيح لتصنيفه قبل نفاد الوقت (<span id="g1-timer" style="color:var(--violet);font-weight:700;">90</span> ثانية):</p>
-
-        <div class="chip-pool" id="g1-pool"></div>
-
-        <div class="drop-grid cols-2">
-          <div class="drop-zone" onclick="placeG1('direct_ester')">
-            <div class="drop-zone-title">
-              <span>1. ناهضات مباشرة: إسترات الكولين</span>
-              <i class="fa-solid fa-arrow-down" style="color:var(--violet)"></i>
-            </div>
-            <div class="chip-pool" id="g1-zone-direct_ester"></div>
-          </div>
-          <div class="drop-zone" onclick="placeG1('direct_alk')">
-            <div class="drop-zone-title">
-              <span>2. ناهضات مباشرة: القلوانيات ونظائرها</span>
-              <i class="fa-solid fa-arrow-down" style="color:var(--cyan)"></i>
-            </div>
-            <div class="chip-pool" id="g1-zone-direct_alk"></div>
-          </div>
-          <div class="drop-zone" onclick="placeG1('indirect_rev')">
-            <div class="drop-zone-title">
-              <span>3. مثبطات AChE غير مباشرة: عكوسة</span>
-              <i class="fa-solid fa-arrow-down" style="color:var(--emerald)"></i>
-            </div>
-            <div class="chip-pool" id="g1-zone-indirect_rev"></div>
-          </div>
-          <div class="drop-zone" onclick="placeG1('indirect_irrev')">
-            <div class="drop-zone-title">
-              <span>4. مثبطات AChE غير مباشرة: غير عكوسة</span>
-              <i class="fa-solid fa-arrow-down" style="color:var(--rose)"></i>
-            </div>
-            <div class="chip-pool" id="g1-zone-indirect_irrev"></div>
-          </div>
-        </div>
-        <div class="feedback-box" id="fb-g1"></div>
-      </article>
-
-      <!-- Game 2 & 3: Smart Flashcards + T/F Duration -->
-      <div class="comparison-grid">
-        <article class="academic-card accent-cyan" id="card-g2">
-          <div class="card-header">
-            <div class="card-title-wrap">
-              <i class="fa-solid fa-layer-group card-icon icon-cyan"></i>
-              <h3 class="card-title">اللعبة 2: بطاقات الاستذكار النشط</h3>
-            </div>
-            <span class="game-status-badge" id="badge-g2">0 / 3</span>
-          </div>
-          <p style="margin-top:0;font-size:0.88rem;color:var(--text-sub);">اضغط على البطاقة لقلبها واستكشاف الجواب العلمي:</p>
-          <div class="flashcard-wrap">
-            <div class="flashcard" id="g2-fc" onclick="flipG2()">
-              <div class="fc-face fc-front">
-                <span style="font-size:0.78rem;color:var(--cyan);font-weight:700;margin-bottom:6px;">سؤال <span id="g2-idx">1</span> من 3</span>
-                <strong id="g2-q" style="font-size:1rem;"></strong>
-                <span style="font-size:0.78rem;color:var(--text-sub);margin-top:10px;"><i class="fa-solid fa-hand-pointer"></i> انقر لقلب البطاقة</span>
-              </div>
-              <div class="fc-face fc-back">
-                <span style="font-size:0.78rem;color:var(--violet);font-weight:700;margin-bottom:6px;">الإجابة العلمية</span>
-                <div id="g2-a" style="font-size:0.92rem;font-weight:600;"></div>
-              </div>
-            </div>
-          </div>
-          <div style="display:flex;justify-content:space-between;margin-top:10px;">
-            <button class="btn btn-outline btn-sm" onclick="prevG2()"><i class="fa-solid fa-chevron-right"></i> السابق</button>
-            <button class="btn btn-cyan btn-sm" onclick="nextG2()">التالي <i class="fa-solid fa-chevron-left"></i></button>
-          </div>
-        </article>
-
-        <article class="academic-card accent-emerald" id="card-g3">
-          <div class="card-header">
-            <div class="card-title-wrap">
-              <i class="fa-solid fa-check-double card-icon icon-emerald"></i>
-              <h3 class="card-title">اللعبة 3: تحدي الصواب والخطأ</h3>
-            </div>
-            <span class="game-status-badge" id="badge-g3">غير مكتمل</span>
-          </div>
-          <div class="step-box">
-            <strong>العبارة:</strong> تتميز جميع الأدوية الكولينية ذات التأثير المباشر بامتلاكها <u>مدة تأثير أقصر</u> من الأستيل كولين الداخلي.
-          </div>
-          <div style="display:flex;gap:10px;">
-            <button class="btn btn-outline" style="flex:1;" onclick="answerTF('g3', true, false, 'تتمتع جميع الناهضات المباشرة بمدة تأثير أطول من الأستيل كولين الداخلي الذي يتخرب فورياً.')"><i class="fa-solid fa-check" style="color:var(--emerald)"></i> صواب</button>
-            <button class="btn btn-outline" style="flex:1;" onclick="answerTF('g3', false, false, 'ممتاز! جميع الأدوية المباشرة الصنعية والطبيعية تملك مدة تأثير أطول من الأستيل كولين الداخلي.')"><i class="fa-solid fa-xmark" style="color:var(--rose)"></i> خطأ</button>
-          </div>
-          <div class="feedback-box" id="fb-g3"></div>
-        </article>
-      </div>
+      <div id="mount-sec-1"></div>
     </section>
 
-    <!-- ========================================================= -->
-    <!-- SECTION 2.0: DIRECT-ACTING AGONISTS                       -->
-    <!-- ========================================================= -->
     <section id="sec-2">
       <div class="topic-header-card">
         <div class="topic-en">2.0 DIRECT-ACTING CHOLINERGIC AGONISTS</div>
         <h2 class="topic-ar">2.0 الناهضات الكولينية ذات التأثير المباشر</h2>
       </div>
-
-      <!-- Game 4: Acetylcholine Hurdles + Clinical Quiz -->
-      <article class="academic-card accent-rose" id="card-g4">
-        <div class="card-header">
-          <div class="card-title-wrap">
-            <i class="fa-solid fa-road-barrier card-icon icon-rose"></i>
-            <h3 class="card-title">اللعبة 4: كاشف عقبات الأستيل كولين (ACh) والاستعمال العيني</h3>
-          </div>
-          <span class="game-status-badge" id="badge-g4">غير مكتمل</span>
-        </div>
-        <p style="margin-top:0;"><strong>المرحلة أ:</strong> لماذا يفتقر الأستيل كولين (ACh) للأهمية العلاجية الجهازية بالحقن؟ اختر <strong>العقبتين الحقيقيتين</strong>:</p>
-        <div class="chip-pool" id="g4-hurdles">
-          <button class="chip" onclick="toggleG4(this, true)">1. تعدد تأثيراته (M و N) وافتقاره للنوعية النسيجية</button>
-          <button class="chip" onclick="toggleG4(this, false)">2. مدة تأثيره الطويلة التي تستمر لأسبوع</button>
-          <button class="chip" onclick="toggleG4(this, true)">3. تخربه السريع جداً بإنزيمات الكولين إستيراز</button>
-          <button class="chip" onclick="toggleG4(this, false)">4. عبوره المفرط للحاجز الدموي الدماغي وإحداث النعاس</button>
-        </div>
-        <div class="formula-box">
-          $$\text{ACh}^+ \text{ (Quaternary Amine)} \xrightarrow{\text{AChE (Rapid)}} \text{Choline} + \text{Acetate}$$
-        </div>
-        <p><strong>المرحلة ب:</strong> ما هو الاستعمال السريري النوعي المصادق عليه للأستيل كولين في الممارسة؟</p>
-        <div class="quiz-options" id="g4-mcq">
-          <button class="quiz-opt" onclick="checkG4Mcq(this, false)">أ) علاج احتباس البول بعد الجراحة وريدياً</button>
-          <button class="quiz-opt" onclick="checkG4Mcq(this, true)">ب) تقطير محلول 1% موضعياً في الحجرة الأمامية للعين لإحداث تضيق حدقة فوري أثناء جراحة الساد</button>
-          <button class="quiz-opt" onclick="checkG4Mcq(this, false)">ج) تدبير نوبات الوهن العضلي الوبيل</button>
-        </div>
-        <div class="feedback-box" id="fb-g4"></div>
-      </article>
-
-      <!-- Game 5: Bethanechol Receptor Gatekeeper + Case -->
-      <article class="academic-card accent-emerald" id="card-g5">
-        <div class="card-header">
-          <div class="card-title-wrap">
-            <i class="fa-solid fa-door-open card-icon icon-emerald"></i>
-            <h3 class="card-title">اللعبة 5: مصفاة المستقبلات وحالة احتباس البول (Bethanechol)</h3>
-          </div>
-          <span class="game-status-badge" id="badge-g5">غير مكتمل</span>
-        </div>
-        <div class="step-box">
-          <strong>حالة سريرية:</strong> مريضة بعد الولادة القيصرية تعاني من <strong>احتباس بولي غير انسدادي</strong> (مثانة رخوة Atonic Bladder). يجب توجيه جزيء <strong>البيثانيكول</strong> إلى بوابة مستقبله الصحيح لتحفيز العضلة الدافعة!
-        </div>
-        <div class="comparison-grid">
-          <button class="drop-zone" style="text-align:center;" onclick="pickG5Gate('M')">
-            <div style="font-size:1.8rem;color:var(--emerald);"><i class="fa-solid fa-lock-open"></i></div>
-            <strong style="font-family:Cairo;">بوابة المستقبلات الموسكارينية (M)</strong>
-            <div style="font-size:0.82rem;color:var(--text-sub);">عضلات ملساء للمثانة والسبيل الهضمي</div>
-          </button>
-          <button class="drop-zone" style="text-align:center;" onclick="pickG5Gate('N')">
-            <div style="font-size:1.8rem;color:var(--rose);"><i class="fa-solid fa-shield-halved"></i></div>
-            <strong style="font-family:Cairo;">بوابة المستقبلات النيكوتينية (N)</strong>
-            <div style="font-size:0.82rem;color:var(--text-sub);">العقد الذاتية والوصلة العصبية العضلية</div>
-          </button>
-        </div>
-        <div class="feedback-box" id="fb-g5"></div>
-      </article>
-
-      <!-- Game 6: Carbachol vs Bethanechol Venn Comparison -->
-      <article class="academic-card accent-amber" id="card-g6">
-        <div class="card-header">
-          <div class="card-title-wrap">
-            <i class="fa-solid fa-scale-balanced card-icon icon-amber"></i>
-            <h3 class="card-title">اللعبة 6: المبارزة الثنائية (الكارباكول مقابل البيثانيكول)</h3>
-          </div>
-          <span class="game-status-badge" id="badge-g6">غير مكتمل</span>
-        </div>
-        <p style="margin-top:0;">اختر الصفة ثم اضغط على الدواء الذي تنطبق عليه:</p>
-        <div class="chip-pool" id="g6-pool"></div>
-        <div class="comparison-grid">
-          <div class="drop-zone" onclick="placeG6('carbachol')" style="border-right:4px solid var(--cyan);">
-            <div class="drop-zone-title"><span>الكارباكول (Carbachol)</span> <i class="fa-solid fa-eye" style="color:var(--cyan)"></i></div>
-            <div class="chip-pool" id="g6-zone-carbachol"></div>
-          </div>
-          <div class="drop-zone" onclick="placeG6('bethanechol')" style="border-right:4px solid var(--amber);">
-            <div class="drop-zone-title"><span>البيثانيكول (Bethanechol)</span> <i class="fa-solid fa-droplet" style="color:var(--amber)"></i></div>
-            <div class="chip-pool" id="g6-zone-bethanechol"></div>
-          </div>
-        </div>
-        <div class="feedback-box" id="fb-g6"></div>
-      </article>
-
-      <!-- Game 7: Pilocarpine Glaucoma Anatomical Simulator + Sjögren -->
-      <article class="academic-card accent-cyan" id="card-g7">
-        <div class="card-header">
-          <div class="card-title-wrap">
-            <i class="fa-solid fa-eye-dropper card-icon icon-cyan"></i>
-            <h3 class="card-title">اللعبة 7: محاكي تصريف الخلط المائي وقناة شليم (Pilocarpine)</h3>
-          </div>
-          <span class="game-status-badge" id="badge-g7">غير مكتمل</span>
-        </div>
-
-        <div class="sim-stage">
-          <div class="iop-meter" id="g7-iop-meter">
-            <i class="fa-solid fa-gauge-high"></i>
-            ضغط العين الداخلي (IOP): <span id="g7-iop-val">35 mmHg (مرتفع - زرق)</span>
-          </div>
-
-          <!-- Interactive SVG of Anterior Chamber & Canal of Schlemm -->
-          <svg viewBox="0 0 360 150" style="width:100%;max-width:420px;background:#fff;border-radius:12px;border:1px solid #CBD5E1;">
-            <!-- Cornea -->
-            <path d="M 30 75 Q 110 10 210 35" fill="none" stroke="#06B6D4" stroke-width="5"/>
-            <text x="85" y="25" font-size="11" fill="#0F172A" font-weight="bold">القرنية والخلط المائي</text>
-            <!-- Iris & Pupil -->
-            <rect id="g7-iris-top" x="150" y="38" width="14" height="32" rx="4" fill="#8B5CF6"/>
-            <rect id="g7-iris-bot" x="150" y="88" width="14" height="32" rx="4" fill="#8B5CF6"/>
-            <text x="122" y="138" font-size="11" fill="#5B21B6" font-weight="bold">الحدقة: <tspan id="g7-pupil-txt">متوسعة</tspan></text>
-            <!-- Trabecular Meshwork & Canal of Schlemm -->
-            <rect x="220" y="30" width="22" height="34" rx="4" fill="#E2E8F0" stroke="#475569" stroke-dasharray="3,2"/>
-            <circle id="g7-schlemm" cx="275" cy="47" r="10" fill="#FDA4AF" stroke="#F43F5E" stroke-width="2"/>
-            <text x="215" y="82" font-size="10" fill="#334155" font-weight="bold">الشبكة التربيقية</text>
-            <text x="255" y="25" font-size="10" fill="#9F1239" font-weight="bold" id="g7-schlemm-lbl">قناة شليم (مضيّقة)</text>
-            <!-- Aqueous Flow Arrows -->
-            <path id="g7-flow" d="M 100 65 L 210 47" stroke="#F43F5E" stroke-width="3" stroke-dasharray="5,4" fill="none"/>
-          </svg>
-
-          <button class="btn btn-cyan" id="g7-drop-btn" onclick="applyPilocarpine()">
-            <i class="fa-solid fa-droplet"></i> تقطير البيلوكاربين (Pilocarpine) الآن
-          </button>
-
-          <!-- Duration & Onset Visual Bar Chart -->
-          <div class="chart-box" style="width:100%;">
-            <div style="font-weight:700;font-size:0.86rem;margin-bottom:8px;color:var(--text-heading);">
-              <i class="fa-solid fa-chart-bar" style="color:var(--cyan)"></i> الحركية الزمنية لقطرة البيلوكاربين:
-            </div>
-            <div class="bar-row">
-              <span class="bar-label">بدء التأثير:</span>
-              <div class="bar-track"><div class="bar-val" id="g7-bar1" style="width:0%;background:var(--emerald);"></div></div>
-              <span style="font-weight:700;">بضع دقائق</span>
-            </div>
-            <div class="bar-row" style="margin-bottom:0;">
-              <span class="bar-label">استمرار المفعول:</span>
-              <div class="bar-track"><div class="bar-val" id="g7-bar2" style="width:0%;background:var(--cyan);"></div></div>
-              <span style="font-weight:700;">4 إلى 8 ساعات</span>
-            </div>
-          </div>
-        </div>
-
-        <div style="margin-top:14px;">
-          <p style="margin:0 0 8px;"><strong>سؤال الحركية والأمراض المناعية:</strong> لماذا يعبر البيلوكاربين للدماغ (CNS)، وما الدواء المستخدم مع البيلوكاربين لعلاج جفاف الفم في <strong>متلازمة شوغرن</strong>؟</p>
-          <div class="quiz-options" id="g7-mcq">
-            <button class="quiz-opt" onclick="checkG7Mcq(this, false)">أ) لأنه مركب رباعي قطبي؛ ويُعطى معه الإدروفونيوم</button>
-            <button class="quiz-opt" onclick="checkG7Mcq(this, true)">ب) لأنه أمين ثالثي غير مشحون ولا يخرب بـ AChE؛ ويُعطى السيفيميلين (Cevimeline)</button>
-            <button class="quiz-opt" onclick="checkG7Mcq(this, false)">ج) لأنه إستر كولين صنعي؛ ويُعطى الإيكوثيوفات</button>
-          </div>
-        </div>
-        <div class="feedback-box" id="fb-g7"></div>
-      </article>
+      <div id="mount-sec-2"></div>
     </section>
 
-    <!-- ========================================================= -->
-    <!-- SECTION 3.0: INDIRECT-ACTING AChE INHIBITORS              -->
-    <!-- ========================================================= -->
     <section id="sec-3">
       <div class="topic-header-card">
         <div class="topic-en">3.0 INDIRECT-ACTING AGONISTS (AChE INHIBITORS)</div>
         <h2 class="topic-ar">3.0 الناهضات الكولينية غير المباشرة (مثبطات الكولين إستراز)</h2>
       </div>
-
-      <!-- Game 8: Edrophonium Tensilon Speed Test -->
-      <article class="academic-card accent-violet" id="card-g8">
-        <div class="card-header">
-          <div class="card-title-wrap">
-            <i class="fa-solid fa-stopwatch card-icon icon-violet"></i>
-            <h3 class="card-title">اللعبة 8: تحدي تشخيص الوهن العضلي السريع (Tensilon Test)</h3>
-          </div>
-          <span class="game-status-badge" id="badge-g8">غير مكتمل</span>
-        </div>
-
-        <div style="display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:space-between;">
-          <div style="flex:1;min-width:220px;">
-            <p style="margin-top:0;">مريض يراجع بـ <strong>تدلي شديد في الجفن (Ptosis)</strong> وضعف عضلي. اختر الدواء التشخيصي الفوري فائق قصر الأمد:</p>
-            <div style="display:flex;flex-wrap:wrap;gap:8px;">
-              <button class="btn btn-violet btn-sm" onclick="runTensilon('edrophonium')">الإدروفونيوم (Edrophonium)</button>
-              <button class="btn btn-outline btn-sm" onclick="runTensilon('echothiophate')">الإيكوثيوفات</button>
-              <button class="btn btn-outline btn-sm" onclick="runTensilon('bethanechol')">البيثانيكول</button>
-            </div>
-          </div>
-          <div style="display:flex;flex-direction:column;align-items:center;gap:6px;">
-            <div class="eye-sim-box">
-              <div class="eye-pupil"></div>
-              <div class="eyelid" id="g8-eyelid"></div>
-            </div>
-            <span id="g8-eye-lbl" style="font-size:0.8rem;font-weight:700;color:var(--rose);">الجفن متدلٍ (وهن عضلي محتمل)</span>
-          </div>
-        </div>
-        <div class="feedback-box" id="fb-g8"></div>
-      </article>
-
-      <!-- Game 9 & 10: Neostigmine vs Pyridostigmine Duel + Red Flag Obstruction -->
-      <div class="comparison-grid">
-        <article class="academic-card accent-amber" id="card-g9">
-          <div class="card-header">
-            <div class="card-title-wrap">
-              <i class="fa-solid fa-user-doctor card-icon icon-amber"></i>
-              <h3 class="card-title">اللعبة 9: توأما الوهن العضلي</h3>
-            </div>
-            <span class="game-status-badge" id="badge-g9">غير مكتمل</span>
-          </div>
-          <p style="margin-top:0;font-size:0.88rem;">اختر العبارة ثم وجهها للدواء الأنسب:</p>
-          <div class="chip-pool" id="g9-pool"></div>
-          <div class="drop-grid">
-            <div class="drop-zone" onclick="placeG9('neo')">
-              <div class="drop-zone-title"><span>النيوستيغمين (Neostigmine)</span></div>
-              <div class="chip-pool" id="g9-zone-neo"></div>
-            </div>
-            <div class="drop-zone" onclick="placeG9('pyrido')">
-              <div class="drop-zone-title"><span>البيريدوستيغمين (Pyridostigmine)</span></div>
-              <div class="chip-pool" id="g9-zone-pyrido"></div>
-            </div>
-          </div>
-          <div class="feedback-box" id="fb-g9"></div>
-        </article>
-
-        <article class="academic-card accent-rose" id="card-g10">
-          <div class="card-header">
-            <div class="card-title-wrap">
-              <i class="fa-solid fa-triangle-exclamation card-icon icon-rose"></i>
-              <h3 class="card-title">اللعبة 10: كاشف الخطر الأحمر!</h3>
-            </div>
-            <span class="game-status-badge" id="badge-g10">غير مكتمل</span>
-          </div>
-          <div class="step-box" style="border-color:var(--rose);background:var(--rose-soft);">
-            <strong>تنبيه وصفة:</strong> طبيب متدرب وصف <strong>النيوستيغمين</strong> لمريض يعاني من <u>انسداد ميكانيكي معوي وبولي تام</u>!
-          </div>
-          <p style="font-size:0.88rem;">ما هو الإجراء السريري والتعليل العلمي الدقيق؟</p>
-          <div class="quiz-options" id="g10-mcq">
-            <button class="quiz-opt" onclick="checkG10(this, false)">صرف الدواء؛ لأنه يعالج الإمساك بأمان</button>
-            <button class="quiz-opt" onclick="checkG10(this, true)">إيقاف الوصفة فوراً (مضاد استطباب مطلق)؛ لأن التقلص العضلي ضد عائق يسبب انثقاب وتمزق الأمعاء أو المثانة</button>
-            <button class="quiz-opt" onclick="checkG10(this, false)">استبداله بالنيوستيغمين الفموي فقط لتجنب عبور الدماغ</button>
-          </div>
-          <div class="feedback-box" id="fb-g10"></div>
-        </article>
-      </div>
-
-      <!-- Game 11: Alzheimer Liver-Safe Sorter + Echothiophate Cataract Mystery -->
-      <div class="comparison-grid">
-        <article class="academic-card accent-emerald" id="card-g11">
-          <div class="card-header">
-            <div class="card-title-wrap">
-              <i class="fa-solid fa-brain card-icon icon-emerald"></i>
-              <h3 class="card-title">اللعبة 11: فرز ألزهايمر وحماية الكبد</h3>
-            </div>
-            <span class="game-status-badge" id="badge-g11">غير مكتمل</span>
-          </div>
-          <p style="margin-top:0;font-size:0.88rem;">افرز أدوية ألزهايمر إلى الأجيال الحديثة العابرة للـ BBB مقابل الدواء السام للكبد:</p>
-          <div class="chip-pool" id="g11-pool"></div>
-          <div class="drop-grid">
-            <div class="drop-zone" onclick="placeG11('safe')" style="border-right:4px solid var(--emerald);">
-              <div class="drop-zone-title"><span>أجيال حديثة معتمدة (تعبر الدماغ)</span></div>
-              <div class="chip-pool" id="g11-zone-safe"></div>
-            </div>
-            <div class="drop-zone" onclick="placeG11('toxic')" style="border-right:4px solid var(--rose);">
-              <div class="drop-zone-title"><span>دواء تاريخي تراجع لسميته الكبدية</span></div>
-              <div class="chip-pool" id="g11-zone-toxic"></div>
-            </div>
-          </div>
-          <div class="feedback-box" id="fb-g11"></div>
-        </article>
-
-        <article class="academic-card accent-violet" id="card-g12">
-          <div class="card-header">
-            <div class="card-title-wrap">
-              <i class="fa-solid fa-biohazard card-icon icon-violet"></i>
-              <h3 class="card-title">اللعبة 12: لغز الإيكوثيوفات (Echothiophate)</h3>
-            </div>
-            <span class="game-status-badge" id="badge-g12">غير مكتمل</span>
-          </div>
-          <div class="formula-box">
-            $$\text{Organophosphate} + \text{AChE} \xrightarrow{\text{Covalent}} \text{Irreversible Inhibition}$$
-          </div>
-          <p style="font-size:0.88rem;">ما الاختلاط العيني الخطير الذي أدى لسحب الإيكوثيوفات من الاستعمال السريري للزرق؟</p>
-          <div class="quiz-options" id="g12-mcq">
-            <button class="quiz-opt" onclick="checkG12(this, false)">اتساع دائم في الحدقة</button>
-            <button class="quiz-opt" onclick="checkG12(this, true)">إعتام دائم في عدسة العين (الساد / Cataracts)</button>
-            <button class="quiz-opt" onclick="checkG12(this, false)">جفاف تام في الغدة الدمعية</button>
-          </div>
-          <div class="feedback-box" id="fb-g12"></div>
-        </article>
-      </div>
+      <div id="mount-sec-3"></div>
     </section>
 
-    <!-- ========================================================= -->
-    <!-- SECTION 4.0: GRAND MATRIX & ODD ONE OUT                   -->
-    <!-- ========================================================= -->
     <section id="sec-4">
       <div class="topic-header-card">
         <div class="topic-en">4.0 THE GRAND PHARMACOLOGICAL MATRIX</div>
         <h2 class="topic-ar">4.0 مصفوفة الربط الكبرى واستخراج الدواء الشاذ</h2>
       </div>
-
-      <!-- Game 13: Grand Interactive Matrix -->
-      <article class="academic-card accent-cyan" id="card-g13">
-        <div class="card-header">
-          <div class="card-title-wrap">
-            <i class="fa-solid fa-table-cells card-icon icon-cyan"></i>
-            <h3 class="card-title">اللعبة 13: مصفوفة المقارنة الكبرى (Master Grid)</h3>
-          </div>
-          <span class="game-status-badge" id="badge-g13">0 / 6</span>
-        </div>
-        <p style="margin-top:0;">اختر البطاقة المفقودة من الأعلى ثم اضغط على الخانة البنفسجية المناسبة في الجدول لإكماله:</p>
-        <div class="chip-pool" id="g13-pool"></div>
-
-        <div class="matrix-table-wrap">
-          <table class="matrix-table">
-            <thead>
-              <tr>
-                <th>الدواء</th>
-                <th>اختراق الـ CNS</th>
-                <th>الاستخدام السريري الرئيسي</th>
-                <th>الملاحظة الفارماكولوجية الخاصة</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><strong>الأستيل كولين</strong></td>
-                <td><span class="matrix-slot" data-ans="cns_none" onclick="fillG13(this)">اضغط للإسقاط</span></td>
-                <td>تضييق الحدقة الجراحي (1%)</td>
-                <td>يتخرب فورياً بإنزيم AChE</td>
-              </tr>
-              <tr>
-                <td><strong>البيثانيكول</strong></td>
-                <td>ضعيف جداً</td>
-                <td><span class="matrix-slot" data-ans="use_urine" onclick="fillG13(this)">اضغط للإسقاط</span></td>
-                <td>خالٍ تماماً من الفعالية النيكوتينية</td>
-              </tr>
-              <tr>
-                <td><strong>البيلوكاربين</strong></td>
-                <td><span class="matrix-slot" data-ans="cns_exc" onclick="fillG13(this)">اضغط للإسقاط</span></td>
-                <td>الزرق وجفاف الفم وشوغرن</td>
-                <td>يفتح الشبكة التربيقية وقناة شليم</td>
-              </tr>
-              <tr>
-                <td><strong>الإدروفونيوم</strong></td>
-                <td>ضعيفة</td>
-                <td><span class="matrix-slot" data-ans="use_diag" onclick="fillG13(this)">اضغط للإسقاط</span></td>
-                <td>فائق قصر أمد التأثير</td>
-              </tr>
-              <tr>
-                <td><strong>النيوستيغمين</strong></td>
-                <td>معدومة (نتروجين رباعي)</td>
-                <td>علاج الوهن العضلي الوبيل</td>
-                <td><span class="matrix-slot" data-ans="note_obs" onclick="fillG13(this)">اضغط للإسقاط</span></td>
-              </tr>
-              <tr>
-                <td><strong>دونيبيزيل / غالانتامين</strong></td>
-                <td>عالية (تخترق الدماغ)</td>
-                <td><span class="matrix-slot" data-ans="use_ad" onclick="fillG13(this)">اضغط للإسقاط</span></td>
-                <td>تعوض نقص عصبونات الكولين بالمخ</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <div class="feedback-box" id="fb-g13"></div>
-      </article>
-
-      <!-- Game 14: Odd One Out -->
-      <article class="academic-card accent-amber" id="card-g14">
-        <div class="card-header">
-          <div class="card-title-wrap">
-            <i class="fa-solid fa-magnifying-glass-minus card-icon icon-amber"></i>
-            <h3 class="card-title">اللعبة 14: استخرج الدواء الشاذ (Odd-One-Out)</h3>
-          </div>
-          <span class="game-status-badge" id="badge-g14">جولة 1 / 3</span>
-        </div>
-        <div id="g14-stage"></div>
-        <div class="feedback-box" id="fb-g14"></div>
-      </article>
+      <div id="mount-sec-4"></div>
     </section>
 
-    <!-- ========================================================= -->
-    <!-- SECTION 5.0: DUMBBELSS & CONTRAINDICATIONS                -->
-    <!-- ========================================================= -->
     <section id="sec-5">
       <div class="topic-header-card">
         <div class="topic-en">5.0 CHOLINERGIC CRISIS (DUMBBELSS) &amp; CONTRAINDICATIONS</div>
         <h2 class="topic-ar">5.0 طوارئ فرط التنبيه الكوليني وموانع الاستعمال المطلقة</h2>
       </div>
-
-      <!-- Game 15: ER DUMBBELSS Rescue Mission -->
-      <article class="academic-card accent-rose" id="card-g15">
-        <div class="card-header">
-          <div class="card-title-wrap">
-            <i class="fa-solid fa-truck-medical card-icon icon-rose"></i>
-            <h3 class="card-title">اللعبة 15: غرفة الطوارئ ومتلازمة DUMBBELSS</h3>
-          </div>
-          <span class="game-status-badge" id="badge-g15">0 / 6</span>
-        </div>
-        <p style="margin-top:0;">وصل مصاب بتسمم بمثبطات الكولين إستراز! طابق كل عَرَض يظهر على الشاشة مع رمز المستقبل الصحيح في متلازمة <strong>DUMBBELSS</strong>:</p>
-
-        <div class="dumbbelss-letters" id="g15-letters">
-          <span class="d-letter" data-l="D">D</span>
-          <span class="d-letter" data-l="U">U</span>
-          <span class="d-letter" data-l="M">M</span>
-          <span class="d-letter" data-l="B1">B</span>
-          <span class="d-letter" data-l="B2">B</span>
-          <span class="d-letter" data-l="E">E</span>
-          <span class="d-letter" data-l="L">L</span>
-          <span class="d-letter" data-l="S1">S</span>
-          <span class="d-letter" data-l="S2">S</span>
-        </div>
-
-        <div class="step-box" style="text-align:center;" id="g15-prompt-box">
-          <div style="font-size:0.8rem;color:var(--text-sub);">العَرَض الطارئ الحالي:</div>
-          <div id="g15-symptom" style="font-family:Cairo;font-size:1.12rem;font-weight:800;color:var(--rose);margin:4px 0;"></div>
-          <div class="chip-pool" style="justify-content:center;" id="g15-btns"></div>
-        </div>
-
-        <div style="margin-top:12px;">
-          <p style="margin:0 0 8px;"><strong>تحقق التسمم الوعائي (صح/خطأ):</strong> ينجم هبوط الضغط الشرياني المحيطي في التسمم الكولينرجي عن بطء القلب (M2) وتحرير أحادي أكسيد النيتروجين (NO/EDRF) من البطانة عبر (M3).</p>
-          <div style="display:flex;gap:10px;">
-            <button class="btn btn-outline btn-sm" style="flex:1;" onclick="answerTF('g15tf', true, true, 'دقيق! M2 يبطئ القلب و M3 البطانية تحرر NO الموسع للأوعية مما يهبط بالضغط.')">صواب</button>
-            <button class="btn btn-outline btn-sm" style="flex:1;" onclick="answerTF('g15tf', false, true, 'غير صحيح؛ العبارة صحيحة فكلا الآليتين (M2 على القلب + NO عبر M3) تسببان هبوط الضغط.')">خطأ</button>
-          </div>
-          <div class="feedback-box" id="fb-g15tf"></div>
-        </div>
-        <div class="feedback-box" id="fb-g15"></div>
-      </article>
-
-      <!-- Game 16: Contraindication Shield -->
-      <article class="academic-card accent-emerald" id="card-g16">
-        <div class="card-header">
-          <div class="card-title-wrap">
-            <i class="fa-solid fa-shield-virus card-icon icon-emerald"></i>
-            <h3 class="card-title">اللعبة 16: درع الأمان ومضادات الاستطباب المطلقة</h3>
-          </div>
-          <span class="game-status-badge" id="badge-g16">غير مكتمل</span>
-        </div>
-        <p style="margin-top:0;">اختر الخطر القاتل ثم اربطه بالمريض الذي يُمنع إعطاؤه مقلدات كولينية حظراً مطلقاً:</p>
-        <div class="chip-pool" id="g16-pool"></div>
-
-        <div class="drop-grid cols-3">
-          <div class="drop-zone" onclick="placeG16('asthma')" style="border-right:4px solid var(--cyan);">
-            <div class="drop-zone-title"><span>1. مريض الربو و COPD</span></div>
-            <div class="chip-pool" id="g16-zone-asthma"></div>
-          </div>
-          <div class="drop-zone" onclick="placeG16('ulcer')" style="border-right:4px solid var(--amber);">
-            <div class="drop-zone-title"><span>2. مريض القرحة الهضمية الفعالة</span></div>
-            <div class="chip-pool" id="g16-zone-ulcer"></div>
-          </div>
-          <div class="drop-zone" onclick="placeG16('obstruction')" style="border-right:4px solid var(--rose);">
-            <div class="drop-zone-title"><span>3. انسداد ميكانيكي معوي/بولي</span></div>
-            <div class="chip-pool" id="g16-zone-obstruction"></div>
-          </div>
-        </div>
-        <div class="feedback-box" id="fb-g16"></div>
-      </article>
+      <div id="mount-sec-5"></div>
     </section>
 
   </main>
 
-  <!-- Sticky Bottom Navigation Bar for Telegram & Mobile -->
-  <nav class="bottom-nav">
-    <a href="#sec-1" class="nav-pill"><i class="fa-solid fa-sitemap"></i> 1. التصنيف</a>
-    <a href="#sec-2" class="nav-pill"><i class="fa-solid fa-capsules"></i> 2. المباشرة</a>
-    <a href="#sec-3" class="nav-pill"><i class="fa-solid fa-ban"></i> 3. غير المباشرة</a>
-    <a href="#sec-4" class="nav-pill"><i class="fa-solid fa-table"></i> 4. المصفوفة</a>
-    <a href="#sec-5" class="nav-pill"><i class="fa-solid fa-triangle-exclamation"></i> 5. الطوارئ</a>
+  <nav class="bottom-nav" id="bottom-nav">
+    <a href="#sec-1" class="nav-pill" data-sec="sec-1"><i class="fa-solid fa-sitemap"></i> 1. التصنيف</a>
+    <a href="#sec-2" class="nav-pill" data-sec="sec-2"><i class="fa-solid fa-capsules"></i> 2. المباشرة</a>
+    <a href="#sec-3" class="nav-pill" data-sec="sec-3"><i class="fa-solid fa-ban"></i> 3. غير المباشرة</a>
+    <a href="#sec-4" class="nav-pill" data-sec="sec-4"><i class="fa-solid fa-table"></i> 4. المصفوفة</a>
+    <a href="#sec-5" class="nav-pill" data-sec="sec-5"><i class="fa-solid fa-triangle-exclamation"></i> 5. الطوارئ</a>
   </nav>
 
   <script>
     // =========================================================
-    // 1. TELEGRAM MINI APP & STATE MANAGEMENT
+    // 1. TELEGRAM MINI APP + STATE
     // =========================================================
-    const tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
+    const tg = window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initData !== undefined ? window.Telegram.WebApp : null;
+
+    function applyInsets() {
+      if (!tg) return;
+      const s = tg.safeAreaInset || {}, c = tg.contentSafeAreaInset || {};
+      document.documentElement.style.setProperty('--safe-top', ((s.top || 0) + (c.top || 0)) + 'px');
+      measureHud();
+    }
+    function measureHud() {
+      const h = document.getElementById('hud');
+      if (h) document.documentElement.style.setProperty('--hud-h', h.offsetHeight + 'px');
+    }
+
     if (tg) {
-      tg.ready();
-      tg.expand();
-      if (tg.setHeaderColor) tg.setHeaderColor('#F1F5F9');
-      if (tg.setBackgroundColor) tg.setBackgroundColor('#F1F5F9');
+      try {
+        tg.ready();
+        tg.expand();
+        if (tg.setHeaderColor) tg.setHeaderColor('#F1F5F9');
+        if (tg.setBackgroundColor) tg.setBackgroundColor('#F1F5F9');
+        if (tg.setBottomBarColor) tg.setBottomBarColor('#FFFFFF');
+        if (tg.disableVerticalSwipes) tg.disableVerticalSwipes();
+        if (tg.onEvent) {
+          tg.onEvent('safeAreaChanged', applyInsets);
+          tg.onEvent('contentSafeAreaChanged', applyInsets);
+        }
+        applyInsets();
+      } catch (e) {}
     }
 
     function haptic(type) {
@@ -1387,707 +653,668 @@
       } catch (e) {}
     }
 
-    const TOTAL_GAMES = 16;
-    let state = {
-      xp: 0,
-      streak: 0,
-      completed: {}
-    };
-
+    const STORE_KEY = 'cholinergic_games_s5_v2';
+    let state = { xp: 0, streak: 0, completed: {}, progress: {} };
     try {
-      const saved = localStorage.getItem('cholinergic_games_s5_v1');
-      if (saved) state = JSON.parse(saved);
+      const saved = JSON.parse(localStorage.getItem(STORE_KEY) || 'null');
+      if (saved && typeof saved === 'object') state = Object.assign(state, saved);
     } catch (e) {}
+    if (!state.completed) state.completed = {};
+    if (!state.progress) state.progress = {};
 
     function saveState() {
-      try { localStorage.setItem('cholinergic_games_s5_v1', JSON.stringify(state)); } catch (e) {}
+      try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch (e) {}
       renderHUD();
     }
 
+    // =========================================================
+    // 2. CONTENT: 16 GAMES -> QUIZ / FLASHCARDS / TRUE-FALSE
+    // =========================================================
+    const Q  = (q, opts, a, exp, o) => Object.assign({ t: 'quiz', q, opts, a, exp }, o || {});
+    const TF = (q, a, exp, o) => Object.assign({ t: 'tf', q, a, exp }, o || {});
+    const F  = (q, a) => ({ t: 'flash', q, a });
+
+    const BR = [
+      'ناهضات مباشرة: إسترات الكولين',
+      'ناهضات مباشرة: القلوانيات ونظائرها',
+      'مثبطات AChE غير مباشرة: عكوسة',
+      'مثبطات AChE غير مباشرة: غير عكوسة'
+    ];
+    const g1Drugs = [
+      ['الأستيل كولين', 0], ['الكارباكول', 0], ['البيثانيكول', 0],
+      ['البيلوكاربين', 1], ['السيفيميلين', 1],
+      ['الإدروفونيوم', 2], ['النيوستيغمين', 2], ['دونيبيزيل', 2],
+      ['الإيكوثيوفات', 3]
+    ];
+
+    const CARB_BETH = ['الكارباكول (Carbachol)', 'البيثانيكول (Bethanechol)'];
+    const NEO_PYR = ['النيوستيغمين (Neostigmine)', 'البيريدوستيغمين (Pyridostigmine)'];
+    const AD_OPTS = ['أجيال حديثة معتمدة (تعبر الدماغ)', 'دواء تاريخي تراجع لسميته الكبدية'];
+    const REC = ['مستقبلات M3', 'مستقبلات M2', 'مستقبلات Nm'];
+    const RISKS = [
+      'تشنج قصبي حاد ومفرزات تسد المجاري التنفسية',
+      'فرط إفراز حمض HCl وخطر النزف والانثقاب',
+      'ضغط هائل يمزق ويثقب جدار الأمعاء أو المثانة'
+    ];
+
+    const GAMES = [
+      // ---------------- SECTION 1 ----------------
+      {
+        id: 'g1', sec: 1, icon: 'fa-sitemap', accent: 'violet', points: 40,
+        title: 'اللعبة 1: اختبار التصنيف الشجري الدوائي (Tree Classifier)',
+        intro: 'صنّف كل دواء ضمن الفرع الشجري الصحيح لإتمام التصنيف الكامل للمقلدات الكولينية.',
+        items: g1Drugs.map(d => Q(
+          'صنّف الدواء «' + d[0] + '» ضمن الفرع الشجري الصحيح:', BR, d[1],
+          'تصنيف صحيح! «' + d[0] + '» ينتمي إلى: ' + BR[d[1]] + '.',
+          { fix: true, hint: 'تصنيف خاطئ لـ (' + d[0] + ')؛ راجع الزمرة وحاول مجدداً.' }
+        ))
+      },
+      {
+        id: 'g2', sec: 1, group: 'a', icon: 'fa-layer-group', accent: 'cyan', points: 20,
+        title: 'اللعبة 2: بطاقات الاستذكار النشط',
+        intro: 'اضغط على البطاقة لقلبها واستكشاف الجواب العلمي:',
+        items: [
+          F('ما الفرق الجوهري بين المقلدات الكولينية المباشرة وغير المباشرة؟', 'المباشرة ترتبط مباشرة بالمستقبلات (M أو N) وتفعلها؛ أما غير المباشرة فتثبط إنزيم AChE فتراكم الأستيل كولين في الشق المشبكي.'),
+          F('لماذا ينفذ البيلوكاربين إلى الجهاز العصبي المركزي (CNS)؟', 'لأنه قلوانيد طبيعي ببنية أمين ثالثي غير مشحون كهربائياً، ولا يخضع للتفكك بإنزيم AChE.'),
+          F('ما الفارق الكيميائي الحركي بين النيوستيغمين والإيكوثيوفات؟', 'النيوستيغمين مثبط عكوس رباعي لا يعبر الدماغ؛ أما الإيكوثيوفات فمركب فوسفوري عضوي يرتبط ارتباطاً غير عكوس بالإنزيم.')
+        ]
+      },
+      {
+        id: 'g3', sec: 1, group: 'a', icon: 'fa-check-double', accent: 'emerald', points: 20,
+        title: 'اللعبة 3: تحدي الصواب والخطأ',
+        items: [
+          TF('تتميز جميع الأدوية الكولينية ذات التأثير المباشر بامتلاكها مدة تأثير أقصر من الأستيل كولين الداخلي.', false,
+            'العبارة خاطئة؛ ممتاز! جميع الناهضات المباشرة (الصنعية والطبيعية) تتمتع بمدة تأثير أطول من الأستيل كولين الداخلي الذي يتخرب فورياً.',
+            { hint: 'تتمتع جميع الناهضات المباشرة بمدة تأثير أطول من الأستيل كولين الداخلي الذي يتخرب فورياً.' })
+        ]
+      },
+
+      // ---------------- SECTION 2 ----------------
+      {
+        id: 'g4', sec: 2, icon: 'fa-road-barrier', accent: 'rose', points: 30,
+        title: 'اللعبة 4: كاشف عقبات الأستيل كولين (ACh) والاستعمال العيني',
+        intro: 'المرحلة أ: لماذا يفتقر الأستيل كولين (ACh) للأهمية العلاجية الجهازية بالحقن؟ حدّد صحة كل عقبة من العقبات التالية، ثم أجب عن سؤال الاستعمال العيني في المرحلة ب.',
+        items: [
+          TF('المرحلة أ — تُعد «تعدد تأثيراته (M و N) وافتقاره للنوعية النسيجية» من عقبات ACh في الاستعمال الجهازي.', true,
+            'صحيح! تعدد التأثيرات الموسكارينية والنيكوتينية وغياب النوعية النسيجية من عقبات ACh.'),
+          TF('المرحلة أ — تُعد «مدة تأثيره الطويلة التي تستمر لأسبوع» من عقبات ACh في الاستعمال الجهازي.', false,
+            'العبارة خاطئة؛ ليست من عقبات ACh. تذكر أنه رباعي الشحنة ويتخرب سريعاً، فمدة تأثيره قصيرة جداً.',
+            { hint: 'هذه ليست من عقبات ACh؛ تذكر أنه رباعي الشحنة ويتخرب سريعاً ولا يعبر الدماغ.' }),
+          TF('المرحلة أ — تُعد «تخربه السريع جداً بإنزيمات الكولين إستراز» من عقبات ACh في الاستعمال الجهازي.', true,
+            'صحيح! يتخرب ACh سريعاً جداً بإنزيمات الكولين إستراز كما توضح المعادلة.',
+            { formula: '\\text{ACh}^+ \\text{ (Quaternary Amine)} \\xrightarrow{\\text{AChE (Rapid)}} \\text{Choline} + \\text{Acetate}' }),
+          TF('المرحلة أ — تُعد «عبوره المفرط للحاجز الدموي الدماغي وإحداث النعاس» من عقبات ACh في الاستعمال الجهازي.', false,
+            'العبارة خاطئة؛ ACh رباعي الشحنة ولا يعبر الدماغ، فليس هذا من عقباته.',
+            { hint: 'هذه ليست من عقبات ACh؛ تذكر أنه رباعي الشحنة ويتخرب سريعاً ولا يعبر الدماغ.' }),
+          Q('المرحلة ب — ما هو الاستعمال السريري النوعي المصادق عليه للأستيل كولين في الممارسة؟',
+            ['علاج احتباس البول بعد الجراحة وريدياً',
+             'تقطير محلول 1% موضعياً في الحجرة الأمامية للعين لإحداث تضيق حدقة فوري أثناء جراحة الساد',
+             'تدبير نوبات الوهن العضلي الوبيل'], 1,
+            'رائع! يقتصر الاستعمال السريري للأستيل كولين على تقطير 1% موضعياً داخل الحجرة الأمامية للعين لإحداث تضيق حدقة فوري أثناء جراحة الساد.',
+            { hint: 'خيار غير دقيق؛ الأستيل كولين يقتصر استعماله السريري على تقطير 1% موضعياً داخل الحجرة الأمامية للعين.' })
+        ]
+      },
+      {
+        id: 'g5', sec: 2, icon: 'fa-door-open', accent: 'emerald', points: 25,
+        title: 'اللعبة 5: مصفاة المستقبلات وحالة احتباس البول (Bethanechol)',
+        items: [
+          Q('إلى أي بوابة مستقبل يجب توجيه جزيء البيثانيكول لتحفيز العضلة الدافعة؟',
+            ['بوابة المستقبلات الموسكارينية (M) — عضلات ملساء للمثانة والسبيل الهضمي',
+             'بوابة المستقبلات النيكوتينية (N) — العقد الذاتية والوصلة العصبية العضلية'], 0,
+            'عبور ناجح! البيثانيكول انتقائي قوي للمستقبلات الموسكارينية (M) ويفتقر تماماً للتأثيرات النيكوتينية، مما يحفز العضلة الدافعة للمثانة الرخوة ويعالج احتباس البول بعد الولادة والجراحة.',
+            { fix: true,
+              ctx: '<strong>حالة سريرية:</strong> مريضة بعد الولادة القيصرية تعاني من <strong>احتباس بولي غير انسدادي</strong> (مثانة رخوة Atonic Bladder). يجب توجيه جزيء <strong>البيثانيكول</strong> إلى بوابة مستقبله الصحيح لتحفيز العضلة الدافعة!',
+              hint: 'البوابة مغلقة! البيثانيكول يفتقر تماماً لأي فعالية نيكوتينية (N). وجّهه نحو المستقبلات الموسكارينية.' })
+        ]
+      },
+      {
+        id: 'g6', sec: 2, icon: 'fa-scale-balanced', accent: 'amber', points: 30,
+        title: 'اللعبة 6: المبارزة الثنائية (الكارباكول مقابل البيثانيكول)',
+        intro: 'حدّد الدواء الذي تنطبق عليه كل صفة:',
+        items: [
+          Q('لأي دواء تنتمي الصفة: «تأثيرات موسكارينية ونيكوتينية معاً»؟', CARB_BETH, 0,
+            'صحيح! الكارباكول يجمع التأثيرين الموسكاريني والنيكوتيني.', { fix: true, hint: 'هذه الصفة تنتمي للدواء الآخر؛ انتبه للفارق بين M فقط و M+N.' }),
+          Q('لأي دواء تنتمي الصفة: «تضييق الحدقة وخفض ضغط العين في الزرق»؟', CARB_BETH, 0,
+            'صحيح! الكارباكول يُستعمل لتضييق الحدقة وخفض ضغط العين في الزرق.', { fix: true, hint: 'هذه الصفة تنتمي للدواء الآخر؛ انتبه للفارق بين M فقط و M+N.' }),
+          Q('لأي دواء تنتمي الصفة: «يحرض إفراز النورأدرينالين من المشابك»؟', CARB_BETH, 0,
+            'صحيح! الكارباكول هو الذي يحرض إفراز النورأدرينالين من المشابك.', { fix: true, hint: 'هذه الصفة تنتمي للدواء الآخر؛ انتبه للفارق بين M فقط و M+N.' }),
+          Q('لأي دواء تنتمي الصفة: «فعالية موسكارينية صرفة (بدون نيكوتينية)»؟', CARB_BETH, 1,
+            'صحيح! البيثانيكول موسكاريني صرف وخالٍ من الفعالية النيكوتينية.', { fix: true, hint: 'هذه الصفة تنتمي للدواء الآخر؛ انتبه للفارق بين M فقط و M+N.' }),
+          Q('لأي دواء تنتمي الصفة: «احتباس البول غير الانسدادي بعد الولادة»؟', CARB_BETH, 1,
+            'صحيح! البيثانيكول (المثانة + موسكاريني صرف) هو دواء احتباس البول غير الانسدادي بعد الولادة.', { fix: true, hint: 'هذه الصفة تنتمي للدواء الآخر؛ انتبه للفارق بين M فقط و M+N.' })
+        ]
+      },
+      {
+        id: 'g7', sec: 2, icon: 'fa-eye-dropper', accent: 'cyan', points: 35,
+        title: 'اللعبة 7: البيلوكاربين، الزرق وقناة شليم (Pilocarpine)',
+        intro: 'قبل تقطير البيلوكاربين: ضغط العين الداخلي (IOP) مرتفع 35 mmHg (زرق) والحدقة متوسعة وقناة شليم مضيّقة.',
+        items: [
+          F('ما تأثير تقطير البيلوكاربين في الزرق على الحدقة وقناة شليم وضغط العين (IOP)؟',
+            'تتضيق الحدقة (Miosis) وتُفتح الشبكة التربيقية وقناة شليم فيتحسن تصريف الخلط المائي، فينخفض ضغط العين من 35 mmHg (مرتفع - زرق) إلى 15 mmHg (طبيعي - تصريف ممتاز).'),
+          TF('يبدأ تأثير قطرة البيلوكاربين خلال بضع دقائق ويستمر مفعولها من 4 إلى 8 ساعات.', true,
+            'صحيح! بدء التأثير خلال بضع دقائق واستمرار المفعول من 4 إلى 8 ساعات.'),
+          TF('يؤدي تقطير البيلوكاربين إلى توسع الحدقة وانغلاق قناة شليم مما يرفع ضغط العين.', false,
+            'العبارة خاطئة؛ البيلوكاربين يضيّق الحدقة ويفتح الشبكة التربيقية وقناة شليم ويخفض ضغط العين.'),
+          Q('لماذا يعبر البيلوكاربين للدماغ (CNS)، وما الدواء المستخدم مع البيلوكاربين لعلاج جفاف الفم في متلازمة شوغرن؟',
+            ['لأنه مركب رباعي قطبي؛ ويُعطى معه الإدروفونيوم',
+             'لأنه أمين ثالثي غير مشحون ولا يخرب بـ AChE؛ ويُعطى السيفيميلين (Cevimeline)',
+             'لأنه إستر كولين صنعي؛ ويُعطى الإيكوثيوفات'], 1,
+            'صحيح! البيلوكاربين أمين ثالثي غير مشحون لا يخرب بـ AChE فينفذ إلى الـ CNS، وبنيته هذه تفسر نفوذه؛ وفي متلازمة شوغرن يُستخدم السيفيميلين.',
+            { hint: 'تذكر: البيلوكاربين أمين ثالثي غير مشحون يقاوم الإنزيم، وفي متلازمة شوغرن يُستخدم السيفيميلين.' })
+        ]
+      },
+
+      // ---------------- SECTION 3 ----------------
+      {
+        id: 'g8', sec: 3, icon: 'fa-stopwatch', accent: 'violet', points: 25,
+        title: 'اللعبة 8: تحدي تشخيص الوهن العضلي السريع (Tensilon Test)',
+        items: [
+          Q('مريض يراجع بتدلي شديد في الجفن (Ptosis) وضعف عضلي. اختر الدواء التشخيصي الفوري فائق قصر الأمد:',
+            ['الإدروفونيوم (Edrophonium)', 'الإيكوثيوفات', 'البيثانيكول'], 0,
+            'تشخيص مؤكد للوهن العضلي الوبيل! ارتبط الإدروفونيوم عكوساً بالإنزيم بروابط كهروستاتيكية ضعيفة فائق قصر الأمد.',
+            { hint: 'اختيار خاطئ لتشخيص الوهن! نحتاج لمثبط عكوس فائق قصر المفعول (الإدروفونيوم).' }),
+          TF('بعد حقن الإدروفونيوم يرتفع الجفن فوراً (استجابة تشخيصية موجبة)، ثم يعود للتدلي خلال دقائق لأن تأثيره فائق قصر الأمد.', true,
+            'صحيح! يزول التأثير سريعاً ويعود الجفن للتدلي خلال دقائق.')
+        ]
+      },
+      {
+        id: 'g9', sec: 3, group: 'b', icon: 'fa-user-doctor', accent: 'amber', points: 25,
+        title: 'اللعبة 9: توأما الوهن العضلي',
+        intro: 'حدّد الدواء الأنسب لكل عبارة:',
+        items: [
+          Q('لأي دواء تنتمي العبارة: «معاكسة الحصار العضلي بعد التخدير»؟', NEO_PYR, 0,
+            'صحيح! النيوستيغمين يعاكس الحصار العضلي بعد التخدير.', { fix: true, hint: 'حاول مجدداً؛ تذكر أن البيريدوستيغمين يمتاز بثبات ومدى أطول للتدبير المزمن.' }),
+          Q('لأي دواء تنتمي العبارة: «له فعالية نوعية قصيرة/متوسطة على الوهن»؟', NEO_PYR, 0,
+            'صحيح! فعالية النيوستيغمين على الوهن قصيرة إلى متوسطة.', { fix: true, hint: 'حاول مجدداً؛ تذكر أن البيريدوستيغمين يمتاز بثبات ومدى أطول للتدبير المزمن.' }),
+          Q('لأي دواء تنتمي العبارة: «الدواء الأساسي للتدبير المزمن طويل الأمد للوهن»؟', NEO_PYR, 1,
+            'صحيح! البيريدوستيغمين هو الخيار المزمن المعتمد.', { fix: true, hint: 'حاول مجدداً؛ تذكر أن البيريدوستيغمين يمتاز بثبات ومدى أطول للتدبير المزمن.' }),
+          Q('لأي دواء تنتمي العبارة: «أطول مفعولاً وأكثر ثباتاً بالتركيز»؟', NEO_PYR, 1,
+            'صحيح! البيريدوستيغمين أطول مفعولاً وأكثر ثباتاً بالتركيز.', { fix: true, hint: 'حاول مجدداً؛ تذكر أن البيريدوستيغمين يمتاز بثبات ومدى أطول للتدبير المزمن.' })
+        ]
+      },
+      {
+        id: 'g10', sec: 3, group: 'b', icon: 'fa-triangle-exclamation', accent: 'rose', points: 25,
+        title: 'اللعبة 10: كاشف الخطر الأحمر!',
+        items: [
+          Q('تنبيه وصفة: طبيب متدرب وصف النيوستيغمين لمريض يعاني من انسداد ميكانيكي معوي وبولي تام! ما هو الإجراء السريري والتعليل العلمي الدقيق؟',
+            ['صرف الدواء؛ لأنه يعالج الإمساك بأمان',
+             'إيقاف الوصفة فوراً (مضاد استطباب مطلق)؛ لأن التقلص العضلي ضد عائق يسبب انثقاب وتمزق الأمعاء أو المثانة',
+             'استبداله بالنيوستيغمين الفموي فقط لتجنب عبور الدماغ'], 1,
+            'قرار آمن 100%! النيوستيغمين مضاد استطباب مطلق في الانسداد الميكانيكي المعوي أو البولي تجنباً لخطر الانثقاب.',
+            { hint: 'خطر! تحفيز تقلص جدار الأمعاء أو المثانة المسدودة ميكانيكياً يولد ضغطاً يمزق الجدار.' })
+        ]
+      },
+      {
+        id: 'g11', sec: 3, group: 'c', icon: 'fa-brain', accent: 'emerald', points: 25,
+        title: 'اللعبة 11: فرز ألزهايمر وحماية الكبد',
+        intro: 'صنّف أدوية ألزهايمر إلى الأجيال الحديثة العابرة للـ BBB مقابل الدواء السام للكبد:',
+        items: [
+          Q('صنّف الدواء «دونيبيزيل (Donepezil)»:', AD_OPTS, 0,
+            'صحيح! دونيبيزيل من الأجيال الحديثة المعتمدة التي تعبر الدماغ.', { fix: true, hint: 'تأكد من الدواء ذي السمية الكبدية الحادة (تاكرين).' }),
+          Q('صنّف الدواء «ريفاستيغمين (Rivastigmine)»:', AD_OPTS, 0,
+            'صحيح! ريفاستيغمين من الأجيال الحديثة المعتمدة التي تعبر الدماغ.', { fix: true, hint: 'تأكد من الدواء ذي السمية الكبدية الحادة (تاكرين).' }),
+          Q('صنّف الدواء «غالانتامين (Galantamine)»:', AD_OPTS, 0,
+            'صحيح! غالانتامين من الأجيال الحديثة المعتمدة التي تعبر الدماغ.', { fix: true, hint: 'تأكد من الدواء ذي السمية الكبدية الحادة (تاكرين).' }),
+          Q('صنّف الدواء «تاكرين (Tacrine)»:', AD_OPTS, 1,
+            'دقيق! استُبدل التاكرين لسميته الكبدية بالأجيال الحديثة (دونيبيزيل، ريفاستيغمين، غالانتامين) لتحسين النقل الكوليني الدماغي.',
+            { fix: true, hint: 'تأكد من الدواء ذي السمية الكبدية الحادة (تاكرين).' })
+        ]
+      },
+      {
+        id: 'g12', sec: 3, group: 'c', icon: 'fa-biohazard', accent: 'violet', points: 25,
+        title: 'اللعبة 12: لغز الإيكوثيوفات (Echothiophate)',
+        items: [
+          TF('ارتباط المركب الفوسفوري العضوي بإنزيم AChE ارتباط تساهمي (Covalent) يؤدي إلى تثبيط غير عكوس للإنزيم.', true,
+            'صحيح! الفوسفوري العضوي يرتبط تساهمياً بالإنزيم ويسبب تثبيطاً غير عكوس.',
+            { formula: '\\text{Organophosphate} + \\text{AChE} \\xrightarrow{\\text{Covalent}} \\text{Irreversible Inhibition}' }),
+          Q('ما الاختلاط العيني الخطير الذي أدى لسحب الإيكوثيوفات من الاستعمال السريري للزرق؟',
+            ['اتساع دائم في الحدقة', 'إعتام دائم في عدسة العين (الساد / Cataracts)', 'جفاف تام في الغدة الدمعية'], 1,
+            'صحيح! الإيكوثيوفات (الفوسفوري العضوي غير العكوس) تراجع وسُحب بسبب إحداثه اعتاماً دائماً في عدسة العين (الساد).',
+            { hint: 'غير صحيح؛ الإيكوثيوفات يضيق الحدقة بشدة ويسبب إعتام عدسة العين الدائم (الساد / Cataracts).' })
+        ]
+      },
+
+      // ---------------- SECTION 4 ----------------
+      {
+        id: 'g13', sec: 4, icon: 'fa-table-cells', accent: 'cyan', points: 45,
+        title: 'اللعبة 13: مصفوفة المقارنة الكبرى (Master Grid)',
+        intro: 'أكمل الخلية المفقودة (؟) في كل صف من مصفوفة المقارنة الفارماكولوجية:',
+        items: [
+          Q('ما القيمة الصحيحة لخانة «اختراق الـ CNS»؟',
+            ['معدومة (مركب رباعي قطبي)', 'ممتازة (أمين ثالثي غير مشحون)', 'عالية (تخترق الدماغ)'], 0,
+            'صحيح! الأستيل كولين مركب رباعي قطبي، فاختراقه للـ CNS معدوم.',
+            { ctx: '<strong>الدواء:</strong> الأستيل كولين<br><strong>اختراق الـ CNS:</strong> ؟<br><strong>الاستخدام السريري:</strong> تضييق الحدقة الجراحي (1%)<br><strong>الملاحظة:</strong> يتخرب فورياً بإنزيم AChE',
+              hint: 'هذه الخلية لا تطابق الاختيار؛ راجع صف الدواء.' }),
+          Q('ما القيمة الصحيحة لخانة «الاستخدام السريري الرئيسي»؟',
+            ['احتباس البول بعد الولادة والجراحة', 'تشخيص الوهن العضلي الوبيل', 'داء ألزهايمر (تدهور معرفي)'], 0,
+            'صحيح! البيثانيكول يُستعمل في احتباس البول بعد الولادة والجراحة.',
+            { ctx: '<strong>الدواء:</strong> البيثانيكول<br><strong>اختراق الـ CNS:</strong> ضعيف جداً<br><strong>الاستخدام السريري:</strong> ؟<br><strong>الملاحظة:</strong> خالٍ تماماً من الفعالية النيكوتينية',
+              hint: 'هذه الخلية لا تطابق الاختيار؛ راجع صف الدواء.' }),
+          Q('ما القيمة الصحيحة لخانة «اختراق الـ CNS»؟',
+            ['ممتازة (أمين ثالثي غير مشحون)', 'معدومة (مركب رباعي قطبي)', 'ضعيفة'], 0,
+            'صحيح! البيلوكاربين أمين ثالثي غير مشحون فاختراقه للـ CNS ممتاز.',
+            { ctx: '<strong>الدواء:</strong> البيلوكاربين<br><strong>اختراق الـ CNS:</strong> ؟<br><strong>الاستخدام السريري:</strong> الزرق وجفاف الفم وشوغرن<br><strong>الملاحظة:</strong> يفتح الشبكة التربيقية وقناة شليم',
+              hint: 'هذه الخلية لا تطابق الاختيار؛ راجع صف الدواء.' }),
+          Q('ما القيمة الصحيحة لخانة «الاستخدام السريري الرئيسي»؟',
+            ['تشخيص الوهن العضلي الوبيل', 'احتباس البول بعد الولادة والجراحة', 'داء ألزهايمر (تدهور معرفي)'], 0,
+            'صحيح! الإدروفونيوم يُستعمل لتشخيص الوهن العضلي الوبيل.',
+            { ctx: '<strong>الدواء:</strong> الإدروفونيوم<br><strong>اختراق الـ CNS:</strong> ضعيفة<br><strong>الاستخدام السريري:</strong> ؟<br><strong>الملاحظة:</strong> فائق قصر أمد التأثير',
+              hint: 'هذه الخلية لا تطابق الاختيار؛ راجع صف الدواء.' }),
+          Q('ما القيمة الصحيحة لخانة «الملاحظة الفارماكولوجية الخاصة»؟',
+            ['ممنوع في الانسداد المعوي والبولي', 'فائق قصر أمد التأثير', 'خالٍ تماماً من الفعالية النيكوتينية'], 0,
+            'صحيح! النيوستيغمين ممنوع في الانسداد المعوي والبولي.',
+            { ctx: '<strong>الدواء:</strong> النيوستيغمين<br><strong>اختراق الـ CNS:</strong> معدومة (نتروجين رباعي)<br><strong>الاستخدام السريري:</strong> علاج الوهن العضلي الوبيل<br><strong>الملاحظة:</strong> ؟',
+              hint: 'هذه الخلية لا تطابق الاختيار؛ راجع صف الدواء.' }),
+          Q('ما القيمة الصحيحة لخانة «الاستخدام السريري الرئيسي»؟',
+            ['داء ألزهايمر (تدهور معرفي)', 'تشخيص الوهن العضلي الوبيل', 'الزرق وجفاف الفم وشوغرن'], 0,
+            'إتقان شامل! دونيبيزيل / غالانتامين يُستعملان في داء ألزهايمر لتعويض نقص عصبونات الكولين بالمخ.',
+            { ctx: '<strong>الدواء:</strong> دونيبيزيل / غالانتامين<br><strong>اختراق الـ CNS:</strong> عالية (تخترق الدماغ)<br><strong>الاستخدام السريري:</strong> ؟<br><strong>الملاحظة:</strong> تعوض نقص عصبونات الكولين بالمخ',
+              hint: 'هذه الخلية لا تطابق الاختيار؛ راجع صف الدواء.' })
+        ]
+      },
+      {
+        id: 'g14', sec: 4, icon: 'fa-magnifying-glass-minus', accent: 'amber', points: 30,
+        title: 'اللعبة 14: استخرج الدواء الشاذ (Odd-One-Out)',
+        items: [
+          Q('أي دواء مما يلي يُعد شاذاً من حيث القدرة على اختراق الجهاز العصبي المركزي (CNS)؟',
+            ['الأستيل كولين', 'النيوستيغمين', 'البيلوكاربين', 'البيريدوستيغمين'], 2,
+            'البيلوكاربين هو الشاذ هنا؛ لأنه أمين ثالثي غير مشحون يخترق الـ CNS بسهولة، بينما البقية مركبات رباعية قطبية لا تعبر.',
+            { hint: 'ليس هذا الدواء الشاذ؛ أعد مقارنة الخصائص الحركية والمستقبلية.' }),
+          Q('أي دواء مما يلي يختلف في آلية الارتباط بإنزيم الكولين إستراز (غير عكوس)؟',
+            ['الإيكوثيوفات', 'الإدروفونيوم', 'النيوستيغمين', 'الدونيبيزيل'], 0,
+            'الإيكوثيوفات مركب فوسفوري عضوي مثبط غير عكوس للإنزيم، أما البقية فمثبطات عكوسة.',
+            { hint: 'ليس هذا الدواء الشاذ؛ أعد مقارنة الخصائص الحركية والمستقبلية.' }),
+          Q('أي دواء مما يلي يفتقر تماماً إلى الفعالية النيكوتينية (انتقائي موسكاريني M فقط)؟',
+            ['الأستيل كولين', 'الكارباكول', 'البيثانيكول'], 2,
+            'البيثانيكول انتقائي للمستقبلات الموسكارينية وخالٍ تماماً من التأثيرات النيكوتينية، بعكس ACh والكارباكول.',
+            { hint: 'ليس هذا الدواء الشاذ؛ أعد مقارنة الخصائص الحركية والمستقبلية.' })
+        ]
+      },
+
+      // ---------------- SECTION 5 ----------------
+      {
+        id: 'g15', sec: 5, icon: 'fa-truck-medical', accent: 'rose', points: 40, letters: true,
+        title: 'اللعبة 15: غرفة الطوارئ ومتلازمة DUMBBELSS',
+        intro: 'وصل مصاب بتسمم بمثبطات الكولين إستراز! طابق كل عَرَض مع المستقبل الصحيح في متلازمة DUMBBELSS، ثم أجب عن سؤال التسمم الوعائي.',
+        items: [
+          Q('العَرَض الطارئ: «إسهال مائي حاد ومغص بطني (Diarrhea)» — ما المستقبل المسؤول؟', REC, 0,
+            'صحيح! M3 مسؤولة عن معظم الإفرازات والعضلات الملساء.', { fix: true, l: 'D', hint: 'المستقبل غير صحيح! تذكر: M2 على القلب، Nm على العضلة الهيكلية، وM3 على الغدد والعضلات الملساء.' }),
+          Q('العَرَض الطارئ: «تبول قسري لا إرادي (Urination)» — ما المستقبل المسؤول؟', REC, 0,
+            'صحيح! M3 مسؤولة عن معظم الإفرازات والعضلات الملساء.', { fix: true, l: 'U', hint: 'المستقبل غير صحيح! تذكر: M2 على القلب، Nm على العضلة الهيكلية، وM3 على الغدد والعضلات الملساء.' }),
+          Q('العَرَض الطارئ: «تضيق حدقة دبوسي وتشنج المطابقة (Miosis)» — ما المستقبل المسؤول؟', REC, 0,
+            'صحيح! M3 مسؤولة عن معظم الإفرازات والعضلات الملساء.', { fix: true, l: 'M', hint: 'المستقبل غير صحيح! تذكر: M2 على القلب، Nm على العضلة الهيكلية، وM3 على الغدد والعضلات الملساء.' }),
+          Q('العَرَض الطارئ: «بطء شديد في نبضات القلب (Bradycardia)» — ما المستقبل المسؤول؟', REC, 1,
+            'صحيح! M2 مسؤولة عن تبطيء القلب.', { fix: true, l: 'B1', hint: 'المستقبل غير صحيح! تذكر: M2 على القلب، Nm على العضلة الهيكلية، وM3 على الغدد والعضلات الملساء.' }),
+          Q('العَرَض الطارئ: «تشنج قصبي حاد ومفرزات قصبية (Bronchospasm)» — ما المستقبل المسؤول؟', REC, 0,
+            'صحيح! M3 مسؤولة عن معظم الإفرازات والعضلات الملساء.', { fix: true, l: 'B2', hint: 'المستقبل غير صحيح! تذكر: M2 على القلب، Nm على العضلة الهيكلية، وM3 على الغدد والعضلات الملساء.' }),
+          Q('العَرَض الطارئ: «رجفان حزمي عضلي يعقبه شلل رخو (Fasciculations)» — ما المستقبل المسؤول؟', REC, 2,
+            'صحيح! Nm مسؤولة عن الرجفان الحزمي العضلي. بطل الطوارئ: M3 للإفرازات والعضلات الملساء، وM2 لتبطيء القلب، وNm للرجفان الحزمي العضلي.',
+            { fix: true, hint: 'المستقبل غير صحيح! تذكر: M2 على القلب، Nm على العضلة الهيكلية، وM3 على الغدد والعضلات الملساء.' }),
+          TF('تحقق التسمم الوعائي: ينجم هبوط الضغط الشرياني المحيطي في التسمم الكولينرجي عن بطء القلب (M2) وتحرير أحادي أكسيد النيتروجين (NO/EDRF) من البطانة عبر (M3).', true,
+            'دقيق! M2 يبطئ القلب و M3 البطانية تحرر NO الموسع للأوعية مما يهبط بالضغط.',
+            { hint: 'غير صحيح؛ العبارة صحيحة فكلا الآليتين (M2 على القلب + NO عبر M3) تسببان هبوط الضغط.' })
+        ]
+      },
+      {
+        id: 'g16', sec: 5, icon: 'fa-shield-virus', accent: 'emerald', points: 35,
+        title: 'اللعبة 16: درع الأمان ومضادات الاستطباب المطلقة',
+        intro: 'اربط الخطر القاتل بالمريض الذي يُمنع إعطاؤه مقلدات كولينية حظراً مطلقاً:',
+        items: [
+          Q('ما الخطر القاتل الذي يمنع إعطاء المقلدات الكولينية حظراً مطلقاً لـ «مريض الربو و COPD»؟', RISKS, 0,
+            'صحيح! تشنج قصبي حاد ومفرزات تسد المجاري التنفسية.', { fix: true, hint: 'الخطر لا يطابق هذا المريض؛ أعد ربط الآلية بالعضو المصاب.' }),
+          Q('ما الخطر القاتل الذي يمنع إعطاء المقلدات الكولينية حظراً مطلقاً لـ «مريض القرحة الهضمية الفعالة»؟', RISKS, 1,
+            'صحيح! فرط إفراز حمض HCl وخطر النزف والانثقاب.', { fix: true, hint: 'الخطر لا يطابق هذا المريض؛ أعد ربط الآلية بالعضو المصاب.' }),
+          Q('ما الخطر القاتل الذي يمنع إعطاء المقلدات الكولينية حظراً مطلقاً لـ «مريض الانسداد الميكانيكي المعوي/البولي»؟', RISKS, 2,
+            'درع الأمان مفعّل! ضغط هائل يمزق ويثقب جدار الأمعاء أو المثانة.', { fix: true, hint: 'الخطر لا يطابق هذا المريض؛ أعد ربط الآلية بالعضو المصاب.' })
+        ]
+      }
+    ];
+
+    const TOTAL_GAMES = GAMES.length;
+    const LETTERS = ['D', 'U', 'M', 'B1', 'B2', 'E', 'L', 'S1', 'S2'];
+    const AR_LET = ['أ', 'ب', 'ج', 'د', 'هـ'];
+    const TYPE_META = {
+      quiz:  { cls: 'type-quiz',  icon: 'fa-list-check',  label: 'QUIZ • اختيار من متعدد' },
+      tf:    { cls: 'type-tf',    icon: 'fa-check-double', label: 'صح أو خطأ' },
+      flash: { cls: 'type-flash', icon: 'fa-layer-group', label: 'FlashCard • بطاقة استذكار' }
+    };
+    const DEFAULT_HINT = 'إجابة غير صحيحة؛ راجع المعلومة وحاول مجدداً.';
+
+    // =========================================================
+    // 3. HUD
+    // =========================================================
     function renderHUD() {
       const doneCount = Object.keys(state.completed).length;
       document.getElementById('hud-xp').textContent = state.xp;
       document.getElementById('hud-streak').textContent = state.streak;
       document.getElementById('hud-done').textContent = doneCount;
       document.getElementById('hud-progress').style.width = Math.round((doneCount / TOTAL_GAMES) * 100) + '%';
-
-      Object.keys(state.completed).forEach(id => {
-        const b = document.getElementById('badge-' + id);
-        if (b && !b.classList.contains('completed')) {
-          b.classList.add('completed');
-          if (b.textContent === 'غير مكتمل') b.innerHTML = '<i class="fa-solid fa-check"></i> مكتمل';
-        }
-      });
+      GAMES.forEach(updateBadge);
     }
 
-    function awardGame(gameId, points = 25) {
+    function updateBadge(g) {
+      const b = document.getElementById('badge-' + g.id);
+      if (!b) return;
+      const r = rt[g.id];
+      if (state.completed[g.id]) {
+        b.classList.add('completed');
+        b.innerHTML = '<i class="fa-solid fa-check"></i> مكتمل';
+      } else {
+        b.classList.remove('completed');
+        b.textContent = (r ? r.done.size : 0) + ' / ' + g.items.length;
+      }
+    }
+
+    function awardGame(gameId, points) {
       if (!state.completed[gameId]) {
         state.completed[gameId] = true;
         state.xp += points;
       }
-      state.streak += 1;
       haptic('ok');
       saveState();
     }
-
-    function recordMistake() {
-      state.streak = 0;
-      haptic('err');
-      saveState();
-    }
-
-    function showFeedback(boxId, ok, html) {
-      const el = document.getElementById(boxId);
-      el.className = 'feedback-box show ' + (ok ? 'ok' : 'err');
-      el.innerHTML = (ok ? '<i class="fa-solid fa-circle-check"></i> ' : '<i class="fa-solid fa-circle-xmark"></i> ') + html;
-    }
+    function correctHit() { state.streak += 1; haptic('ok'); }
+    function recordMistake() { state.streak = 0; haptic('err'); }
 
     function resetAllProgress() {
-      if (confirm('هل تريد إعادة ضبط جميع النقاط والتحديات للبدء من جديد؟')) {
-        localStorage.removeItem('cholinergic_games_s5_v1');
+      const doReset = () => {
+        try { localStorage.removeItem(STORE_KEY); } catch (e) {}
         location.reload();
-      }
-    }
-
-    // Helper for simple True / False
-    function answerTF(id, picked, correctVal, msg) {
-      const isOk = picked === correctVal;
-      showFeedback('fb-' + id, isOk, msg);
-      if (isOk) awardGame(id, 20);
-      else recordMistake();
-    }
-
-    // =========================================================
-    // GAME 1: TREE BRANCH CLASSIFIER
-    // =========================================================
-    const g1Data = [
-      { id: 'ach', name: 'الأستيل كولين', cat: 'direct_ester' },
-      { id: 'carb', name: 'الكارباكول', cat: 'direct_ester' },
-      { id: 'beth', name: 'البيثانيكول', cat: 'direct_ester' },
-      { id: 'pilo', name: 'البيلوكاربين', cat: 'direct_alk' },
-      { id: 'cevi', name: 'السيفيميلين', cat: 'direct_alk' },
-      { id: 'edro', name: 'الإدروفونيوم', cat: 'indirect_rev' },
-      { id: 'neo', name: 'النيوستيغمين', cat: 'indirect_rev' },
-      { id: 'don', name: 'دونيبيزيل', cat: 'indirect_rev' },
-      { id: 'echo', name: 'الإيكوثيوفات', cat: 'indirect_irrev' }
-    ];
-    let g1Selected = null;
-    let g1Placed = 0;
-    let g1Time = 90;
-    let g1TimerHandle = null;
-
-    function initG1() {
-      const pool = document.getElementById('g1-pool');
-      const shuffled = [...g1Data].sort(() => Math.random() - 0.5);
-      shuffled.forEach(item => {
-        const btn = document.createElement('button');
-        btn.className = 'chip';
-        btn.id = 'g1-chip-' + item.id;
-        btn.textContent = item.name;
-        btn.onclick = () => {
-          haptic();
-          if (!g1TimerHandle) startG1Timer();
-          document.querySelectorAll('#g1-pool .chip').forEach(c => c.classList.remove('selected'));
-          btn.classList.add('selected');
-          g1Selected = item;
-        };
-        pool.appendChild(btn);
-      });
-    }
-
-    function startG1Timer() {
-      g1TimerHandle = setInterval(() => {
-        if (g1Time > 0 && g1Placed < g1Data.length) {
-          g1Time--;
-          document.getElementById('g1-timer').textContent = g1Time;
-        } else {
-          clearInterval(g1TimerHandle);
-        }
-      }, 1000);
-    }
-
-    function placeG1(cat) {
-      if (!g1Selected) {
-        showFeedback('fb-g1', false, 'اختر دواءً من القائمة أولاً ثم اضغط على الفرع الشجري.');
-        return;
-      }
-      if (g1Selected.cat === cat) {
-        const chip = document.getElementById('g1-chip-' + g1Selected.id);
-        chip.classList.remove('selected');
-        chip.classList.add('correct', 'disabled');
-        document.getElementById('g1-zone-' + cat).appendChild(chip);
-        g1Selected = null;
-        g1Placed++;
-        haptic('ok');
-        if (g1Placed === g1Data.length) {
-          clearInterval(g1TimerHandle);
-          awardGame('g1', 40);
-          showFeedback('fb-g1', true, 'أحسنت! أتقنت التصنيف الشجري الكامل للمقلدات الكولينية!');
-        } else {
-          showFeedback('fb-g1', true, `تصنيف صحيح (${g1Placed} / ${g1Data.length}).`);
-        }
-      } else {
-        recordMistake();
-        showFeedback('fb-g1', false, `تصنيف خاطئ لـ (${g1Selected.name})؛ راجع الزمرة وحاول مجدداً.`);
+      };
+      const msg = 'هل تريد إعادة ضبط جميع النقاط والتحديات للبدء من جديد؟';
+      if (tg && tg.showConfirm && tg.isVersionAtLeast && tg.isVersionAtLeast('6.2')) {
+        tg.showConfirm(msg, ok => { if (ok) doReset(); });
+      } else if (confirm(msg)) {
+        doReset();
       }
     }
 
     // =========================================================
-    // GAME 2: SMART FLASHCARDS
+    // 4. GAME ENGINE
     // =========================================================
-    const g2Cards = [
-      { q: 'ما الفرق الجوهري بين المقلدات الكولينية المباشرة وغير المباشرة؟', a: 'المباشرة ترتبط مباشرة بالمستقبلات (M أو N) وتفعلها؛ أما غير المباشرة فتثبط إنزيم AChE فتراكم الأستيل كولين في الشق المشبكي.' },
-      { q: 'لماذا ينفذ البيلوكاربين إلى الجهاز العصبي المركزي (CNS)؟', a: 'لأنه قلوانيد طبيعي ببنية أمين ثالثي غير مشحون كهربائياً، ولا يخضع للتفكك بإنزيم AChE.' },
-      { q: 'ما الفارق الكيميائي الحركي بين النيوستيغمين والإيكوثيوفات؟', a: 'النيوستيغمين مثبط عكوس رباعي لا يعبر الدماغ؛ أما الإيكوثيوفات فمركب فوسفوري عضوي يرتبط ارتباطاً غير عكوس بالإنزيم.' }
-    ];
-    let g2Idx = 0;
-    let g2Seen = new Set([0]);
+    const rt = {}; // runtime per game
 
-    function renderG2() {
-      const fc = document.getElementById('g2-fc');
-      fc.classList.remove('flipped');
-      document.getElementById('g2-idx').textContent = g2Idx + 1;
-      document.getElementById('g2-q').textContent = g2Cards[g2Idx].q;
-      document.getElementById('g2-a').textContent = g2Cards[g2Idx].a;
-      document.getElementById('badge-g2').textContent = `${g2Seen.size} / 3`;
-      if (g2Seen.size === 3) awardGame('g2', 20);
+    function loadRT(g) {
+      const p = state.progress[g.id];
+      const done = new Set((p && Array.isArray(p.done) ? p.done : []).filter(i => i >= 0 && i < g.items.length));
+      let i = p && Number.isInteger(p.i) ? Math.min(Math.max(p.i, 0), g.items.length - 1) : 0;
+      rt[g.id] = { i, done, wrong: {}, order: {}, fb: {}, flipped: {} };
     }
-    function flipG2() { haptic(); document.getElementById('g2-fc').classList.toggle('flipped'); }
-    function nextG2() { g2Idx = (g2Idx + 1) % g2Cards.length; g2Seen.add(g2Idx); renderG2(); }
-    function prevG2() { g2Idx = (g2Idx - 1 + g2Cards.length) % g2Cards.length; g2Seen.add(g2Idx); renderG2(); }
 
-    // =========================================================
-    // GAME 4: ACh HURDLES & OCULAR QUIZ
-    // =========================================================
-    let g4HurdlesFound = 0;
-    let g4McqDone = false;
+    function persist(g) {
+      const r = rt[g.id];
+      state.progress[g.id] = { i: r.i, done: Array.from(r.done) };
+      saveState();
+    }
 
-    function toggleG4(btn, isCorrect) {
-      if (btn.classList.contains('correct')) return;
-      if (isCorrect) {
-        btn.classList.add('correct');
-        g4HurdlesFound++;
-        haptic('ok');
-        checkG4Complete();
-      } else {
-        btn.classList.add('wrong');
-        recordMistake();
-        showFeedback('fb-g4', false, 'هذه ليست من عقبات ACh؛ تذكر أنه رباعي الشحنة ويتخرب سريعاً ولا يعبر الدماغ.');
+    function shuffleIdx(n) {
+      const a = Array.from({ length: n }, (_, k) => k);
+      for (let k = n - 1; k > 0; k--) {
+        const j = Math.floor(Math.random() * (k + 1));
+        [a[k], a[j]] = [a[j], a[k]];
       }
+      return a;
     }
 
-    function checkG4Mcq(btn, isOk) {
-      if (isOk) {
-        btn.classList.add('correct');
-        g4McqDone = true;
-        haptic('ok');
-        checkG4Complete();
-      } else {
-        btn.classList.add('wrong');
-        recordMistake();
-        showFeedback('fb-g4', false, 'خيار غير دقيق؛ الأستيل كولين يقتصر استعماله السريري على تقطير 1% موضعياً داخل الحجرة الأمامية للعين.');
-      }
-    }
+    function gameById(id) { return GAMES.find(x => x.id === id); }
 
-    function checkG4Complete() {
-      if (g4HurdlesFound >= 2 && g4McqDone) {
-        awardGame('g4', 30);
-        showFeedback('fb-g4', true, 'رائع! استوعبت عقبات ACh الجهازية واستعماله الموضعي الدقيق في جراحة الساد.');
-      } else if (g4HurdlesFound >= 2) {
-        showFeedback('fb-g4', true, 'أصبت العقبتين! أكمل الآن الإجابة عن السؤال العيني في المرحلة ب.');
-      }
-    }
-
-    // =========================================================
-    // GAME 5: BETHANECHOL RECEPTOR GATEKEEPER
-    // =========================================================
-    function pickG5Gate(gate) {
-      if (gate === 'M') {
-        awardGame('g5', 25);
-        showFeedback('fb-g5', true, 'عبور ناجح! البيثانيكول انتقائي قوي للمستقبلات الموسكارينية (M) ويفتقر تماماً للتأثيرات النيكوتينية، مما يحفز العضلة الدافعة للمثانة الرخوة ويعالج احتباس البول بعد الولادة والجراحة.');
-      } else {
-        recordMistake();
-        showFeedback('fb-g5', false, 'البوابة مغلقة! البيثانيكول يفتقر تماماً لأي فعالية نيكوتينية (N). وجّهه نحو المستقبلات الموسكارينية.');
-      }
-    }
-
-    // =========================================================
-    // GAME 6: CARBACHOL VS BETHANECHOL
-    // =========================================================
-    const g6Items = [
-      { id: 'c1', text: 'تأثيرات موسكارينية ونيكوتينية معاً', target: 'carbachol' },
-      { id: 'c2', text: 'تضييق الحدقة وخفض ضغط العين في الزرق', target: 'carbachol' },
-      { id: 'c3', text: 'يحرض إفراز النورأدرينالين من المشابك', target: 'carbachol' },
-      { id: 'b1', text: 'فعالية موسكارينية صرفة (بدون نيكوتينية)', target: 'bethanechol' },
-      { id: 'b2', text: 'احتباس البول غير الانسدادي بعد الولادة', target: 'bethanechol' }
-    ];
-    let g6Sel = null, g6Count = 0;
-
-    function initG6() {
-      const pool = document.getElementById('g6-pool');
-      [...g6Items].sort(() => Math.random() - 0.5).forEach(it => {
-        const btn = document.createElement('button');
-        btn.className = 'chip';
-        btn.id = 'g6-chip-' + it.id;
-        btn.textContent = it.text;
-        btn.onclick = () => {
-          haptic();
-          document.querySelectorAll('#g6-pool .chip').forEach(c => c.classList.remove('selected'));
-          btn.classList.add('selected');
-          g6Sel = it;
-        };
-        pool.appendChild(btn);
-      });
-    }
-
-    function placeG6(target) {
-      if (!g6Sel) return;
-      if (g6Sel.target === target) {
-        const chip = document.getElementById('g6-chip-' + g6Sel.id);
-        chip.classList.remove('selected');
-        chip.classList.add('correct', 'disabled');
-        document.getElementById('g6-zone-' + target).appendChild(chip);
-        g6Sel = null;
-        g6Count++;
-        haptic('ok');
-        if (g6Count === g6Items.length) {
-          awardGame('g6', 30);
-          showFeedback('fb-g6', true, 'تطابق كامل! ميّزت بدقة بين الكارباكول (الزرق + نيكوتيني) والبيثانيكول (المثانة + موسكاريني صرف).');
-        }
-      } else {
-        recordMistake();
-        showFeedback('fb-g6', false, 'هذه الصفة تنتمي للدواء الآخر؛ انتبه للفارق بين M فقط و M+N.');
-      }
-    }
-
-    // =========================================================
-    // GAME 7: PILOCARPINE GLAUCOMA SIMULATOR
-    // =========================================================
-    let g7SimDone = false, g7McqDone = false;
-
-    function applyPilocarpine() {
-      haptic('ok');
-      document.getElementById('g7-iris-top').setAttribute('height', '44');
-      document.getElementById('g7-iris-bot').setAttribute('y', '76');
-      document.getElementById('g7-iris-bot').setAttribute('height', '44');
-      document.getElementById('g7-pupil-txt').textContent = 'متضيقة (Miosis)';
-      document.getElementById('g7-schlemm').setAttribute('fill', '#A7F3D0');
-      document.getElementById('g7-schlemm').setAttribute('stroke', '#10B981');
-      document.getElementById('g7-schlemm').setAttribute('r', '14');
-      document.getElementById('g7-schlemm-lbl').textContent = 'قناة شليم (مفتوحة)';
-      document.getElementById('g7-schlemm-lbl').setAttribute('fill', '#065F46');
-      document.getElementById('g7-flow').setAttribute('stroke', '#10B981');
-      document.getElementById('g7-flow').setAttribute('stroke-width', '5');
-
-      const meter = document.getElementById('g7-iop-meter');
-      meter.classList.add('normal');
-      document.getElementById('g7-iop-val').textContent = '15 mmHg (طبيعي - تصريف ممتاز)';
-      document.getElementById('g7-bar1').style.width = '20%';
-      document.getElementById('g7-bar2').style.width = '82%';
-      document.getElementById('g7-drop-btn').disabled = true;
-      document.getElementById('g7-drop-btn').innerHTML = '<i class="fa-solid fa-check"></i> تم فتح قناة شليم وخفض الضغط';
-
-      g7SimDone = true;
-      checkG7All();
-    }
-
-    function checkG7Mcq(btn, ok) {
-      if (ok) {
-        btn.classList.add('correct');
-        g7McqDone = true;
-        haptic('ok');
-        checkG7All();
-      } else {
-        btn.classList.add('wrong');
-        recordMistake();
-        showFeedback('fb-g7', false, 'تذكر: البيلوكاربين أمين ثالثي غير مشحون يقاوم الإنزيم، وفي متلازمة شوغرن يُستخدم السيفيميلين.');
-      }
-    }
-
-    function checkG7All() {
-      if (g7SimDone && g7McqDone) {
-        awardGame('g7', 35);
-        showFeedback('fb-g7', true, 'محاكاة ناجحة! فتح البيلوكاربين الشبكة التربيقية وقناة شليم خلال دقائق (لمدة 4-8 ساعات)، وبنيته كأمين ثالثي تفسر نفوذه للـ CNS.');
-      }
-    }
-
-    // =========================================================
-    // GAME 8: TENSILON SPEED TEST (EDROPHONIUM)
-    // =========================================================
-    function runTensilon(drug) {
-      const lid = document.getElementById('g8-eyelid');
-      const lbl = document.getElementById('g8-eye-lbl');
-      if (drug === 'edrophonium') {
-        lid.classList.add('open');
-        lbl.textContent = 'ارتفع الجفن فوراً! (استجابة تشخيصية موجبة)';
-        lbl.style.color = 'var(--emerald)';
-        awardGame('g8', 25);
-        showFeedback('fb-g8', true, 'تشخيص مؤكد للوهن العضلي الوبيل! ارتبط الإدروفونيوم عكوساً بالإنزيم بروابط كهروستاتيكية ضعيفة فائق قصر الأمد، وسيعود الجفن للهبوط خلال دقائق.');
-        setTimeout(() => {
-          lid.classList.remove('open');
-          lbl.textContent = 'زال التأثير سريعاً وعاد الجفن للتدلي';
-          lbl.style.color = 'var(--amber)';
-        }, 3800);
-      } else {
-        recordMistake();
-        showFeedback('fb-g8', false, 'اختيار خاطئ لتشخيص الوهن! نحتاج لمثبط عكوس فائق قصر المفعول (الإدروفونيوم).');
-      }
-    }
-
-    // =========================================================
-    // GAME 9: NEOSTIGMINE VS PYRIDOSTIGMINE
-    // =========================================================
-    const g9Items = [
-      { id: 'n1', text: 'معاكسة الحصار العضلي بعد التخدير', target: 'neo' },
-      { id: 'n2', text: 'له فعالية نوعية قصيرة/متوسطة على الوهن', target: 'neo' },
-      { id: 'p1', text: 'الدواء الأساسي للتدبير المزمن طويل الأمد للوهن', target: 'pyrido' },
-      { id: 'p2', text: 'أطول مفعولاً وأكثر ثباتاً بالتركيز', target: 'pyrido' }
-    ];
-    let g9Sel = null, g9Count = 0;
-
-    function initG9() {
-      const pool = document.getElementById('g9-pool');
-      [...g9Items].sort(() => Math.random() - 0.5).forEach(it => {
-        const btn = document.createElement('button');
-        btn.className = 'chip';
-        btn.id = 'g9-chip-' + it.id;
-        btn.textContent = it.text;
-        btn.onclick = () => {
-          haptic();
-          document.querySelectorAll('#g9-pool .chip').forEach(c => c.classList.remove('selected'));
-          btn.classList.add('selected');
-          g9Sel = it;
-        };
-        pool.appendChild(btn);
-      });
-    }
-
-    function placeG9(target) {
-      if (!g9Sel) return;
-      if (g9Sel.target === target) {
-        const chip = document.getElementById('g9-chip-' + g9Sel.id);
-        chip.classList.remove('selected');
-        chip.classList.add('correct', 'disabled');
-        document.getElementById('g9-zone-' + target).appendChild(chip);
-        g9Sel = null;
-        g9Count++;
-        haptic('ok');
-        if (g9Count === g9Items.length) {
-          awardGame('g9', 25);
-          showFeedback('fb-g9', true, 'ممتاز! البيريدوستيغمين هو الخيار المزمن المعتمد، والنيوستيغمين يعاكس الحصار العضلي بعد التخدير.');
-        }
-      } else {
-        recordMistake();
-        showFeedback('fb-g9', false, 'حاول مجدداً؛ تذكر أن البيريدوستيغمين يمتاز بثبات ومدى أطول للتدبير المزمن.');
-      }
-    }
-
-    // =========================================================
-    // GAME 10 & 12: MCQs
-    // =========================================================
-    function checkG10(btn, ok) {
-      if (ok) {
-        btn.classList.add('correct');
-        awardGame('g10', 25);
-        showFeedback('fb-g10', true, 'قرار آمن 100%! النيوستيغمين مضاد استطباب مطلق في الانسداد الميكانيكي المعوي أو البولي تجنباً لخطر الانثقاب.');
-      } else {
-        btn.classList.add('wrong');
-        recordMistake();
-        showFeedback('fb-g10', false, 'خطر! تحفيز تقلص جدار الأمعاء أو المثانة المسدودة ميكانيكياً يولد ضغطاً يمزق الجدار.');
-      }
-    }
-
-    function checkG12(btn, ok) {
-      if (ok) {
-        btn.classList.add('correct');
-        awardGame('g12', 25);
-        showFeedback('fb-g12', true, 'صحيح! الإيكوثيوفات (الفوسفوري العضوي غير العكوس) تراجع وسُحب بسبب إحداثه اعتاماً دائماً في عدسة العين (الساد).');
-      } else {
-        btn.classList.add('wrong');
-        recordMistake();
-        showFeedback('fb-g12', false, 'غير صحيح؛ الإيكوثيوفات يضيق الحدقة بشدة ويسبب إعتام عدسة العين الدائم (الساد / Cataracts).');
-      }
-    }
-
-    // =========================================================
-    // GAME 11: ALZHEIMER SORTER
-    // =========================================================
-    const g11Items = [
-      { id: 'a1', text: 'دونيبيزيل (Donepezil)', target: 'safe' },
-      { id: 'a2', text: 'ريفاستيغمين (Rivastigmine)', target: 'safe' },
-      { id: 'a3', text: 'غالانتامين (Galantamine)', target: 'safe' },
-      { id: 'a4', text: 'تاكرين (Tacrine)', target: 'toxic' }
-    ];
-    let g11Sel = null, g11Count = 0;
-
-    function initG11() {
-      const pool = document.getElementById('g11-pool');
-      [...g11Items].sort(() => Math.random() - 0.5).forEach(it => {
-        const btn = document.createElement('button');
-        btn.className = 'chip';
-        btn.id = 'g11-chip-' + it.id;
-        btn.textContent = it.text;
-        btn.onclick = () => {
-          haptic();
-          document.querySelectorAll('#g11-pool .chip').forEach(c => c.classList.remove('selected'));
-          btn.classList.add('selected');
-          g11Sel = it;
-        };
-        pool.appendChild(btn);
-      });
-    }
-
-    function placeG11(target) {
-      if (!g11Sel) return;
-      if (g11Sel.target === target) {
-        const chip = document.getElementById('g11-chip-' + g11Sel.id);
-        chip.classList.remove('selected');
-        chip.classList.add('correct', 'disabled');
-        document.getElementById('g11-zone-' + target).appendChild(chip);
-        g11Sel = null;
-        g11Count++;
-        haptic('ok');
-        if (g11Count === g11Items.length) {
-          awardGame('g11', 25);
-          showFeedback('fb-g11', true, 'دقيق! استُبدل التاكرين لسميته الكبدية بالأجيال الحديثة (دونيبيزيل، ريفاستيغمين، غالانتامين) لتحسين النقل الكوليني الدماغي.');
-        }
-      } else {
-        recordMistake();
-        showFeedback('fb-g11', false, 'تأكد من الدواء ذي السمية الكبدية الحادة (تاكرين).');
-      }
-    }
-
-    // =========================================================
-    // GAME 13: GRAND MASTER MATRIX
-    // =========================================================
-    const g13Cards = [
-      { id: 'cns_none', text: 'معدومة (مركب رباعي قطبي)' },
-      { id: 'use_urine', text: 'احتباس البول بعد الولادة والجراحة' },
-      { id: 'cns_exc', text: 'ممتازة (أمين ثالثي غير مشحون)' },
-      { id: 'use_diag', text: 'تشخيص الوهن العضلي الوبيل' },
-      { id: 'note_obs', text: 'ممنوع في الانسداد المعوي والبولي' },
-      { id: 'use_ad', text: 'داء ألزهايمر (تدهور معرفي)' }
-    ];
-    let g13Sel = null, g13Filled = 0;
-
-    function initG13() {
-      const pool = document.getElementById('g13-pool');
-      [...g13Cards].sort(() => Math.random() - 0.5).forEach(it => {
-        const btn = document.createElement('button');
-        btn.className = 'chip';
-        btn.id = 'g13-chip-' + it.id;
-        btn.textContent = it.text;
-        btn.onclick = () => {
-          haptic();
-          document.querySelectorAll('#g13-pool .chip').forEach(c => c.classList.remove('selected'));
-          btn.classList.add('selected');
-          g13Sel = it;
-        };
-        pool.appendChild(btn);
-      });
-    }
-
-    function fillG13(slot) {
-      if (slot.classList.contains('filled') || !g13Sel) return;
-      if (slot.dataset.ans === g13Sel.id) {
-        slot.textContent = g13Sel.text;
-        slot.classList.add('filled');
-        const chip = document.getElementById('g13-chip-' + g13Sel.id);
-        chip.classList.remove('selected');
-        chip.classList.add('correct', 'disabled');
-        g13Sel = null;
-        g13Filled++;
-        document.getElementById('badge-g13').textContent = `${g13Filled} / 6`;
-        haptic('ok');
-        if (g13Filled === 6) {
-          awardGame('g13', 45);
-          showFeedback('fb-g13', true, 'إتقان شامل! أكملت مصفوفة المقارنة الفارماكولوجية الكبرى بنجاح.');
-        }
-      } else {
-        recordMistake();
-        showFeedback('fb-g13', false, 'هذه الخلية لا تطابق البطاقة المختارة؛ راجع صف الدواء.');
-      }
-    }
-
-    // =========================================================
-    // GAME 14: ODD ONE OUT
-    // =========================================================
-    const g14Rounds = [
-      {
-        q: 'أي دواء مما يلي يُعد شاذاً من حيث القدرة على اختراق الجهاز العصبي المركزي (CNS)؟',
-        opts: [
-          { t: 'الأستيل كولين', ok: false },
-          { t: 'النيوستيغمين', ok: false },
-          { t: 'البيلوكاربين', ok: true },
-          { t: 'البيريدوستيغمين', ok: false }
-        ],
-        exp: 'البيلوكاربين هو الشاذ هنا؛ لأنه أمين ثالثي غير مشحون يخترق الـ CNS بسهولة، بينما البقية مركبات رباعية قطبية لا تعبر.'
-      },
-      {
-        q: 'أي دواء مما يلي يختلف في آلية الارتباط بإنزيم الكولين إستراز (غير عكوس)؟',
-        opts: [
-          { t: 'الإيكوثيوفات', ok: true },
-          { t: 'الإدروفونيوم', ok: false },
-          { t: 'النيوستيغمين', ok: false },
-          { t: 'الدونيبيزيل', ok: false }
-        ],
-        exp: 'الإيكوثيوفات مركب فوسفوري عضوي مثبط غير عكوس للإنزيم، أما البقية فمثبطات عكوسة.'
-      },
-      {
-        q: 'أي دواء مما يلي يفتقر تماماً إلى الفعالية النيكوتينية (انتقائي موسكاريني M فقط)؟',
-        opts: [
-          { t: 'الأستيل كولين', ok: false },
-          { t: 'الكارباكول', ok: false },
-          { t: 'البيثانيكول', ok: true }
-        ],
-        exp: 'البيثانيكول انتقائي للمستقبلات الموسكارينية وخالٍ تماماً من التأثيرات النيكوتينية، بعكس ACh والكارباكول.'
-      }
-    ];
-    let g14Round = 0;
-
-    function renderG14() {
-      const stage = document.getElementById('g14-stage');
-      const r = g14Rounds[g14Round];
-      document.getElementById('badge-g14').textContent = `جولة ${g14Round + 1} / ${g14Rounds.length}`;
-      stage.innerHTML = `<p style="margin-top:0;font-weight:600;">${r.q}</p><div class="chip-pool">` +
-        r.opts.map((o, i) => `<button class="chip" onclick="pickG14(${i})">${o.t}</button>`).join('') +
-        `</div>`;
-    }
-
-    function pickG14(idx) {
-      const r = g14Rounds[g14Round];
-      if (r.opts[idx].ok) {
-        haptic('ok');
-        showFeedback('fb-g14', true, r.exp);
-        if (g14Round < g14Rounds.length - 1) {
-          g14Round++;
-          setTimeout(renderG14, 1500);
-        } else {
-          awardGame('g14', 30);
-          document.getElementById('badge-g14').textContent = 'مكتمل';
-        }
-      } else {
-        recordMistake();
-        showFeedback('fb-g14', false, 'ليس هذا الدواء الشاذ؛ أعد مقارنة الخصائص الحركية والمستقبلية.');
-      }
-    }
-
-    // =========================================================
-    // GAME 15: ER DUMBBELSS RESCUE MISSION
-    // =========================================================
-    const g15Queue = [
-      { l: 'D', sym: 'إسهال مائي حاد ومغص بطني (Diarrhea)', ans: 'M3', choices: ['M3', 'M2', 'Nm'] },
-      { l: 'U', sym: 'تبول قسري لا إرادي (Urination)', ans: 'M3', choices: ['M3', 'M2', 'Nm'] },
-      { l: 'M', sym: 'تضيق حدقة دبوسي وتشنج المطابقة (Miosis)', ans: 'M3', choices: ['M3', 'M2', 'Nm'] },
-      { l: 'B1', sym: 'بطء شديد في نبضات القلب (Bradycardia)', ans: 'M2', choices: ['M3', 'M2', 'Nm'] },
-      { l: 'B2', sym: 'تشنج قصبي حاد ومفرزات قصبية (Bronchospasm)', ans: 'M3', choices: ['M3', 'M2', 'Nm'] },
-      { l: 'E', sym: 'رجفان حزمي عضلي يعقبه شلل رخو (Fasciculations)', ans: 'Nm', choices: ['M3', 'M2', 'Nm'] }
-    ];
-    let g15Idx = 0;
-
-    function renderG15() {
-      const q = g15Queue[g15Idx];
-      document.getElementById('g15-symptom').textContent = q.sym;
-      document.getElementById('g15-btns').innerHTML = q.choices.map(c =>
-        `<button class="btn btn-outline btn-sm" onclick="answerG15('${c}')">مستقبلات ${c}</button>`
-      ).join('');
-    }
-
-    function answerG15(choice) {
-      const q = g15Queue[g15Idx];
-      if (choice === q.ans) {
-        haptic('ok');
-        const el = document.querySelector(`.d-letter[data-l="${q.l}"]`);
-        if (el) el.classList.add('solved');
-        if (q.l === 'E') {
-          document.querySelectorAll('.d-letter').forEach(x => x.classList.add('solved'));
-        }
-        g15Idx++;
-        document.getElementById('badge-g15').textContent = `${g15Idx} / ${g15Queue.length}`;
-        if (g15Idx >= g15Queue.length) {
-          awardGame('g15', 40);
-          document.getElementById('g15-prompt-box').innerHTML = '<strong style="color:var(--emerald);"><i class="fa-solid fa-heart-pulse"></i> تمت السيطرة على جميع مستقبلات DUMBBELSS و Nm بنجاح!</strong>';
-          showFeedback('fb-g15', true, 'بطل الطوارئ! تذكر أن M3 مسؤولة عن معظم الإفرازات والعضلات الملساء، وM2 عن تبطيء القلب، وNm عن الرجفان الحزمي العضلي.');
-        } else {
-          renderG15();
-        }
-      } else {
-        recordMistake();
-        showFeedback('fb-g15', false, 'المستقبل غير صحيح! تذكر: M2 على القلب، Nm على العضلة الهيكلية، وM3 على الغدد والعضلات الملساء.');
-      }
-    }
-
-    // =========================================================
-    // GAME 16: CONTRAINDICATION SHIELD
-    // =========================================================
-    const g16Items = [
-      { id: 'x1', text: 'تشنج قصبي حاد ومفرزات تسد المجاري التنفسية', target: 'asthma' },
-      { id: 'x2', text: 'فرط إفراز حمض HCl وخطر النزف والانثقاب', target: 'ulcer' },
-      { id: 'x3', text: 'ضغط هائل يمزق ويثقب جدار الأمعاء أو المثانة', target: 'obstruction' }
-    ];
-    let g16Sel = null, g16Count = 0;
-
-    function initG16() {
-      const pool = document.getElementById('g16-pool');
-      [...g16Items].sort(() => Math.random() - 0.5).forEach(it => {
-        const btn = document.createElement('button');
-        btn.className = 'chip';
-        btn.id = 'g16-chip-' + it.id;
-        btn.textContent = it.text;
-        btn.onclick = () => {
-          haptic();
-          document.querySelectorAll('#g16-pool .chip').forEach(c => c.classList.remove('selected'));
-          btn.classList.add('selected');
-          g16Sel = it;
-        };
-        pool.appendChild(btn);
-      });
-    }
-
-    function placeG16(target) {
-      if (!g16Sel) return;
-      if (g16Sel.target === target) {
-        const chip = document.getElementById('g16-chip-' + g16Sel.id);
-        chip.classList.remove('selected');
-        chip.classList.add('correct', 'disabled');
-        document.getElementById('g16-zone-' + target).appendChild(chip);
-        g16Sel = null;
-        g16Count++;
-        haptic('ok');
-        if (g16Count === g16Items.length) {
-          awardGame('g16', 35);
-          showFeedback('fb-g16', true, 'درع الأمان مفعّل! أتقنت جميع مضادات الاستطباب المطلقة للمقلدات الكولينية وتعليلاتها الفسيولوجية.');
-        }
-      } else {
-        recordMistake();
-        showFeedback('fb-g16', false, 'الخطر لا يطابق هذا المريض؛ أعد ربط الآلية بالعضو المصاب.');
-      }
-    }
-
-    // =========================================================
-    // BOOTSTRAP ALL GAMES & KATEX
-    // =========================================================
-    window.addEventListener('DOMContentLoaded', () => {
-      initG1();
-      renderG2();
-      initG6();
-      initG9();
-      initG11();
-      initG13();
-      renderG14();
-      renderG15();
-      initG16();
-      renderHUD();
-
-      if (window.renderMathInElement) {
-        renderMathInElement(document.body, {
-          delimiters: [
-            { left: '$$', right: '$$', display: true },
-            { left: '$', right: '$', display: false }
-          ]
+    function renderMath(el) {
+      if (!window.renderMathInElement || !el) return;
+      try {
+        window.renderMathInElement(el, {
+          delimiters: [{ left: '$$', right: '$$', display: true }],
+          throwOnError: false
         });
+      } catch (e) {}
+    }
+
+    function lettersHtml(g, r) {
+      const complete = r.done.size === g.items.length;
+      const solved = new Set();
+      g.items.forEach((it, idx) => { if (it.l && r.done.has(idx)) solved.add(it.l); });
+      return '<div class="dumbbelss-letters" aria-hidden="true">' + LETTERS.map(l => {
+        const base = l.charAt(0);
+        return '<span class="d-letter' + ((complete || solved.has(l)) ? ' solved' : '') + '">' + base + '</span>';
+      }).join('') + '</div>';
+    }
+
+    function mainHtml(g, r) {
+      const it = g.items[r.i];
+      const done = r.done.has(r.i);
+      let h = '';
+      if (g.letters) h += lettersHtml(g, r);
+      if (it.ctx) h += '<div class="step-box">' + it.ctx + '</div>';
+      if (it.formula) h += '<div class="formula-box">$$' + it.formula + '$$</div>';
+
+      if (it.t === 'flash') {
+        const flipped = !!r.flipped[r.i];
+        h += '<div class="flashcard-wrap"><div class="flashcard' + (flipped ? ' flipped' : '') + '" id="fc-' + g.id + '" role="button" tabindex="0" aria-label="بطاقة استذكار: انقر لقلبها" ' +
+          'onclick="flipF(\'' + g.id + '\')" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();flipF(\'' + g.id + '\')}">' +
+          '<div class="fc-face fc-front"><span class="fc-tag">بطاقة ' + (r.i + 1) + ' من ' + g.items.length + '</span>' +
+          '<strong class="fc-q">' + it.q + '</strong>' +
+          '<span class="fc-hint"><i class="fa-solid fa-hand-pointer"></i> انقر لقلب البطاقة</span></div>' +
+          '<div class="fc-face fc-back"><span class="fc-tag-back">الإجابة العلمية</span><div>' + it.a + '</div></div>' +
+          '</div></div>';
+        return h;
       }
+
+      h += '<p class="q-text">' + it.q + '</p>';
+      const wrong = r.wrong[r.i] || [];
+
+      if (it.t === 'quiz') {
+        if (!r.order[r.i]) r.order[r.i] = it.fix ? it.opts.map((_, k) => k) : shuffleIdx(it.opts.length);
+        h += '<div class="quiz-options">' + r.order[r.i].map((k, pos) => {
+          let cls = '';
+          if (done) cls = (k === it.a) ? ' correct' : ' dim';
+          else if (wrong.indexOf(k) > -1) cls = ' wrong';
+          const dis = (done || wrong.indexOf(k) > -1) ? ' disabled' : '';
+          return '<button type="button" class="quiz-opt' + cls + '"' + dis + ' onclick="pickQ(\'' + g.id + '\',' + k + ')">' +
+            '<span class="opt-letter">' + AR_LET[pos] + '</span><span>' + it.opts[k] + '</span></button>';
+        }).join('') + '</div>';
+      } else { // tf
+        const mk = (val, label, icon, color) => {
+          const key = val ? 'T' : 'F';
+          let cls = '';
+          if (done) cls = (val === it.a) ? ' correct' : '';
+          else if (wrong.indexOf(key) > -1) cls = ' wrong';
+          const dis = (done || wrong.indexOf(key) > -1) ? ' disabled' : '';
+          return '<button type="button" class="btn btn-outline' + cls + '"' + dis + ' onclick="pickTF(\'' + g.id + '\',' + val + ')">' +
+            '<i class="fa-solid ' + icon + '" style="color:' + color + '"></i> ' + label + '</button>';
+        };
+        h += '<div class="tf-row">' + mk(true, 'صواب', 'fa-check', 'var(--emerald)') + mk(false, 'خطأ', 'fa-xmark', 'var(--rose)') + '</div>';
+      }
+
+      const fb = r.fb[r.i];
+      if (fb) {
+        h += '<div class="feedback-box ' + (fb.ok ? 'ok' : 'err') + '"><i class="fa-solid ' + (fb.ok ? 'fa-circle-check' : 'fa-circle-xmark') + '"></i> ' + fb.html + '</div>';
+      } else if (done && it.exp) {
+        h += '<div class="feedback-box ok"><i class="fa-solid fa-circle-check"></i> ' + it.exp + '</div>';
+      }
+      return h;
+    }
+
+    function metaHtml(g, r) {
+      const it = g.items[r.i];
+      const tm = TYPE_META[it.t];
+      const dots = g.items.map((_, idx) =>
+        '<span class="dot' + (r.done.has(idx) ? ' done' : '') + (idx === r.i ? ' current' : '') + '"></span>').join('');
+      return '<div class="q-meta">' +
+        '<span class="type-tag ' + tm.cls + '"><i class="fa-solid ' + tm.icon + '"></i> ' + tm.label + '</span>' +
+        '<span class="q-counter">' + (r.i + 1) + ' / ' + g.items.length + '</span>' +
+        '</div><div class="dots" style="margin-bottom:12px;">' + dots + '</div>';
+    }
+
+    function navHtml(g, r) {
+      const n = g.items.length;
+      const complete = r.done.size === n;
+      const canNext = r.done.has(r.i) && r.i < n - 1;
+      let h = '<div class="card-nav">' +
+        '<button type="button" class="btn btn-outline btn-sm" onclick="goG(\'' + g.id + '\',-1)"' + (r.i === 0 ? ' disabled' : '') + '><i class="fa-solid fa-chevron-right"></i> السابق</button>' +
+        '<button type="button" class="btn btn-violet btn-sm" onclick="goG(\'' + g.id + '\',1)"' + (canNext ? '' : ' disabled') + '>التالي <i class="fa-solid fa-chevron-left"></i></button>' +
+        '</div>';
+      if (complete) {
+        h += '<div class="done-banner"><span><i class="fa-solid fa-trophy"></i> أكملت هذه اللعبة بنجاح! (+' + g.points + ' XP عند أول إتمام)</span>' +
+          '<button type="button" class="btn btn-outline btn-sm" onclick="restartG(\'' + g.id + '\')"><i class="fa-solid fa-rotate-right"></i> إعادة اللعبة</button></div>';
+      }
+      return h;
+    }
+
+    function refreshChrome(g) {
+      const r = rt[g.id];
+      document.getElementById('meta-' + g.id).innerHTML = metaHtml(g, r);
+      document.getElementById('nav-' + g.id).innerHTML = navHtml(g, r);
+      updateBadge(g);
+    }
+
+    function renderGame(g) {
+      const r = rt[g.id];
+      const main = document.getElementById('main-' + g.id);
+      main.innerHTML = mainHtml(g, r);
+      refreshChrome(g);
+      renderMath(main);
+    }
+
+    function checkComplete(g) {
+      const r = rt[g.id];
+      if (r.done.size === g.items.length) awardGame(g.id, g.points);
+    }
+
+    function pickQ(gid, k) {
+      const g = gameById(gid), r = rt[gid], it = g.items[r.i];
+      if (r.done.has(r.i)) return;
+      if (k === it.a) {
+        r.done.add(r.i);
+        r.fb[r.i] = { ok: true, html: it.exp };
+        correctHit();
+        persist(g);
+        checkComplete(g);
+      } else {
+        (r.wrong[r.i] = r.wrong[r.i] || []).push(k);
+        r.fb[r.i] = { ok: false, html: it.hint || DEFAULT_HINT };
+        recordMistake();
+        saveState();
+      }
+      renderGame(g);
+    }
+
+    function pickTF(gid, val) {
+      const g = gameById(gid), r = rt[gid], it = g.items[r.i];
+      if (r.done.has(r.i)) return;
+      if (val === it.a) {
+        r.done.add(r.i);
+        r.fb[r.i] = { ok: true, html: it.exp };
+        correctHit();
+        persist(g);
+        checkComplete(g);
+      } else {
+        (r.wrong[r.i] = r.wrong[r.i] || []).push(val ? 'T' : 'F');
+        r.fb[r.i] = { ok: false, html: it.hint || DEFAULT_HINT };
+        recordMistake();
+        saveState();
+      }
+      renderGame(g);
+    }
+
+    function flipF(gid) {
+      const g = gameById(gid), r = rt[gid];
+      haptic();
+      r.flipped[r.i] = !r.flipped[r.i];
+      const el = document.getElementById('fc-' + gid);
+      if (el) el.classList.toggle('flipped', !!r.flipped[r.i]);
+      if (r.flipped[r.i] && !r.done.has(r.i)) {
+        r.done.add(r.i);
+        persist(g);
+        checkComplete(g);
+        refreshChrome(g);
+      }
+    }
+
+    function goG(gid, d) {
+      const g = gameById(gid), r = rt[gid];
+      const ni = r.i + d;
+      if (ni < 0 || ni >= g.items.length) return;
+      r.i = ni;
+      persist(g);
+      renderGame(g);
+      const card = document.getElementById('card-' + gid);
+      if (card) {
+        const rect = card.getBoundingClientRect();
+        const top = (parseInt(getComputedStyle(document.documentElement).getPropertyValue('--hud-h')) || 64) + 4;
+        if (rect.top < top) card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+
+    function restartG(gid) {
+      const g = gameById(gid);
+      delete state.progress[gid];
+      loadRT(g);
+      saveState();
+      renderGame(g);
+    }
+
+    // =========================================================
+    // 5. BUILD PAGE
+    // =========================================================
+    function cardHtml(g) {
+      return '<article class="academic-card accent-' + g.accent + '" id="card-' + g.id + '">' +
+        '<div class="card-header"><div class="card-title-wrap">' +
+        '<i class="fa-solid ' + g.icon + ' card-icon icon-' + g.accent + '"></i>' +
+        '<h3 class="card-title">' + g.title + '</h3></div>' +
+        '<span class="game-status-badge" id="badge-' + g.id + '"></span></div>' +
+        (g.intro ? '<p class="card-intro">' + g.intro + '</p>' : '') +
+        '<div id="meta-' + g.id + '"></div><div id="main-' + g.id + '"></div><div id="nav-' + g.id + '"></div>' +
+        '</article>';
+    }
+
+    function buildPage() {
+      for (let s = 1; s <= 5; s++) {
+        const mount = document.getElementById('mount-sec-' + s);
+        const games = GAMES.filter(g => g.sec === s);
+        let html = '', i = 0;
+        while (i < games.length) {
+          const g = games[i];
+          if (g.group) {
+            const grp = games.filter(x => x.group === g.group);
+            html += '<div class="comparison-grid">' + grp.map(cardHtml).join('') + '</div>';
+            i += grp.length;
+          } else {
+            html += cardHtml(g);
+            i++;
+          }
+        }
+        mount.innerHTML = html;
+      }
+      GAMES.forEach(g => { loadRT(g); renderGame(g); });
+      document.getElementById('total-q').textContent = GAMES.reduce((n, g) => n + g.items.length, 0);
+      renderHUD();
+    }
+
+    // Active section highlight in the bottom bar
+    function setupNavSpy() {
+      const pills = Array.from(document.querySelectorAll('.nav-pill'));
+      if (!('IntersectionObserver' in window)) return;
+      const io = new IntersectionObserver(entries => {
+        entries.forEach(en => {
+          if (en.isIntersecting) {
+            pills.forEach(p => p.classList.toggle('active', p.dataset.sec === en.target.id));
+            const act = pills.find(p => p.classList.contains('active'));
+            if (act && act.scrollIntoView) { try { act.scrollIntoView({ inline: 'center', block: 'nearest' }); } catch (e) {} }
+          }
+        });
+      }, { rootMargin: '-35% 0px -55% 0px' });
+      document.querySelectorAll('main section[id^="sec-"]').forEach(s => io.observe(s));
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      buildPage();
+      measureHud();
+      setupNavSpy();
     });
+    window.addEventListener('load', () => {
+      measureHud();
+      renderMath(document.body); // in case KaTeX finished loading late
+    });
+    window.addEventListener('resize', measureHud);
   </script>
 </body>
 </html>
